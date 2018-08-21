@@ -45,7 +45,7 @@ public interface WalletService {
     public  ApiResponseResult modifyWithdrawMoney(WalletUtilsVo walletUtilsVo)
             throws Exception;
 
-    public  ApiResponseResult queryContractAddr(String paramString1, String paramString2)
+    public  ApiResponseResult queryContractAddr(String phone, String contractAddr)
             throws Exception;
 
     public  ApiResponseResult queryAccountList()
@@ -56,7 +56,6 @@ public interface WalletService {
     public  ApiResponseResult queryUserWalletInfo(String paramString1, String paramString2)
             throws Exception;
 
-    public  ApiResponseResult chatAndTransfer(WalletVXUtilsVo walletVXUtilsVo)
-            throws Exception;
+
 
 }

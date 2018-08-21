@@ -1,13 +1,95 @@
 package com.duck.yellowduck.publics;
 
+import com.alibaba.fastjson.JSONObject;
+
+import java.math.BigDecimal;
 import java.util.UUID;
 
-public class ObjectUtils
-{
-    public static String getWalletRemark(String remark, Integer typeCode)
-    {
+/**
+ * 辅助工具类
+ */
+public class ObjectUtils {
+
+
+    /**
+     * 用户钱包总额
+     * @param str
+     * @return
+     */
+    public static BigDecimal getPrice(String str){
+
+        BigDecimal price = new BigDecimal("0");
+
+        JSONObject jsonObject = new JSONObject();
+
+        if(str != null && !str.equals("") && !str.equals("null")){
+
+            JSONObject body = (JSONObject) jsonObject.get(str);
+
+            if(body.get("body") != null && !body.get("body").equals("")){
+
+                JSONObject json = (JSONObject)body.get("body");
+
+                if(json.get("error") != null && !json.get("error").equals("")){
+
+                    return price;
+                }
+
+                price = new BigDecimal(json.get("balance").toString());
+            }
+        }
+        return price;
+    }
+
+    /**
+     * 获取转账成功的hash值
+     * @param str
+     * @return
+     */
+    public static String getHash(String str){
+
+        String hash = "";
+
+        JSONObject jsonObject = new JSONObject();
+
+        if(str != null && !str.equals("") && !str.equals("null")){
+
+            JSONObject body = (JSONObject) jsonObject.get(str);
+
+            if(body.get("body") != null && !body.get("body").equals("")){
+
+                JSONObject json = (JSONObject)body.get("body");
+
+                if(json.get("error") != null && !json.get("error").equals("")){
+
+                    return hash;
+                }
+
+                hash = json.get("hash").toString();
+
+            }
+
+            if(body.get("tx") != null && !body.get("tx").equals("")){
+
+                JSONObject json = (JSONObject)body.get("tx");
+
+                if(json.get("error") != null && !json.get("error").equals("")){
+
+                    return hash;
+                }
+
+                hash = json.get("result").toString();
+            }
+
+        }
+        return hash;
+    }
+
+
+
+    public static String getWalletRemark(String remark, Integer typeCode){
         if ((remark == null) || (remark.equals(""))) {
-            switch (typeCode.intValue())
+            switch (typeCode)
             {
                 case 1:
                     remark = "转入";
@@ -26,14 +108,13 @@ public class ObjectUtils
     {
         if ((remark != null) && (!remark.equals("")))
         {
-            if (typeCode.intValue() == 2) {
+            if (typeCode == 2) {
                 remark = "转出";
             }
             return remark;
         }
         if ((remark == null) || (remark.equals(""))) {
-            switch (typeCode.intValue())
-            {
+            switch (typeCode) {
                 case 1:
                     remark = "����,����(freeAmount)����,����(availableAmount)����,��������";
                     break;
@@ -59,10 +140,12 @@ public class ObjectUtils
         return remark;
     }
 
-    public static String getUUID()
-    {
+    public static String getUUID(){
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
 
         return uuid;
     }
+
+
+
 }

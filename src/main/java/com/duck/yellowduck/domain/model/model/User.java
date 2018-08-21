@@ -7,25 +7,25 @@ import java.util.Date;
  */
 public class User {
 
-    private Integer id;
+    private Integer id;                         //编号
 
-    private String userName;
+    private String userName;                    //用户名
 
-    private String phone;
+    private String phone;                       //手机号
 
-    private String passwd;
+    private String passwd;                      //用户密码
 
-    private String headImg;
+    private String headImg;                     //头像
 
-    private String nickName;
+    private String nickName;                    //昵称
 
-    private Integer sex;
+    private Integer sex;                        //0 男 1 女
 
-    private Date synchronizationCreateTime;
+    private Date synchronizationCreateTime;     //同步创建时间
 
-    private Date synchronizationUpdateTime;
+    private Date synchronizationUpdateTime;     //同步修改时间
 
-    private String remark;
+    private String remark;                      //备注
 
     public Integer getId()
     {

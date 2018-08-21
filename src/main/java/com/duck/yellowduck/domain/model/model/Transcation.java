@@ -6,33 +6,33 @@ import java.util.Date;
 /**
  * 交易订单Model
  */
-public class Transcation
-{
-    private Integer id;
+public class Transcation {
 
-    private Integer userId;
+    private Integer id;                         //编号
 
-    private String coinName;
+    private Integer userId;                     //用户ID
 
-    private BigDecimal amount;
+    private String coinName;                    //币种
 
-    private Integer txType;
+    private BigDecimal amount;                  //交易金额
 
-    private String from;
+    private Integer txType;                     //交易类型（1：转入，2转出）
 
-    private String contractAddr;
+    private String from;                        //转出地址
 
-    private String to;
+    private String contractAddr;                //合约币地址
 
-    private String hash;
+    private String to;                          //收款地址
 
-    private Integer txStatus;
+    private String hash;                        //交易ID
 
-    private Date createTime;
+    private Integer txStatus;                   //交易状态（1：已提交，2：已完成）
 
-    private Date updateTime;
+    private Date createTime;                    //订单创建时间
 
-    private String remark;
+    private Date updateTime;                    //订单修改时间
+
+    private String remark;                      //备注
 
     public Integer getId()
     {

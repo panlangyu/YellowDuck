@@ -8,35 +8,35 @@ import java.util.Date;
  */
 public class Wallet {
 
-    private Integer id;
+    private Integer id;                     //编号
 
-    private String coinName;
+    private String coinName;                //币种名称
 
-    private String address;
+    private String address;                 //ETH钱包地址
 
-    private String contractAddr;
+    private String contractAddr;            //合约币地址
 
-    private String privateKey;
+    private String privateKey;              //钱包私钥
 
-    private String passwd;
+    private String passwd;                  //密码
 
-    private Date createTime;
+    private Date createTime;                //钱包创建时间
 
-    private Date updateTime;
+    private Date updateTime;                //钱包更新时间
 
-    private String keystore;
+    private String keystore;                //keystore(密钥库)
 
-    private Integer userId;
+    private Integer userId;                 //用户ID
 
-    private BigDecimal freeAmount;
+    private BigDecimal freeAmount;          //冻结金额
 
-    private BigDecimal amount;
+    private BigDecimal amount;              //钱包总额
 
-    private BigDecimal availableAmount;
+    private BigDecimal availableAmount;     //可用金额(钱包总额-冻结金额)
 
-    private String coinImg;
+    private String coinImg;                 //币种图标
 
-    private String remark;
+    private String remark;                  //备注
 
 
     public Integer getId() {

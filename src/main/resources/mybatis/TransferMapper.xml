@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duck.yellowduck.domain.dao.TransferMapper">
+
+    <!-- 装配用户转账信息 -->
+    <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.TransferVo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="userId" jdbcType="INTEGER" property="userId"/>
+        <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="remark" jdbcType="VARCHAR" property="remark"/>
+        <result column="headImg" jdbcType="VARCHAR" property="headImg"/>
+        <result column="nickName" jdbcType="VARCHAR" property="nickName"/>
+    </resultMap>
+
+   <!-- <sql id="Base_Column_List">
+
+
+    </sql>-->
+
+
+    <!-- 查询用户转账记录(转入和转出) -->
+    <select id="findUserTransferInfo" resultMap="BaseResultMap">
+
+        SELECT t.id,userId,t.coinName,amount,t.createTime,t.remark,nickName,headImg FROM duck_transfer t
+        INNER JOIN duck_user u ON t.userId = u.id
+
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            <if test="startTime != null and startTime.length() > 0">
+                AND createTime BETWEEN  #{startTime} AND #{endTime}
+            </if>
+
+        </trim>
+
+
+    </select>
+
+
+    <!-- 新增转账信息 转出-->
+    <insert id="insertTransferTurnTo" parameterType="com.duck.yellowduck.domain.model.model.Transfer">
+
+        INSERT INTO duck_transfer(
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                userId,
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                coinName,
+            </if>
+
+            <if test="amount != null and amount != 0">
+                amount,
+            </if>
+            <if test="status != null and status != 0">
+                `status`,
+            </if>
+
+            createTime,
+            updateTime,
+
+            <if test="remark != null and remark.length() > 0">
+                remark
+            </if>
+        </trim>
+        )
+        VALUES(
+
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                #{userId},
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                #{coinName},
+            </if>
+
+            <if test="amount != null and amount != 0">
+                -#{amount},
+            </if>
+            <if test="status != null and status != 0">
+                #{status},
+            </if>
+
+            now(),
+            now(),
+
+            <if test="remark != null and remark.length() > 0">
+                #{remark}
+            </if>
+        </trim>
+        )
+    </insert>
+
+
+    <!-- 新增转账信息 转入-->
+    <insert id="insertTransferToCharge" parameterType="com.duck.yellowduck.domain.model.model.Transfer">
+
+        INSERT INTO duck_transfer(
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                userId,
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                coinName,
+            </if>
+
+            <if test="amount != null and amount != 0">
+                amount,
+            </if>
+            <if test="status != null and status != 0">
+                `status`,
+            </if>
+
+            createTime,
+            updateTime,
+
+            <if test="remark != null and remark.length() > 0">
+                remark
+            </if>
+        </trim>
+        )
+        VALUES(
+
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                #{userId},
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                #{coinName},
+            </if>
+
+            <if test="amount != null and amount != 0">
+                #{amount},
+            </if>
+            <if test="status != null and status != 0">
+                #{status},
+            </if>
+
+            now(),
+            now(),
+
+            <if test="remark != null and remark.length() > 0">
+                #{remark}
+            </if>
+        </trim>
+        )
+    </insert>
+
+
+
+
+</mapper>

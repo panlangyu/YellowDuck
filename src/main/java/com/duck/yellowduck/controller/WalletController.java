@@ -30,7 +30,7 @@ public class WalletController {
 
     @ApiOperation(value="查询用户个人钱包总额", notes="根据userId查询个人钱包币种数量总额")
     @ApiImplicitParam(name="userId", value="用户编号userId", dataType="Integer", paramType="query", required=true)
-    @RequestMapping(value={"/queryUserWalletTotal"}, method=RequestMethod.GET)
+    @RequestMapping(value="/queryUserWalletTotal", method=RequestMethod.GET)
     public ApiResponseResult queryUserWalletTotal(@RequestParam("userId") Integer userId) {
         ApiResponseResult apiResponse = new ApiResponseResult();
         try {
@@ -39,7 +39,7 @@ public class WalletController {
         catch (Exception e){
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2001), "error", "出现异常", "");
+            return ApiResponseResult.build(2001, "error", "出现异常", "");
         }
         return apiResponse;
     }
@@ -51,7 +51,7 @@ public class WalletController {
             @ApiImplicitParam(name="userId", value="用户编号", dataType="Integer", paramType="query", required=true),
             @ApiImplicitParam(name="coinName", value="币种名称", dataType="String", paramType="query", required=false)
     })
-    @RequestMapping(value={"/queryUserWalletCoinList"}, method=RequestMethod.GET)
+    @RequestMapping(value="/queryUserWalletCoinList", method=RequestMethod.GET)
     public ApiResponseResult queryUserWalletCoinList(@RequestParam("currentPage") Integer currentPage,
                                                      @RequestParam("currentSize") Integer currentSize,
                                                      @RequestParam("userId") Integer userId,
@@ -64,14 +64,14 @@ public class WalletController {
         catch (Exception e) {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2002), "error", "出现异常", "");
+            return ApiResponseResult.build(2002, "error", "出现异常", "");
         }
         return apiResponse;
     }
 
     @ApiOperation(value="钱包转出到(交易所),提币操作", notes="钱包提币操作")
     @ApiImplicitParam(name="wallet", value="钱包对象wallet", dataType="Wallet")
-    @RequestMapping(value={"/modifyWalletTurnOut"}, method=RequestMethod.POST)
+    @RequestMapping(value="/modifyWalletTurnOut", method=RequestMethod.POST)
     public ApiResponseResult modifyWalletTurnOut(@RequestBody Wallet wallet, HttpServletRequest request) {
         ApiResponseResult apiResponse = new ApiResponseResult();
         try {
@@ -82,7 +82,7 @@ public class WalletController {
         catch (Exception e) {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2003), "error", "出现异常", "");
+            return ApiResponseResult.build(2003, "error", "出现异常", "");
         }
         return apiResponse;
     }
@@ -93,7 +93,7 @@ public class WalletController {
             @ApiImplicitParam(name="currentSize", value="页面容量", dataType="Integer", paramType="query", required=true),
             @ApiImplicitParam(name="userId", value="用户编号", dataType="Integer", paramType="query", required=true)
     })
-    @RequestMapping(value={"/queryUserWalletCoinStraightOrInterest"}, method=RequestMethod.GET)
+    @RequestMapping(value="/queryUserWalletCoinStraightOrInterest", method=RequestMethod.GET)
     public ApiResponseResult queryUserWalletCoinStraightOrInterest(@RequestParam("currentPage") Integer currentPage,
                                                                    @RequestParam("currentSize") Integer currentSize,
                                                                    @RequestParam("userId") Integer userId,
@@ -108,7 +108,7 @@ public class WalletController {
 
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2004), "error", "出现异常", "");
+            return ApiResponseResult.build(2004, "error", "出现异常", "");
         }
         return apiResponse;
     }
@@ -118,7 +118,7 @@ public class WalletController {
             @ApiImplicitParam(name="userId", value="用户编号", dataType="Integer", paramType="query", required=true),
             @ApiImplicitParam(name="coinId", value="币种编号", dataType="Integer", paramType="query", required=true)
     })
-    @RequestMapping(value={"/queryYesterdayProfit"}, method=RequestMethod.GET)
+    @RequestMapping(value="/queryYesterdayProfit", method=RequestMethod.GET)
     public ApiResponseResult queryYesterdayProfit(@RequestParam("userId") Integer userId,
                                                   @RequestParam("coinId") Integer coinId,
                                                   HttpServletRequest request) {
@@ -131,14 +131,14 @@ public class WalletController {
         catch (Exception e) {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2007), "error", "��������", "");
+            return ApiResponseResult.build(2007, "error", "出现异常", "");
         }
         return apiResponse;
     }
 
     @ApiOperation(value="钱包管理(转入)本金不发生改变,冻结增加和可用减少", notes="钱包管理(转入)")
-    @ApiImplicitParam(name="wallet", value="��������wallet", dataType="Wallet")
-    @RequestMapping(value={"/modifyWalletDepositToChangeInfo"}, method=RequestMethod.POST)
+    @ApiImplicitParam(name="wallet", value="钱包wallet", dataType="Wallet")
+    @RequestMapping(value="/modifyWalletDepositToChangeInfo", method=RequestMethod.POST)
     public ApiResponseResult modifyWalletDepositToChangeInfo(@RequestBody Wallet wallet,
                                                              HttpServletRequest request) {
 
@@ -150,14 +150,14 @@ public class WalletController {
         catch (Exception e) {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2016), "error", "出现异常", "");
+            return ApiResponseResult.build(2016, "error", "出现异常", "");
         }
         return apiResponse;
     }
 
     @ApiOperation(value="钱包管理(转出)本金不发生改变,冻结减少和可用金额增加", notes="钱包管理(转出)")
     @ApiImplicitParam(name="wallet", value="钱包管理wallet", dataType="Wallet")
-    @RequestMapping(value={"/modifyWalletDepositTurnTo"}, method=RequestMethod.POST)
+    @RequestMapping(value="/modifyWalletDepositTurnTo", method=RequestMethod.POST)
     public ApiResponseResult modifyWalletDepositTurnTo(@RequestBody Wallet wallet,
                                                        HttpServletRequest request) {
 
@@ -168,14 +168,14 @@ public class WalletController {
         catch (Exception e) {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2016), "error", "出现异常", "");
+            return ApiResponseResult.build(2016, "error", "出现异常", "");
         }
         return apiResponse;
     }
 
     @ApiOperation(value="用户充币信息", notes="用户充币")
     @ApiImplicitParam(name="wallet", value="钱包对象wallet", dataType="Wallet")
-    @RequestMapping(value={"/modifyChargeMoneyInfo"}, method=RequestMethod.POST)
+    @RequestMapping(value="/modifyChargeMoneyInfo", method=RequestMethod.POST)
     public ApiResponseResult modifyChargeMoneyInfo(@RequestBody Wallet wallet,
                                                    HttpServletRequest request) {
 
@@ -188,14 +188,14 @@ public class WalletController {
         catch (Exception e) {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2017), "error", "出现异常", "");
+            return ApiResponseResult.build(2017, "error", "出现异常", "");
         }
         return apiResponse;
     }
 
     @ApiOperation(value="用户创建钱包", notes="创建钱包")
     @ApiImplicitParam(name="user", value="用户对象user", dataType="User")
-    @RequestMapping(value={"/createWalletInfo"}, method=RequestMethod.POST)
+    @RequestMapping(value="/createWalletInfo", method=RequestMethod.POST)
     public ApiResponseResult createWalletInfo(@RequestBody User user,
                                               HttpServletRequest request) {
         ApiResponseResult apiResponse = new ApiResponseResult();
@@ -207,7 +207,7 @@ public class WalletController {
         catch (Exception e) {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2017), "error", "出现异常", "");
+            return ApiResponseResult.build(2017, "error", "出现异常", "");
         }
         return apiResponse;
     }
@@ -219,8 +219,8 @@ public class WalletController {
             @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true),
             @ApiImplicitParam(name="coinName", value="币种名称", dataType="String", paramType="query", required=false)
     })
-    @RequestMapping(value={"/queryUserWalletList"}, method=RequestMethod.GET)
-    public ApiResponseResult queryUserWalletList(@RequestParam("currentPage") Integer currentPage,
+    @RequestMapping(value="/queryWalletListInfo", method=RequestMethod.GET)
+    public ApiResponseResult queryWalletListInfo(@RequestParam("currentPage") Integer currentPage,
                                                  @RequestParam("currentSize") Integer currentSize,
                                                  @RequestParam("phone") String phone,
                                                  @RequestParam(value="coinName", required=false) String coinName) {
@@ -234,14 +234,14 @@ public class WalletController {
         catch (Exception e) {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2011), "error", "出现异常", "");
+            return ApiResponseResult.build(2011, "error", "出现异常", "");
         }
         return apiResponseResult;
     }
 
     @ApiOperation(value="用户提币", notes="调用第三方转账")
     @ApiImplicitParam(name="wallet", value="钱包对象wallet", dataType="Wallet")
-    @RequestMapping(value={"/modifyWithdrawMoney"}, method=RequestMethod.POST)
+    @RequestMapping(value="/modifyWithdrawMoney", method=RequestMethod.POST)
     public ApiResponseResult modifyWithdrawMoney(@RequestBody WalletUtilsVo wallet,
                                                  HttpServletRequest request){
 
@@ -254,7 +254,7 @@ public class WalletController {
         {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2017), "error", "出现异常", "");
+            return ApiResponseResult.build(2017, "error", "出现异常", "");
         }
         return apiResponseResult;
     }
@@ -264,7 +264,7 @@ public class WalletController {
             @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true),
             @ApiImplicitParam(name="contractAddr", value="合约币地址", dataType="String", paramType="query", required=true)
     })
-    @RequestMapping(value={"/queryContractAddr"}, method=RequestMethod.GET)
+    @RequestMapping(value="/queryContractAddr", method=RequestMethod.GET)
     public ApiResponseResult queryContractAddr(@RequestParam("phone") String phone,
                                                @RequestParam("contractAddr") String contractAddr)
     {
@@ -277,13 +277,13 @@ public class WalletController {
         {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2016), "error", "出现异常", "");
+            return ApiResponseResult.build(2016, "error", "出现异常", "");
         }
         return apiResponseResult;
     }
 
     @ApiOperation(value="查询所有账户", notes="所有账户")
-    @RequestMapping(value={"/queryAccountInfo"}, method= RequestMethod.GET)
+    @RequestMapping(value="/queryAccountInfo", method= RequestMethod.GET)
     public ApiResponseResult queryAccountInfo() {
         ApiResponseResult apiResponseResult = new ApiResponseResult();
         try {
@@ -295,13 +295,13 @@ public class WalletController {
         {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2016), "error", "出现异常", "");
+            return ApiResponseResult.build(2016, "error", "出现异常", "");
         }
         return apiResponseResult;
     }
 
     @ApiOperation(value="查询阻塞数信息", notes="阻塞数")
-    @RequestMapping(value={"/blockNumber"}, method=RequestMethod.GET)
+    @RequestMapping(value="/blockNumber", method=RequestMethod.GET)
     public ApiResponseResult blockNumber() {
 
         return this.walletService.blockNumber();
@@ -312,7 +312,7 @@ public class WalletController {
             @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true),
             @ApiImplicitParam(name="earnerPhone", value="对方手机号", dataType="String", paramType="query", required=true)
     })
-    @RequestMapping(value={"/queryUserWalletInfo"}, method=RequestMethod.GET)
+    @RequestMapping(value="/queryUserWalletInfo", method=RequestMethod.GET)
     public ApiResponseResult queryUserWalletInfo(@RequestParam("phone") String phone,
                                                  @RequestParam("earnerPhone") String earnerPhone) {
 
@@ -324,18 +324,12 @@ public class WalletController {
         {
             e.printStackTrace();
 
-            return ApiResponseResult.build(Integer.valueOf(2016), "error", "出现异常", "");
+            return ApiResponseResult.build(2016, "error", "出现异常", "");
         }
         return apiResponseResult;
     }
 
-    @ApiOperation(value="用户聊天转账", notes="转账")
-    @ApiImplicitParam(name="wallet", value="装配聊天转账wallet", dataType="Wallet")
-    @RequestMapping(value={"/chatAndTransfer"}, method=RequestMethod.GET)
-    public ApiResponseResult chatAndTransfer(@RequestBody WalletVXUtilsVo wallet) {
 
-        return null;
-    }
 
 
 
