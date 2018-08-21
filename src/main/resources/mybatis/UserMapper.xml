@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duck.yellowduck.domain.dao.UserMapper">
+
+    <!--  -->
+    <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.UserVo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="userName" jdbcType="VARCHAR" property="userName"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <!--<result column="passwd" jdbcType="VARCHAR" property="passwd"/>-->
+        <result column="headImg" jdbcType="VARCHAR" property="headImg"/>
+        <result column="nickName" jdbcType="VARCHAR" property="nickName"/>
+        <result column="sex" jdbcType="INTEGER" property="sex"/>
+        <result column="synchronization_create_time" jdbcType="TIMESTAMP" property="synchronizationCreateTime"/>
+        <result column="synchronization_update_time" jdbcType="TIMESTAMP" property="synchronizationUpdateTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,
+        userName,
+        phone,
+        headImg,
+        nickName,
+        sex,
+        synchronization_create_time,
+        synchronization_update_time
+    </sql>
+
+
+    <!-- ������������������������,��������������?,������������������ -->
+    <select id="findUserExist" parameterType="java.lang.String" resultMap="BaseResultMap">
+
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM duck_user
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="phone != null and phone.length() > 0">
+
+                AND  phone = #{phone}
+
+            </if>
+
+        </trim>
+
+    </select>
+
+
+    <!-- ������������������ -->
+    <insert id="insertUserInfo" parameterType="com.duck.yellowduck.domain.model.model.User">
+
+        INSERT INTO duck_user(
+        <trim suffix="" suffixOverrides=",">
+            <if test="userName != null and userName.length() > 0">
+                userName,
+            </if>
+            <if test="phone != null and phone.length() > 0">
+                phone,
+            </if>
+            <!--    <if test="passwd != null and passwd.length() > 0">
+                    passwd,
+                </if>-->
+            <if test="headImg != null and headImg.length() > 0">
+                headImg,
+            </if>
+            <if test="nickName != null and nickName.length() > 0">
+                nickName,
+            </if>
+            <if test="sex != null">
+                sex,
+            </if>
+
+            synchronization_create_time,
+            synchronization_update_time,
+
+            <if test="remark != null and remark.length() > 0">
+                remark
+            </if>
+        </trim>
+        )
+        VALUES(
+
+        <trim suffix="" suffixOverrides=",">
+            <if test="userName != null and userName.length() > 0">
+                #{userName},
+            </if>
+            <if test="phone != null and phone.length() > 0">
+                #{phone},
+            </if>
+            <!--     <if test="passwd != null and passwd.length() > 0">
+                     #{passwd},
+                 </if>-->
+            <if test="headImg != null and headImg.length() > 0">
+                #{headImg},
+            </if>
+            <if test="nickName != null and nickName.length() > 0">
+                #{nickName},
+            </if>
+            <if test="sex != null">
+                #{sex},
+            </if>
+
+            now(),
+            now(),
+
+            <if test="remark != null and remark.length() > 0">
+                #{remark}
+            </if>
+        </trim>
+        )
+    </insert>
+
+    <!-- ������������������ -->
+    <update id="modifyUserInfo" parameterType="com.duck.yellowduck.domain.model.model.User">
+
+        UPDATE duck_user
+
+        <trim prefix="SET" suffixOverrides="," suffix="WHERE phone=#{phone}">
+
+            <if test="userName != null and userName.length() > 0">
+                userName=#{userName},
+            </if>
+            <!--        <if test="passwd != null and passwd.length() > 0">
+                        passwd=#{passwd},
+                    </if>-->
+            <if test="headImg != null and headImg.length() > 0">
+                headImg=#{headImg},
+            </if>
+            <if test="nickName != null and nickName.length() > 0">
+                nickName=#{nickName},
+            </if>
+            <if test="sex != null">
+                sex=#{sex},
+            </if>
+
+            synchronization_update_time=NOW(),
+
+            <if test="remark != null and remark.length() > 0">
+                remark=#{remark},
+            </if>
+
+        </trim>
+
+    </update>
+
+    <!-- ������������������������ -->
+    <select id="findUserById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+
+        SELECT
+
+        <include refid="Base_Column_List"/>
+
+        FROM duck_user
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="id != null and id != 0">
+
+                AND  id = #{id}
+
+            </if>
+
+        </trim>
+
+    </select>
+
+
+
+</mapper>

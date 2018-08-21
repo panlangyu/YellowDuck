@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duck.yellowduck.domain.dao.DirectPrizeMapper">
+
+    <!-- ��������������������������������? -->
+    <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.DirectPrizeVo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="referee_id" jdbcType="INTEGER" property="refereeId"/>
+        <result column="coverReferee_id" jdbcType="INTEGER" property="coverRefereeId"/>
+        <result column="coinId" jdbcType="INTEGER" property="coinId"/>
+        <result column="amountUsed" jdbcType="DECIMAL" property="amountUsed"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="amountAvailable" jdbcType="DECIMAL" property="amountAvailable"/>
+    </resultMap>
+
+    <!-- ��������������������������������������������?3 -->
+    <select id="selectDirectPrizeCount" parameterType="Integer" resultType="Integer">
+
+        SELECT  COUNT(*)  FROM VAH_D_DIRECTTPRIZE
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="refereeId != null and refereeId != 0">
+                AND referee_id = #{refereeId}
+            </if>
+
+        </trim>
+
+    </select>
+
+    <!-- ������������������������������������������������3 -->
+    <select id="selectDirectPrizeList" resultMap="BaseResultMap">
+
+        SELECT  id,referee_id,coverReferee_id,coinId,
+        amountUsed,amount,amountAvailable  FROM VAH_D_DIRECTTPRIZE
+
+        WHERE amountUsed != amount
+
+    </select>
+
+
+    <!-- ��������������������? -->
+    <insert id="insertDirectPrizeInfo" parameterType="com.duck.yellowduck.domain.model.model.DirectPrize" useGeneratedKeys="true"
+            keyProperty="id">
+
+      INSERT INTO VAH_D_DIRECTTPRIZE(
+                    referee_id,
+                    coverReferee_id,
+                    coinId,
+                    amountUsed,
+                    amount,
+                    amountAvailable,
+                    create_time,
+                    update_time
+                  )
+           VALUES(
+                #{refereeId},
+                #{coverRefereeId},
+                #{coinId},
+                DEFAULT,
+                #{amount},
+                #{amountAvailable},
+                NOW(),
+                NOW()
+            )
+
+    </insert>
+
+
+    <!-- ��������������������������? -->
+    <update id="modifyDirectPrizeInfo" parameterType="com.duck.yellowduck.domain.model.model.DirectPrize">
+
+        UPDATE VAH_D_DIRECTTPRIZE
+
+        <trim prefix="SET" suffixOverrides="," suffix="WHERE id=#{id}">
+
+            <if test="amount != null and amount != 0">
+                amountUsed = amountUsed + #{amount},
+                amountAvailable = amountAvailable - #{amount},
+            </if>
+            update_time = NOW(),
+        </trim>
+
+
+
+    </update>
+
+
+
+
+</mapper>

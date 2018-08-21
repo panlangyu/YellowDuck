@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duck.yellowduck.domain.dao.DictionaryMapper">
+
+    <!-- ������������������������ -->
+    <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.DictionaryVo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="parentId" jdbcType="INTEGER" property="parentId"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="value" jdbcType="VARCHAR" property="value"/>
+        <result column="code" jdbcType="INTEGER" property="code"/>
+        <result column="sortSign" jdbcType="INTEGER" property="sortSign"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+    </resultMap>
+
+
+    <!-- ������������������,��������������?,parentId������0 -->
+    <select id="selectDictionaryList" parameterType="String" resultType="com.duck.yellowduck.domain.model.model.Dictionary">
+        SELECT * FROM VAH_D_DICTIONARY
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            AND parent_id != 0
+            <if test="type != null and type.length() > 0">
+
+                AND `type` = #{type}
+            </if>
+        </trim>
+
+        /*ORDER BY sort_sign*/
+
+    </select>
+
+    <!-- ������������������,��������������?,parentId������0,��������������������������? -->
+    <select id="selectDictionaryListById" resultMap="BaseResultMap">
+        SELECT id,parent_id,`name`,`value`/100 AS `value`,`code`,sort_sign,`status` FROM VAH_D_DICTIONARY
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            AND parent_id != 0
+
+            <if test="id != null and id != 0">
+
+                AND id = #{id}
+            </if>
+            <if test="type != null and type.length() > 0">
+
+                AND `type` = #{type}
+            </if>
+
+            <!-- <if test="value != null and value.length() > 0">
+
+                 AND `value` = #{value}
+             </if>-->
+
+        </trim>
+
+        /*ORDER BY sort_sign*/
+
+    </select>
+
+
+    <update id="updateDictionaryValueById">
+        update VAH_D_DICTIONARY set `value` = #{value} where  id = #{id}
+    </update>
+
+</mapper>

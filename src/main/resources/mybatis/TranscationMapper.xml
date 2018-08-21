@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duck.yellowduck.domain.dao.TranscationMapper">
+
+    <!-- ������������ -->
+    <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.TranscationVo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="txType" jdbcType="INTEGER" property="txType"/>
+        <result column="from" jdbcType="VARCHAR" property="from"/>
+        <result column="contractAddr" jdbcType="VARCHAR" property="contractAddr"/>
+        <result column="to" jdbcType="VARCHAR" property="to"/>
+        <result column="hash" jdbcType="VARCHAR" property="hash"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>
+
+    <!-- ��������������������������������������������? -->
+    <select id="selectUserCoinTransactionList" resultMap="BaseResultMap">
+        SELECT  id,txType,amount,`from`,contractAddr,`to`,`hash`,createTime FROM duck_transcation
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                AND coinName = #{coinName}
+            </if>
+
+            <!-- <if test="startTime != null and startTime.length() > 0">
+                 AND createTime BETWEEN  #{startTime} AND #{endTime}
+             </if>-->
+
+            AND txType &lt; 3
+
+        </trim>
+
+        ORDER BY createTime DESC
+
+    </select>
+
+    <!-- ������������������ ������������������ -->
+    <insert id="insertWalletTurnOut" parameterType="com.duck.yellowduck.domain.model.model.Transcation" useGeneratedKeys="true"
+            keyProperty="id">
+
+        INSERT INTO duck_transcation(
+
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                userId,
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                coinName,
+            </if>
+            <if test="amount != null and amount != 0">
+                amount,
+            </if>
+            <if test="txType != null and txType != 0">
+                txType,
+            </if>
+            <if test="from != null and from.length() > 0">
+                `from`,
+            </if>
+            <if test="contractAddr != null and contractAddr.length() > 0">
+                contractAddr,
+            </if>
+            <if test="to != null and to.length() > 0">
+                `to`,
+            </if>
+            <if test="hash != null and hash.length() > 0">
+                `hash`,
+            </if>
+            <if test="txStatus != null and txStatus != 0">
+                txStatus,
+            </if>
+
+            createTime,
+            updateTime,
+
+            <if test="remark != null and remark.length() > 0">
+                remark,
+            </if>
+        </trim>
+        )
+        VALUES(
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                #{userId},
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                #{coinName},
+            </if>
+            <if test="amount != null and amount != 0">
+                #{amount},
+            </if>
+            <if test="txType != null and txType != 0">
+                #{txType},
+            </if>
+            <if test="from != null and from.length() > 0">
+                #{from},
+            </if>
+            <if test="contractAddr != null and contractAddr.length() > 0">
+                #{contractAddr},
+            </if>
+            <if test="to != null and to.length() > 0">
+                #{to},
+            </if>
+            <if test="hash != null and hash.length() > 0">
+                #{hash},
+            </if>
+            <if test="txStatus != null and txStatus != 0">
+                #{txStatus},
+            </if>
+
+            now(),
+            now(),
+
+            <if test="remark != null and remark.length() > 0">
+                #{remark},
+            </if>
+        </trim>
+
+        )
+
+
+        INSERT INTO duck_transcation(userId,coinName,amount,txType,`from`,contractAddr,`to`,`hash`,txStatus,createTime,updateTime,remark)
+        VALUES(
+        remark, #{userId},#{coinName},#{amount},#{txType},#{from},#{contractAddr},#{to},#{hash},#{txStatus},
+        )
+
+    </insert>
+
+    <!-- ������������������ ������������������ -->
+    <insert id="insertWalletToChangeInto" parameterType="com.duck.yellowduck.domain.model.model.Transcation" useGeneratedKeys="true"
+            keyProperty="id">
+
+        INSERT INTO duck_transcation(userId,coinName,amount,txType,`from`,`to`,`hash`,txStatus,createTime,updateTime,remark)
+        VALUES(
+            #{userId},#{coinName},#{amount},#{txType},#{from},#{to},#{hash},#{txStatus},now(),now(),#{remark}
+        )
+
+    </insert>
+
+    <!-- ������������������������������,������������ ������ -->
+    <select id="selectUserCoinTurnToTotal" resultType="Double">
+
+        SELECT SUM(amount) FROM duck_transcation
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            AND amount &lt; 0
+
+            <if test="startTime != null and startTime.length() > 0">
+                AND createTime BETWEEN  #{startTime} AND #{endTime}
+            </if>
+
+        </trim>
+
+    </select>
+
+
+    <!-- ������������������������������,������������ ������ -->
+    <select id="selectUserCoinToChargeInfoTotal" resultType="Double">
+
+        SELECT SUM(amount) FROM duck_transcation
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            AND amount &gt; 0
+
+            <if test="startTime != null and startTime.length() > 0">
+                AND createTime BETWEEN  #{startTime} AND #{endTime}
+            </if>
+
+        </trim>
+
+    </select>
+
+
+    <!-- ������������������������������,������������ ������ -->
+    <select id="selectUserCoinTrunToChargeTotal" resultType="Map">
+
+        SELECT DISTINCT (
+        SELECT  SUM(amount)
+        FROM duck_transcation
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            AND amount &gt; 0
+
+            <if test="startTime != null and startTime.length() > 0">
+                AND createTime BETWEEN  #{startTime} AND #{endTime}
+            </if>
+
+        </trim>
+        ) AS toChangeInto
+        ,(
+        SELECT SUM(amount)
+        FROM duck_transcation
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            AND amount &lt; 0
+
+            <if test="startTime != null and startTime.length() > 0">
+                AND createTime BETWEEN  #{startTime} AND #{endTime}
+            </if>
+
+        </trim>
+        ) AS turnTo
+        FROM duck_transcation
+    </select>
+
+
+    <!-- ��������������������������? ������(3) ��? ������(4) ����?���� -->
+    <select id="selectUserWalletCoinStraightOrInterest" resultType="Map">
+        SELECT DISTINCT (
+        SELECT  SUM(amount)
+        FROM duck_transcation
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            AND txType = 3
+
+            <if test="coinName != null and coinName.length() > 0">
+                AND coinName = #{coinName}
+            </if>
+
+        </trim>
+
+        ) AS straightPush
+        ,(
+        SELECT SUM(amount)
+        FROM duck_transcation
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            AND txType = 4
+
+            <if test="coinName != null and coinName.length() > 0">
+                AND coinName = #{coinName}
+            </if>
+
+        </trim>
+        ) AS  interest
+        FROM duck_transcation
+
+    </select>
+
+
+    <!-- ��������������������������������������? -->
+    <select id="selectWalletUserCoinTransactionList" resultMap="BaseResultMap">
+        SELECT  id,txType,`to`,`hash`,amount,createTime FROM duck_transcation
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                AND coinName = #{coinName}
+            </if>
+
+            <if test="startTime != null and startTime.length() > 0">
+                AND createTime BETWEEN  #{startTime} AND #{endTime}
+            </if>
+
+        </trim>
+
+    </select>
+
+
+    <!-- ����������?������? ��? ������������ ������ ������������ 10000 -->
+    <select id="selectTranscationRechargeRecord" resultType="BigDecimal">
+        SELECT SUM(amount) FROM duck_transcation
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+            <if test="coinId != null and coinId != 0">
+                AND coinId = #{coinId}
+            </if>
+
+            AND txType &lt; 3
+        </trim>
+
+    </select>
+
+
+    <!--<select id="selectTranscationByParams" resultType="com.duck.yellowduck.domain.model.model.AdminTranscationBean">
+        SELECT
+        t.id,
+        t.userId,
+        t.coinName,
+        t.amount,
+        t.txType,
+        t.`from`,
+        t.`to`,
+        t.`hash`,
+        t.remark,
+        t.txStatus,
+        t.createTime,
+        t.updateTime,
+        u.phoneNum,
+        u.nickName
+        FROM
+        duck_transcation t
+        LEFT JOIN VAH_T_USER u
+        ON t.userId = u.id
+        <if test="params.tel!=null">
+            AND u.phoneNum = #{params.tel}
+        </if>
+        WHERE 1=1
+        <if test="params.type != null">
+            AND txType = #{params.type}
+        </if>
+        <if test="params.startTime!=null">
+            AND t.createTime > #{params.startTime}
+        </if>
+        <if test="params.endTime">
+            AND t.createTime &lt; #{params.startTime}
+        </if>
+    </select>-->
+
+</mapper>

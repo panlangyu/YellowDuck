@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duck.yellowduck.domain.dao.InvestmentMapper">
+
+    <!-- ������������������ -->
+    <!--<resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.TranscationVo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="txType" jdbcType="INTEGER" property="txType"/>
+        <result column="to" jdbcType="VARCHAR" property="to"/>
+        <result column="hash" jdbcType="VARCHAR" property="hash"/>
+        <result column="amount" jdbcType="DECIMAL" property="amount"/>
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+    </resultMap>-->
+
+
+    <!-- ������������������,��������?������������������������ ������ ��? ��������������������������������������������? -->
+    <insert id="insertUserInvestmentInfo" parameterType="java.util.List">
+
+        <!-- <selectKey resultType ="java.lang.Long" keyProperty= "id" order= "AFTER">
+
+             SELECT LAST_INSERT_ID()
+
+         </selectKey>-->
+
+        INSERT INTO VAH_T_INVESTMENT(
+        walletId,
+        interests,
+        recommend,
+        dynamicAward,
+        createTime,
+        updateTime
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.walletId},
+            DEFAULT,
+            DEFAULT,
+            DEFAULT,
+            now(),
+            now()
+            )
+        </foreach>
+
+    </insert>
+
+
+    <!-- ������������������������������,��������������������? -->
+    <select id="selectInvestmentByWalletId" resultType="com.duck.yellowduck.domain.model.model.Investment" parameterType="Integer">
+
+        SELECT id,walletId,interests,recommend,dynamicAward FROM VAH_T_INVESTMENT
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="walletId != null and walletId != 0">
+
+                AND walletId = #{walletId}
+            </if>
+
+        </trim>
+
+    </select>
+
+    <!-- ������  ����������?���������������������� -->
+    <update id="modifyInvestmentInfo" parameterType="com.duck.yellowduck.domain.model.model.Investment">
+
+        UPDATE VAH_T_INVESTMENT
+
+        <trim prefix="SET" suffixOverrides="," suffix="WHERE id=#{id}">
+
+            <if test="interests != null and interests != 0">
+
+                interests = interests + #{interests},
+            </if>
+            <if test="recommend != null and recommend != 0">
+
+                recommend = recommend + #{recommend},
+            </if>
+            <if test="dynamicAward != null and dynamicAward != 0">
+
+                dynamicAward = dynamicAward + #{dynamicAward},
+            </if>
+            updateTime=NOW(),
+        </trim>
+
+    </update>
+
+
+</mapper>

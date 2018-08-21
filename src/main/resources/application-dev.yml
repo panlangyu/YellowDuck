@@ -1,0 +1,62 @@
+spring:
+  application:
+    name: yellowduck
+  cloud:
+  devtools:
+    restart:
+      enabled: true
+      exclude: WEB-INF/**
+  resources:
+    static-locations: classpath:/static,classpath:/public,classpath:/resources,classpath:/META-INF/resources
+  datasource:
+    name: yellowduck
+    #        url: jdbc:mysql://39.105.26.249:3306/PMBC
+    #        url: jdbc:mysql://172.17.0.1:3306/wallet
+    url: jdbc:mysql://39.105.26.249:3306/yellowduck
+    username: root
+    password: 68d63351097d882f
+    # 阿里巴巴druid 数据源
+    type: com.alibaba.druid.pool.DruidDataSource
+    driver-class-name: com.mysql.jdbc.Driver
+    filters: stat
+    maxActive: 20
+    initialSize: 1
+    maxWait: 60000
+    minIdle: 1
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+    maxOpenPreparedStatements: 20
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+    content-type: text/html
+    mode: LEGACYHTML5
+mybatis:
+  mapper-locations: classpath:mybatis/*.xml
+  type-aliases-package: com.duck.yellowduck
+
+#pagehelper分页插件
+pagehelper:
+  helperDialect: mysql
+  reasonable: false
+  supportMethodsArguments: true
+  params: count=countSql
+
+logging:
+  level:
+    com.duck.yellowduck.domain.dao: DEBUG
+
+#绑定IP servert.host IP
+server:
+  context-path: /yellowduck
+  port: 8080
+  address: 192.168.10.125
+
+

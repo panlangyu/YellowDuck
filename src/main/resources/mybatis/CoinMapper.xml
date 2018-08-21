@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duck.yellowduck.domain.dao.CoinMapper">
+
+
+    <!-- ������������������ -->
+    <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.CoinVo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
+        <result column="coinImg" jdbcType="VARCHAR" property="coinImg"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+    </resultMap>
+
+
+    <!-- ��������?��������������? -->
+    <select id="selectCoinList" resultMap="BaseResultMap">
+
+          SELECT id,coinName,coinImg,address,`status` FROM VAH_T_COIN
+
+    </select>
+
+
+
+
+</mapper>
