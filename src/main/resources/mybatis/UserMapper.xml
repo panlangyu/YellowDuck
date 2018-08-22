@@ -70,6 +70,9 @@
             <if test="sex != null">
                 sex,
             </if>
+            <if test="memorizingWords != null and memorizingWords.length() > 0">
+                memorizingWords,
+            </if>
 
             synchronization_create_time,
             synchronization_update_time,
@@ -100,6 +103,9 @@
             <if test="sex != null">
                 #{sex},
             </if>
+            <if test="memorizingWords != null and memorizingWords.length() > 0">
+                #{memorizingWords},
+            </if>
 
             now(),
             now(),
@@ -111,7 +117,7 @@
         )
     </insert>
 
-    <!-- ������������������ -->
+    <!-- 修改用户信息 -->
     <update id="modifyUserInfo" parameterType="com.duck.yellowduck.domain.model.model.User">
 
         UPDATE duck_user
@@ -132,6 +138,9 @@
             </if>
             <if test="sex != null">
                 sex=#{sex},
+            </if>
+            <if test="memorizingWords != null and memorizingWords.length() > 0">
+                memorizingWords=#{memorizingWords},
             </if>
 
             synchronization_update_time=NOW(),
@@ -164,6 +173,25 @@
         </trim>
 
     </select>
+
+
+    <!-- 修改用户助记词 -->
+    <update id="modifyUserMemorizingInfo">
+
+        UPDATE duck_user
+
+        <trim prefix="SET" suffixOverrides="," suffix="WHERE phone=#{phone}">
+
+            <if test="memorizingWords != null and memorizingWords.length() > 0">
+                memorizingWords=#{memorizingWords},
+            </if>
+
+            synchronization_update_time=NOW(),
+
+        </trim>
+
+    </update>
+
 
 
 

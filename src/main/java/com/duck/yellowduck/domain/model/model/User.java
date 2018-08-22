@@ -21,6 +21,8 @@ public class User {
 
     private Integer sex;                        //0 男 1 女
 
+    private String memorizingWords;             //助记词
+
     private Date synchronizationCreateTime;     //同步创建时间
 
     private Date synchronizationUpdateTime;     //同步修改时间
@@ -95,6 +97,14 @@ public class User {
     public void setSex(Integer sex)
     {
         this.sex = sex;
+    }
+
+    public String getMemorizingWords() {
+        return memorizingWords;
+    }
+
+    public void setMemorizingWords(String memorizingWords) {
+        this.memorizingWords = memorizingWords;
     }
 
     public Date getSynchronizationCreateTime()

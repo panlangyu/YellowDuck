@@ -333,7 +333,7 @@ public class WalletController {
 
 
 
-    @ApiOperation(value="查询用户下拥有的币种", notes="币种命")
+    @ApiOperation(value="查询用户下拥有的币种", notes="币种名称")
     @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true)
     @RequestMapping(value="/queryWalletListInfo", method=RequestMethod.GET)
     public ApiResponseResult queryWalletListInfo(@RequestParam("phone")String phone){

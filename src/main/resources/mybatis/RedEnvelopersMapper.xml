@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duck.yellowduck.domain.dao.RedEnvelopersMapper">
+
+    <!-- 装配用户发红包信息 -->
+    <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.RedEnvelopersVo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="userId" jdbcType="INTEGER" property="userId"/>
+        <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
+        <result column="red_lead_count" jdbcType="INTEGER" property="redLeadCount"/>
+        <result column="red_envelopers_count" jdbcType="INTEGER" property="redEnvelopersCount"/>
+        <result column="received_amount" jdbcType="DECIMAL" property="receivedAmount"/>
+        <result column="total_amount" jdbcType="DECIMAL" property="totalAmount"/>
+    </resultMap>
+
+    <!-- 封装公用参数 -->
+    <sql id="Base_Column_List">
+          id,
+          userId,
+          coinName,
+          red_lead_count,
+          red_envelopers_count,
+          received_amount,
+          total_amount
+    </sql>
+
+
+    <!-- 查询用户转账记录(转入和转出) -->
+    <select id="findUserRedEnvelopersInfo" resultMap="BaseResultMap">
+
+        SELECT
+
+        <include refid="Base_Column_List"/>
+
+        FROM duck_red_envelopes
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="id != null and id != 0">
+                AND id = #{id}
+            </if>
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+        </trim>
+
+    </select>
+
+
+    <!-- 新增转账信息 转出-->
+    <insert id="insertRedEnvelopersInfo" parameterType="com.duck.yellowduck.domain.model.model.RedEnvelopers">
+
+
+        INSERT INTO duck_red_envelopes(
+        userId,coinName,red_lead_count,red_envelopers_count,`status`,red_envelopers_status,
+        received_amount,total_amount,red_type,`type`,`hash`,create_time,update_time,remark)
+
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                userId,
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                coinName,
+            </if>
+
+            <if test="amount != null and amount != 0">
+                amount,
+            </if>
+            <if test="status != null and status != 0">
+                `status`,
+            </if>
+            <if test="transferStatus != null and transferStatus != 0">
+                transferStatus,
+            </if>
+            <if test="hash != null and hash.length() > 0">
+                `hash`,
+            </if>
+
+            createTime,
+            updateTime,
+
+            <if test="remark != null and remark.length() > 0">
+                remark,
+            </if>
+        </trim>
+
+
+
+        VALUES()
+
+        INSERT INTO duck_transfer(
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                userId,
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                coinName,
+            </if>
+
+            <if test="amount != null and amount != 0">
+                amount,
+            </if>
+            <if test="status != null and status != 0">
+                `status`,
+            </if>
+            <if test="transferStatus != null and transferStatus != 0">
+                transferStatus,
+            </if>
+            <if test="hash != null and hash.length() > 0">
+                `hash`,
+            </if>
+
+            createTime,
+            updateTime,
+
+            <if test="remark != null and remark.length() > 0">
+                remark,
+            </if>
+        </trim>
+        )
+        VALUES(
+
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                #{userId},
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                #{coinName},
+            </if>
+
+            <if test="amount != null and amount != 0">
+                -#{amount},
+            </if>
+            <if test="status != null and status != 0">
+                #{status},
+            </if>
+            <if test="transferStatus != null and transferStatus != 0">
+                #{transferStatus},
+            </if>
+            <if test="hash != null and hash.length() > 0">
+                #{hash},
+            </if>
+
+            now(),
+            now(),
+
+            <if test="remark != null and remark.length() > 0">
+                #{remark},
+            </if>
+        </trim>
+        )
+    </insert>
+
+
+
+
+
+
+
+</mapper>
