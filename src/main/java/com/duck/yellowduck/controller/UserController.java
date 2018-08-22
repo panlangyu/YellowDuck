@@ -73,7 +73,7 @@ public class UserController
             //同步用户信息成功
             this.userService.synchronousUserInfo(user);
             //apiResponseResult = this.userService.synchronousUserInfo(user);
-            apiResponseResult = ApiResponseResult.build(4,"succss","获取助记词成功",keyWorld);
+            apiResponseResult = ApiResponseResult.build(200,"succss","获取助记词成功",keyWorld);
         }
         catch (Exception e)
         {

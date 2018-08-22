@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.duck.yellowduck.domain.dao.RedPacketRecordMapper">
 
-    <!-- 装配用户转账信息 -->
-   <!-- <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.TransferVo">
+    <!-- 装配红包列表信息 -->
+    <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.RedPacketRecordVo">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="userId" jdbcType="INTEGER" property="userId"/>
         <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
@@ -12,11 +12,88 @@
         <result column="remark" jdbcType="VARCHAR" property="remark"/>
         <result column="headImg" jdbcType="VARCHAR" property="headImg"/>
         <result column="nickName" jdbcType="VARCHAR" property="nickName"/>
-    </resultMap>-->
+    </resultMap>
 
 
+    <!-- 用户当前红包记录 -->
+    <select id="findUserRedPacketRecordInfo" resultMap="BaseResultMap">
+
+        SELECT
+            r.id,amount,r.create_time,r.remark,nickName,headImg
+        FROM duck_red_packet_record r
+        INNER JOIN duck_user u ON r.userId = u.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            <if test="redEnvelopersId != null and redEnvelopersId != 0">
+                AND red_envelopers_id = #{redEnvelopersId}
+            </if>
+
+        </trim>
+
+    </select>
 
 
+    <!-- 新增红包信息 -->
+    <insert id="insertRedPacketRecordInfo" parameterType="com.duck.yellowduck.domain.model.model.RedPacketRecord">
+
+
+        INSERT INTO duck_red_packet_record(
+
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                userId,
+            </if>
+            <if test="redEnvelopersId != null and redEnvelopersId != 0">
+                red_envelopers_id,
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                coinName,
+            </if>
+            <if test="amount != null and amount != 0">
+                amount,
+            </if>
+
+            create_time,
+            update_time,
+
+            <if test="remark != null and remark.length() > 0">
+                remark,
+            </if>
+        </trim>
+        )
+
+        VALUES(
+
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                #{userId},
+            </if>
+            <if test="redEnvelopersId != null and redEnvelopersId != 0">
+                #{redEnvelopersId},
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                #{coinName},
+            </if>
+            <if test="amount != null and amount != 0">
+                #{amount},
+            </if>
+
+            now(),
+            now(),
+
+            <if test="remark != null and remark.length() > 0">
+                #{remark},
+            </if>
+        </trim>
+
+        )
+
+    </insert>
 
 
 

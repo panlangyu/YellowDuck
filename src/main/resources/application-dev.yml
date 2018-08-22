@@ -56,7 +56,7 @@ logging:
 #绑定IP servert.host IP
 server:
   context-path: /yellowduck
-  port: 8080
+  port: 8082
   address: 192.168.10.125
 
 

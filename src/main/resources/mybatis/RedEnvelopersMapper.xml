@@ -49,96 +49,85 @@
     </select>
 
 
-    <!-- 新增转账信息 转出-->
+    <!-- 新增红包信息 -->
     <insert id="insertRedEnvelopersInfo" parameterType="com.duck.yellowduck.domain.model.model.RedEnvelopers">
 
-
         INSERT INTO duck_red_envelopes(
-        userId,coinName,red_lead_count,red_envelopers_count,`status`,red_envelopers_status,
-        received_amount,total_amount,red_type,`type`,`hash`,create_time,update_time,remark)
 
-        <trim suffix="" suffixOverrides=",">
+          <trim suffix="" suffixOverrides=",">
             <if test="userId != null and userId != 0">
                 userId,
             </if>
             <if test="coinName != null and coinName.length() > 0">
                 coinName,
             </if>
-
-            <if test="amount != null and amount != 0">
-                amount,
+            <!--<if test="redLeadCount != null and redLeadCount != 0">-->
+                red_lead_count,
+            <!--</if>-->
+            <if test="redEnvelopersCount != null and redEnvelopersCount != 0">
+                red_envelopers_count,
             </if>
-            <if test="status != null and status != 0">
+            <!--<if test="status != null and status != 0">-->
                 `status`,
+            <!--</if>-->
+
+            red_envelopers_status,
+
+            received_amount,
+
+            <if test="totalAmount != null and totalAmount != 0">
+                total_amount,
             </if>
-            <if test="transferStatus != null and transferStatus != 0">
-                transferStatus,
+            <if test="redType != null and redType != 0">
+                red_type,
             </if>
+
+            `type`,
+
             <if test="hash != null and hash.length() > 0">
                 `hash`,
             </if>
 
-            createTime,
-            updateTime,
+            create_time,
+            update_time,
 
             <if test="remark != null and remark.length() > 0">
                 remark,
             </if>
         </trim>
 
-
-
-        VALUES()
-
-        INSERT INTO duck_transfer(
-        <trim suffix="" suffixOverrides=",">
-            <if test="userId != null and userId != 0">
-                userId,
-            </if>
-            <if test="coinName != null and coinName.length() > 0">
-                coinName,
-            </if>
-
-            <if test="amount != null and amount != 0">
-                amount,
-            </if>
-            <if test="status != null and status != 0">
-                `status`,
-            </if>
-            <if test="transferStatus != null and transferStatus != 0">
-                transferStatus,
-            </if>
-            <if test="hash != null and hash.length() > 0">
-                `hash`,
-            </if>
-
-            createTime,
-            updateTime,
-
-            <if test="remark != null and remark.length() > 0">
-                remark,
-            </if>
-        </trim>
-        )
         VALUES(
 
         <trim suffix="" suffixOverrides=",">
             <if test="userId != null and userId != 0">
-                #{userId},
+                userId,
             </if>
             <if test="coinName != null and coinName.length() > 0">
-                #{coinName},
+                coinName,
+            </if>
+            <!--<if test="redLeadCount != null and redLeadCount != 0">-->
+            DEFAULT,
+            <!--</if>-->
+            <if test="redEnvelopersCount != null and redEnvelopersCount != 0">
+                red_envelopers_count,
+            </if>
+            <!--<if test="status != null and status != 0">-->
+            DEFAULT,
+            <!--</if>-->
+
+            DEFAULT,
+
+            DEFAULT ,
+
+            <if test="totalAmount != null and totalAmount != 0">
+                #{totalAmount},
+            </if>
+            <if test="redType != null and redType != 0">
+                #{redType},
             </if>
 
-            <if test="amount != null and amount != 0">
-                -#{amount},
-            </if>
-            <if test="status != null and status != 0">
-                #{status},
-            </if>
-            <if test="transferStatus != null and transferStatus != 0">
-                #{transferStatus},
-            </if>
+            DEFAULT,
+
             <if test="hash != null and hash.length() > 0">
                 #{hash},
             </if>
