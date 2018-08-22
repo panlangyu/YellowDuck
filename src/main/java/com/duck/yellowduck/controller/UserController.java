@@ -69,6 +69,7 @@ public class UserController
         {
 
             String keyWorld = MnemonitUtitls.generateMnemonic();
+            user.setMemorizingWords(keyWorld);
             //同步用户信息成功
             this.userService.synchronousUserInfo(user);
             //apiResponseResult = this.userService.synchronousUserInfo(user);
