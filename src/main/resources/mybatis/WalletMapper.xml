@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.duck.yellowduck.domain.dao.WalletMapper">
 
-    <!-- ������������������������������������ -->
+    <!-- 封装给客户端的Vo数据 -->
     <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.WalletVo">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
@@ -12,7 +12,7 @@
         <result column="userId" jdbcType="INTEGER" property="userId"/>
     </resultMap>
 
-    <!-- ������������������������������������ -->
+    <!-- 封装条件 -->
     <resultMap id="BaseResultMapWallet" type="com.duck.yellowduck.domain.model.model.Wallet">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
@@ -25,8 +25,13 @@
         <result column="userId" jdbcType="INTEGER" property="userId"/>
     </resultMap>
 
+    <!-- 封装币种信息 -->
+    <resultMap id="BaseResultWallet" type="com.duck.yellowduck.domain.model.vo.WalletStatusVo">
+        <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
+    </resultMap>
 
-    <!-- ��������������������������? -->
+
+    <!-- 查询用户钱包总额 -->
     <select id="selectUserWalletTotal" resultType="BigDecimal" >
         SELECT SUM(amount) FROM duck_wallet
 
@@ -39,10 +44,8 @@
     </select>
 
 
-    <!-- ������������������������������ -->
-    <select id="selectUserWalletCoinList" resultMap="BaseResultMap">
-        /*SELECT w.id,coinId,coinName,coinImg,w.address,w.userId,freeAmount,availableAmount FROM duck_wallet w
-        INNER JOIN DUCK_COIN c ON w.`coinId`=c.`id`*/
+    <!-- 查询用户钱包下的币种信息 -->
+    <select id="selectUserWalletInfo" resultMap="BaseResultMap">
 
         SELECT id,coinName,coinImg,address,contractAddr,userId FROM duck_wallet
 
@@ -60,7 +63,7 @@
     </select>
 
 
-    <!-- ������������������������������,��������? -->
+    <!-- 锁住钱包表,行级锁 -->
     <select id="lockWalletTable" resultType="com.duck.yellowduck.domain.model.model.Wallet">
 
         /*SELECT * FROM duck_wallet FOR UPDATE*/
@@ -69,7 +72,7 @@
 
     </select>
 
-    <!-- ������������������������������,��������������? -->
+    <!-- 查询单条钱包币种信息 -->
     <select id="selectUserWalletCoinById" resultMap="BaseResultMapWallet" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
 
         SELECT
@@ -85,7 +88,7 @@
 
     </select>
 
-    <!-- ������������������������������,��������?������ -->
+    <!-- 按照address去查询钱包信息 -->
     <select id="selectUserWalletCoinByAddress" resultMap="BaseResultMapWallet" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
 
         SELECT
@@ -102,8 +105,7 @@
     </select>
 
 
-
-    <!-- ������������������ ������ -->
+    <!-- 钱包转账 -->
     <update id="modifyWalletTurnOut" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
 
         UPDATE duck_wallet
@@ -119,7 +121,7 @@
 
     </update>
 
-    <!-- ������������������ ������ -->
+    <!-- 钱包转入 -->
     <update id="modifyWalletToChangeInto" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
 
         UPDATE duck_wallet
@@ -134,14 +136,11 @@
             updateTime=NOW(),
         </trim>
 
-        <!-- <if test="coinId != null and coinId != 0">
-           AND coinId = #{coinId}
-         </if>-->
 
     </update>
 
 
-    <!-- ��������������������������������������? -->
+    <!-- 查询用户拥有单条钱包信息 -->
     <select id="selectUserWalletByCoinId" resultType="com.duck.yellowduck.domain.model.model.Wallet">
 
         SELECT
@@ -394,6 +393,22 @@
         ORDER BY createTime
 
     </select>
+
+    <!-- 查询用户下的币种信息,名称 -->
+    <select id="findWalletListInfo" parameterType="java.lang.Integer" resultMap="BaseResultWallet">
+
+        SELECT coinName FROM duck_wallet
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+        </trim>
+
+    </select>
+
 
 
 

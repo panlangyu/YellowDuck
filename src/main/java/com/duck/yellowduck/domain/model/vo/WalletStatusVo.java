@@ -1,9 +1,14 @@
 package com.duck.yellowduck.domain.model.vo;
 
-public class WalletStatusVo
-{
+/**
+ * 封装币种信息
+ */
+public class WalletStatusVo {
+
     private String coinName;
+
     private Boolean status;
+
 
     public String getCoinName()
     {

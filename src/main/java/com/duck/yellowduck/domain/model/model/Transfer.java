@@ -18,7 +18,11 @@ public class Transfer {
 
     private BigDecimal amount;      //转账数量
 
-    private Integer status;         //状态 1、已领取 2、未领取 3、已过期
+    private Integer status;         //转账类型 1、转入 2、转出
+
+    private Integer transferStatus; //金额状态 1、已领取 2、未领取 3、已过期
+
+    private String hash;            //转账成功的hash值
 
     private Date createTime;        //创建时间
 
@@ -69,6 +73,22 @@ public class Transfer {
 
     public void setStatus(Integer status) {
         this.status = status;
+    }
+
+    public Integer getTransferStatus() {
+        return transferStatus;
+    }
+
+    public void setTransferStatus(Integer transferStatus) {
+        this.transferStatus = transferStatus;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     public Date getCreateTime() {

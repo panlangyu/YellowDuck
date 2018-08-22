@@ -14,6 +14,8 @@ public class WalletVXUtilsVo {
 
     private String passwd;              //钱包密码
 
+    private String hash;                //转账成功的hash值
+
     private String coinName;            //币种名称
 
     private String value;               //数量
@@ -56,6 +58,14 @@ public class WalletVXUtilsVo {
 
     public void setPasswd(String passwd) {
         this.passwd = passwd;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     public String getCoinName()

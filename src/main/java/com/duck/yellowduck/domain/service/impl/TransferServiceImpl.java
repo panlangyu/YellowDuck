@@ -137,8 +137,8 @@ public class TransferServiceImpl implements TransferService {
         price = ObjectUtils.getPrice(str);
 
         //看是否出异常
-        Integer bijiao = price.compareTo(BigDecimal.ZERO);
-        if(bijiao == 0){
+        Integer compareZero = price.compareTo(BigDecimal.ZERO);
+        if(compareZero == 0){
 
             return ApiResponseResult.build(2011, "error", "出现异常", "");
         }
@@ -181,6 +181,8 @@ public class TransferServiceImpl implements TransferService {
 
             return ApiResponseResult.build(2011, "error", "出现异常", "");
         }
+
+        wallet.setHash(hash);                           //转账成功的hash值
 
         //新增转出记录
         wallet.setUserId(user.getId());                 //用户编号
@@ -241,7 +243,9 @@ public class TransferServiceImpl implements TransferService {
         Transfer transfer = new Transfer();
         transfer.setUserId(wallet.getUserId());                 //用户编号
         transfer.setCoinName(wallet.getCoinName());             //币种名称
-        transfer.setStatus(1);                                  //已领取
+        transfer.setStatus(2);                                  //转账方式 1、转入 2、转出
+        transfer.setTransferStatus(1);                          //状态 1、已领取 2、未领取 3、已过期
+        transfer.setHash(wallet.getHash());                     //转账成功的hash值
         transfer.setAmount(new BigDecimal(wallet.getValue()));  //金额
         transfer.setRemark(ObjectUtils.getWalletRemark(wallet.getRemark(),transfer.getStatus()));  //备注
 
@@ -262,7 +266,9 @@ public class TransferServiceImpl implements TransferService {
 
         Transfer transfer = new Transfer();
         transfer.setUserId(wallet.getUserId());                 //用户编号
-        transfer.setStatus(1);                                  //已领取
+        transfer.setStatus(1);                                  //转账方式 1、转入 2、转出
+        transfer.setTransferStatus(1);                          //状态 1、已领取 2、未领取 3、已过期
+        transfer.setHash(wallet.getHash());                     //转账成功的hash值
         transfer.setCoinName(wallet.getCoinName());             //币种名称
         transfer.setAmount(new BigDecimal(wallet.getValue()));  //金额
         transfer.setRemark(ObjectUtils.getWalletRemark(wallet.getRemark(),transfer.getStatus()));  //备注

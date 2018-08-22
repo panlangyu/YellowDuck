@@ -36,6 +36,7 @@ public class TranscationServiceImpl implements TranscationService {
     private WalletMapper walletMapper;                      //钱包Mapper
 
 
+    @Override
     public ApiResponseResult selectUserCoinTransactionList(Integer currentPage, Integer currentSize, 
                                                            Integer userId, String coinName) throws Exception {
         
@@ -56,6 +57,7 @@ public class TranscationServiceImpl implements TranscationService {
         return ApiResponseResult.build(200, "success", "查询用户钱包币种交易记录", pageBean);
     }
 
+    @Override
     public ApiResponseResult selectUserCoinTransactionListInfo(Integer currentPage, Integer currentSize,
                                                                Integer userId, String startTime) throws Exception {
         String endTime = "";
@@ -83,6 +85,7 @@ public class TranscationServiceImpl implements TranscationService {
         return ApiResponseResult.build(200, "success", "查询币种交易记录", pageBean);
     }
 
+    @Override
     public ApiResponseResult selectUserCoinTransactionTotal(Integer userId, String startTime) throws Exception {
 
         Map<String, Object> map = new HashMap();
@@ -113,6 +116,7 @@ public class TranscationServiceImpl implements TranscationService {
         return ApiResponseResult.build((200), "success", "查询币种交易记录收入支出总额", list);
     }
 
+    @Override
     public ApiResponseResult selectUserCoinTrunToChargeTotal(Integer userId, String startTime) throws Exception{
 
         Map<String, Object> map = new HashMap();
@@ -132,6 +136,7 @@ public class TranscationServiceImpl implements TranscationService {
         return ApiResponseResult.build(200, "success", "查询币种交易记录收入支出总额", list);
     }
 
+    @Override
     public ApiResponseResult selectWalletUserCoinTransactionList(Integer currentPage, Integer currentSize,
                                                                  Integer userId, String coinName, String startTime) throws Exception {
         PageHelper.startPage(currentPage, currentSize);
@@ -151,6 +156,7 @@ public class TranscationServiceImpl implements TranscationService {
         return ApiResponseResult.build(200, "success", "查询钱包管理用户币种交易记录", pageBean);
     }
 
+    @Override
     public ApiResponseResult findUserTransactionList(Integer currentPage, Integer currentSize,
                                                      String phone, String coinName) throws Exception {
         UserVo userInfo = this.userMapper.findUserExist(phone);

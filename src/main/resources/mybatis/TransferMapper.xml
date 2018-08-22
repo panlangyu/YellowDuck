@@ -60,12 +60,18 @@
             <if test="status != null and status != 0">
                 `status`,
             </if>
+            <if test="transferStatus != null and transferStatus != 0">
+                transferStatus,
+            </if>
+            <if test="hash != null and hash.length() > 0">
+                `hash`,
+            </if>
 
             createTime,
             updateTime,
 
             <if test="remark != null and remark.length() > 0">
-                remark
+                remark,
             </if>
         </trim>
         )
@@ -85,12 +91,18 @@
             <if test="status != null and status != 0">
                 #{status},
             </if>
+            <if test="transferStatus != null and transferStatus != 0">
+                #{transferStatus},
+            </if>
+            <if test="hash != null and hash.length() > 0">
+                #{hash},
+            </if>
 
             now(),
             now(),
 
             <if test="remark != null and remark.length() > 0">
-                #{remark}
+                #{remark},
             </if>
         </trim>
         )
@@ -115,7 +127,12 @@
             <if test="status != null and status != 0">
                 `status`,
             </if>
-
+            <if test="transferStatus != null and transferStatus != 0">
+                transferStatus,
+            </if>
+            <if test="hash != null and hash.length() > 0">
+                `hash`,
+            </if>
             createTime,
             updateTime,
 
@@ -139,6 +156,12 @@
             </if>
             <if test="status != null and status != 0">
                 #{status},
+            </if>
+            <if test="transferStatus != null and transferStatus != 0">
+                #{transferStatus},
+            </if>
+            <if test="hash != null and hash.length() > 0">
+                #{hash},
             </if>
 
             now(),

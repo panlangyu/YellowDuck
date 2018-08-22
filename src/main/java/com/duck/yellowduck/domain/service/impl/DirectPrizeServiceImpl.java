@@ -32,17 +32,25 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class DirectPrizeServiceImpl implements DirectPrizeService {
+
     private Logger logger = Logger.getLogger("DirectPrizeServiceImpl");
+
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:MM:SS");
+
     private BigDecimal dayLimit = null;
+
     @Autowired
     private DirectPrizeMapper directPrizeMapper;
+
     @Autowired
     private WalletMapper walletMapper;
+
     @Autowired
     private DictionaryMapper dictionaryMapper;
+
     @Autowired
     private TranscationMapper transcationMapper;
+
     @Autowired
     private InvestmentMapper investmentMapper;
 
@@ -64,9 +72,8 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
     }
 
     @Transactional
-    public ApiResponseResult interestAward()
-            throws Exception
-    {
+    public ApiResponseResult interestAward() throws Exception {
+
         BigDecimal staticGreaterNumber = RewardConfigureUtils.getInstance().getStaticGreaterNumber();
         BigDecimal staticGreaterRation = RewardConfigureUtils.getInstance().getStaticGreaterRation();
         BigDecimal staticLessNumber = RewardConfigureUtils.getInstance().getStaticLessNumber();

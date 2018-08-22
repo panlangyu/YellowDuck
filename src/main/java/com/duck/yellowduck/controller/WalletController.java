@@ -219,8 +219,8 @@ public class WalletController {
             @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true),
             @ApiImplicitParam(name="coinName", value="币种名称", dataType="String", paramType="query", required=false)
     })
-    @RequestMapping(value="/queryWalletListInfo", method=RequestMethod.GET)
-    public ApiResponseResult queryWalletListInfo(@RequestParam("currentPage") Integer currentPage,
+    @RequestMapping(value="/queryUserWalletList", method=RequestMethod.GET)
+    public ApiResponseResult queryUserWalletList(@RequestParam("currentPage") Integer currentPage,
                                                  @RequestParam("currentSize") Integer currentSize,
                                                  @RequestParam("phone") String phone,
                                                  @RequestParam(value="coinName", required=false) String coinName) {
@@ -228,7 +228,7 @@ public class WalletController {
         ApiResponseResult apiResponseResult = new ApiResponseResult();
         try {
 
-            apiResponseResult = this.walletService.findUserWalletList(currentPage, currentSize, phone, coinName);
+            apiResponseResult = this.walletService.findUserWalletList(currentPage,currentSize,phone,coinName);
 
         }
         catch (Exception e) {
@@ -318,14 +318,38 @@ public class WalletController {
 
         ApiResponseResult apiResponseResult = new ApiResponseResult();
         try {
+
             apiResponseResult = this.walletService.queryUserWalletInfo(phone, earnerPhone);
+
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             e.printStackTrace();
 
             return ApiResponseResult.build(2016, "error", "出现异常", "");
         }
+
+        return apiResponseResult;
+    }
+
+
+
+    @ApiOperation(value="查询用户下拥有的币种", notes="币种命")
+    @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true)
+    @RequestMapping(value="/queryWalletListInfo", method=RequestMethod.GET)
+    public ApiResponseResult queryWalletListInfo(@RequestParam("phone")String phone){
+
+        ApiResponseResult apiResponseResult = new ApiResponseResult();
+        try {
+
+            apiResponseResult = this.walletService.findWalletListInfo(phone);
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+
+            return ApiResponseResult.build(2016, "error", "出现异常", "");
+        }
+
         return apiResponseResult;
     }
 

@@ -19,7 +19,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;                      //用户Mapper
 
 
-
+    @Override
     public ApiResponseResult synchronousUserInfo(User user) throws Exception {
 
         Integer result = null;
@@ -43,6 +43,7 @@ public class UserServiceImpl implements UserService {
         return ApiResponseResult.build(200, "success", "同步数据成功", result);
     }
 
+    @Override
     public ApiResponseResult queryUserByPhone(String phone) throws Exception {
 
         UserVo user = this.userMapper.findUserExist(phone);
