@@ -14,10 +14,6 @@
         <result column="nickName" jdbcType="VARCHAR" property="nickName"/>
     </resultMap>
 
-   <!-- <sql id="Base_Column_List">
-
-
-    </sql>-->
 
 
     <!-- 查询用户转账记录(转入和转出) -->
@@ -33,17 +29,19 @@
             </if>
 
             <if test="startTime != null and startTime.length() > 0">
-                AND createTime BETWEEN  #{startTime} AND #{endTime}
+                AND t.createTime BETWEEN  #{startTime} AND #{endTime}
             </if>
 
         </trim>
 
+        ORDER BY t.createTime DESC
 
     </select>
 
 
     <!-- 新增转账信息 转出-->
-    <insert id="insertTransferTurnTo" parameterType="com.duck.yellowduck.domain.model.model.Transfer">
+    <insert id="insertTransferTurnTo" parameterType="com.duck.yellowduck.domain.model.model.Transfer" useGeneratedKeys="true"
+            keyProperty="id">
 
         INSERT INTO duck_transfer(
         <trim suffix="" suffixOverrides=",">
@@ -110,7 +108,8 @@
 
 
     <!-- 新增转账信息 转入-->
-    <insert id="insertTransferToCharge" parameterType="com.duck.yellowduck.domain.model.model.Transfer">
+    <insert id="insertTransferToCharge" parameterType="com.duck.yellowduck.domain.model.model.Transfer" useGeneratedKeys="true"
+            keyProperty="id">
 
         INSERT INTO duck_transfer(
         <trim suffix="" suffixOverrides=",">

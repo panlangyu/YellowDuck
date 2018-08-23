@@ -38,7 +38,7 @@
 
     </select>
 
-    <!-- ������������������ ������������������ -->
+    <!-- 新增交易记录 -->
     <insert id="insertWalletTurnOut" parameterType="com.duck.yellowduck.domain.model.model.Transcation" useGeneratedKeys="true"
             keyProperty="id">
 
@@ -121,15 +121,9 @@
 
         )
 
-
-        INSERT INTO duck_transcation(userId,coinName,amount,txType,`from`,contractAddr,`to`,`hash`,txStatus,createTime,updateTime,remark)
-        VALUES(
-        remark, #{userId},#{coinName},#{amount},#{txType},#{from},#{contractAddr},#{to},#{hash},#{txStatus},
-        )
-
     </insert>
 
-    <!-- ������������������ ������������������ -->
+    <!-- 新增转入记录 -->
     <insert id="insertWalletToChangeInto" parameterType="com.duck.yellowduck.domain.model.model.Transcation" useGeneratedKeys="true"
             keyProperty="id">
 

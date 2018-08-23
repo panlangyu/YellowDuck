@@ -1,7 +1,6 @@
 package com.duck.yellowduck.publics;
 
 import com.alibaba.fastjson.JSONObject;
-
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -20,11 +19,13 @@ public class ObjectUtils {
 
         BigDecimal price = new BigDecimal("0");
 
-        JSONObject jsonObject = new JSONObject();
+        //JSONObject jsonObject = new JSONObject();
 
         if(str != null && !str.equals("") && !str.equals("null")){
 
-            JSONObject body = (JSONObject) jsonObject.get(str);
+            JSONObject body = JSONObject.parseObject(str);
+
+            System.out.println(body.get("body"));
 
             if(body.get("body") != null && !body.get("body").equals("")){
 
@@ -32,6 +33,7 @@ public class ObjectUtils {
 
                 if(json.get("error") != null && !json.get("error").equals("")){
 
+                    price = new BigDecimal("-1");
                     return price;
                 }
 
@@ -50,11 +52,11 @@ public class ObjectUtils {
 
         String hash = "";
 
-        JSONObject jsonObject = new JSONObject();
-
         if(str != null && !str.equals("") && !str.equals("null")){
 
-            JSONObject body = (JSONObject) jsonObject.get(str);
+            JSONObject body = JSONObject.parseObject(str);
+
+            System.out.println(body.get("body"));
 
             if(body.get("body") != null && !body.get("body").equals("")){
 

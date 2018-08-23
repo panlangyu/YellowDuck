@@ -1,6 +1,7 @@
 package com.duck.yellowduck.domain.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.duck.yellowduck.domain.dao.TransferMapper;
 import com.duck.yellowduck.domain.dao.UserMapper;
 import com.duck.yellowduck.domain.dao.WalletMapper;
@@ -20,7 +21,9 @@ import com.duck.yellowduck.publics.ObjectUtils;
 import com.duck.yellowduck.publics.PageBean;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import io.swagger.annotations.Scope;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +41,7 @@ public class TransferServiceImpl implements TransferService {
 
     @Autowired
     private TransferMapper transferMapper;              //转账Mapper
-    
+
     @Autowired
     private WalletMapper walletMapper;                  //钱包Mapper
 
@@ -47,6 +50,10 @@ public class TransferServiceImpl implements TransferService {
 
     @Autowired
     private WalletService walletService;                //钱包Service
+
+    @Value("${yellowduck.url}")
+    private String url ;                                //第三方服务器端口
+
 
 
     @Transactional
@@ -84,6 +91,8 @@ public class TransferServiceImpl implements TransferService {
             return ApiResponseResult.build(2013, "error", "被转账用户不存在", "");
         }
 
+
+        String address = "";            //被转账地址
         //查询被当前用户是否有钱包信息
         Wallet earnerWallet = walletMapper.selectUserWalletByCoinId(earnerUser.getId(), wallet.getCoinName());
         if (null == earnerWallet) {
@@ -91,10 +100,15 @@ public class TransferServiceImpl implements TransferService {
             //添加合约币信息
             apiResponse = walletService.queryContractAddr(wallet.getEarnerPhone(),userWallet.getContractAddr());
 
-            /*if(apiResponse == null && apiResponse.getCode() == 0){
+        }
 
-            }*/
+        //判断用户是否拥有该币种
+        if(apiResponse != null && apiResponse.getCode() == 0){
 
+            address = earnerWallet.getAddress();                //被抓账用户有该币种地址时
+        }else{
+
+            address = apiResponse.getData().toString();         //被转账地址
         }
 
         //锁钱包表
@@ -105,40 +119,40 @@ public class TransferServiceImpl implements TransferService {
         if ((trun == 0) || (trun == -1)) {
             return ApiResponseResult.build(2010, "error", "请输入大于 0 的正数", "");
         }
-        String url = "";
+
+        String uri = "";            //接收第三方URL
 
         Map<String, String> amountMap = new HashMap();
         Map<String, String> txMap = new HashMap();
-        Map<String, Object> mapOne = new HashMap();
-        Map<String, Object> mapTwo = new HashMap();
-        Map<String, Object> mapThree = new HashMap();
-        Map<String, Object> mapFour = new HashMap();
+
         if (userWallet.getContractAddr() != null && (!userWallet.getContractAddr().equals(""))) {
-            url = "http://39.105.26.249:9090/token/balance";
+
+            uri = url + "/token/balance";
 
             amountMap.put("from", userWallet.getAddress());
             amountMap.put("contractAddr", userWallet.getContractAddr());
 
         } else {
-            url = "http://39.105.26.249:9090/address";
+
+            uri = url + "/address";
             amountMap.put("address", userWallet.getAddress());
         }
 
         String str = "";
         BigDecimal price = new BigDecimal("0");                 //拿到用户的币种数量(金额)
 
-        str = HttpUtils.sendGet(url, amountMap, 2);            //查询用户币种数量
+        str = HttpUtils.sendGet(uri, amountMap, 2);            //查询用户币种数量
 
         if(str == null || str.equals("")){
 
             return ApiResponseResult.build(2010, "error", "余额不足", "");
         }
 
-        price = ObjectUtils.getPrice(str);
+        price = ObjectUtils.getPrice(str);                          //拿出币种数量
 
         //看是否出异常
         Integer compareZero = price.compareTo(BigDecimal.ZERO);
-        if(compareZero == 0){
+        if(compareZero == -1){
 
             return ApiResponseResult.build(2011, "error", "出现异常", "");
         }
@@ -148,28 +162,30 @@ public class TransferServiceImpl implements TransferService {
         if (compare == 0 || compare == -1) {
             return ApiResponseResult.build(2011, "error", "币种数量不足", "");
         }
-        url = "http://39.105.26.249:9090/sendTx";
+        //url = "http://39.105.26.249:9090/sendTx";
+
 
         txMap.put("sign", userWallet.getPasswd());
-        txMap.put("to", userWallet.getAddress());
+        txMap.put("to", address);
         txMap.put("value", wallet.getValue());
         //txMap.put("gasPrice", "7810");
         //txMap.put("gas", "6050");
 
         if (userWallet.getContractAddr() != null && !userWallet.getContractAddr().equals("")) {
 
-            url = "http://39.105.26.249:9090/token/sendTx";
+            uri = url + "/token/sendTx";
 
             txMap.put("from", userWallet.getAddress());
             txMap.put("contractAddr", userWallet.getContractAddr());
         } else {
 
+            uri = url + "/sendTx";
             txMap.put("from", userWallet.getAddress());
         }
 
         String json = JSONArray.toJSONString(txMap);
 
-        str = HttpUtils.sendPost(url, json);
+        str = HttpUtils.sendPost(uri, json);
 
         if (str == null || str.equals("")) {
 
@@ -177,6 +193,7 @@ public class TransferServiceImpl implements TransferService {
         }
 
         String hash = ObjectUtils.getHash(str);         //拿出成功的hash
+
         if(hash == null || hash.equals("")){
 
             return ApiResponseResult.build(2011, "error", "出现异常", "");
@@ -186,13 +203,13 @@ public class TransferServiceImpl implements TransferService {
 
         //新增转出记录
         wallet.setUserId(user.getId());                 //用户编号
-        Transfer transfer = insertTransferTurnTo(wallet);
+        Integer num = insertTransferTurnTo(wallet);
 
         //新增转入记录
         wallet.setUserId(earnerUser.getId());           //被转账者编号
-        transfer = insertTransferToCharge(wallet);
+        num = insertTransferToCharge(wallet);
 
-        return ApiResponseResult.build(200, "success", "转账成功", transfer);
+        return ApiResponseResult.build(200, "success", "转账成功", num);
     }
 
     @Override
@@ -206,8 +223,8 @@ public class TransferServiceImpl implements TransferService {
         }
 
         String endTime = "";
-        if ((startTime != null) && (!startTime.equals("")))
-        {
+        if (startTime != null && !startTime.equals("")){
+
             String[] str = CalendarUtil.assemblyDate(startTime);
             startTime = str[0];
             endTime = str[1];
@@ -237,7 +254,7 @@ public class TransferServiceImpl implements TransferService {
      * @return
      * @throws Exception
      */
-    public Transfer insertTransferTurnTo(WalletVXUtilsVo wallet) throws Exception {
+    public Integer insertTransferTurnTo(WalletVXUtilsVo wallet) throws Exception {
 
 
         Transfer transfer = new Transfer();
@@ -249,9 +266,10 @@ public class TransferServiceImpl implements TransferService {
         transfer.setAmount(new BigDecimal(wallet.getValue()));  //金额
         transfer.setRemark(ObjectUtils.getWalletRemark(wallet.getRemark(),transfer.getStatus()));  //备注
 
-        transferMapper.insertTransferTurnTo(transfer);
+        Integer num = transferMapper.insertTransferTurnTo(transfer);
+        transfer.setId(transfer.getId());                       //获取自增后的编号
 
-        return transfer;
+        return num;
     }
 
 
@@ -261,7 +279,7 @@ public class TransferServiceImpl implements TransferService {
      * @return
      * @throws Exception
      */
-    public Transfer insertTransferToCharge(WalletVXUtilsVo wallet) throws Exception {
+    public Integer insertTransferToCharge(WalletVXUtilsVo wallet) throws Exception {
 
 
         Transfer transfer = new Transfer();
@@ -273,9 +291,27 @@ public class TransferServiceImpl implements TransferService {
         transfer.setAmount(new BigDecimal(wallet.getValue()));  //金额
         transfer.setRemark(ObjectUtils.getWalletRemark(wallet.getRemark(),transfer.getStatus()));  //备注
 
-        transferMapper.insertTransferToCharge(transfer);
+        Integer num = transferMapper.insertTransferToCharge(transfer);
+        transfer.setId(transfer.getId());                       //获取自增后的编号
 
-        return transfer;
+        return num;
+    }
+
+
+    public static void main(String[] args) {
+
+        String str ="{\"body\":{\"balance\":\"887\"},\"code\":4,\"type\":\"ok\"}";
+
+        JSONObject jsonObject = JSONObject.parseObject(str);
+
+        System.out.println(jsonObject.get("body"));
+
+        JSONObject bof = (JSONObject)jsonObject.get("body");
+
+        System.out.println(bof.get("balance"));
+
+
+
     }
 
 

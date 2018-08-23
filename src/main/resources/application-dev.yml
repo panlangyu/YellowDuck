@@ -8,12 +8,19 @@ spring:
       exclude: WEB-INF/**
   resources:
     static-locations: classpath:/static,classpath:/public,classpath:/resources,classpath:/META-INF/resources
+  http:
+    encoding:
+      force: true
+      charset: UTF-8
+      enabled: true
   datasource:
     name: yellowduck
     #        url: jdbc:mysql://39.105.26.249:3306/PMBC
     #        url: jdbc:mysql://172.17.0.1:3306/wallet
-    url: jdbc:mysql://39.105.26.249:3306/yellowduck
+    url: jdbc:mysql://39.105.26.249:3306/yellowduck?autoReconnect=true&initialTimeout=3&useUnicode=true&characterEncoding=utf-8
+    #url: jdbc:mysql://localhost:3306/yellowduck?autoReconnect=true&initialTimeout=3&useUnicode=true&characterEncoding=utf-8
     username: root
+    #password: 123456
     password: 68d63351097d882f
     # 阿里巴巴druid 数据源
     type: com.alibaba.druid.pool.DruidDataSource
@@ -56,7 +63,12 @@ logging:
 #绑定IP servert.host IP
 server:
   context-path: /yellowduck
-  port: 8082
+  port: 8080
   address: 192.168.10.125
+  tomcat:
+    uri-encoding: UTF-8
 
-
+#配置第三方访问路径
+yellowduck:
+  url: "http://39.105.26.249:9090"
+# url: "http://192.168.10.103:9090"

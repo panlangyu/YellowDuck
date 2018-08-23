@@ -15,6 +15,7 @@ import com.duck.yellowduck.publics.RewardConfigureUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
@@ -46,6 +47,9 @@ public class WalletServiceImpl implements WalletService {
 
     @Autowired
     private InvestmentMapper investmentMapper;                 //利息Mapper
+
+    @Value("${yellowduck.url}")
+    private String url ;                                       //第三方服务器端口
 
 
     @Override
@@ -88,6 +92,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public ApiResponseResult modifyWalletTurnOut(Wallet wallet) throws Exception {
 
+        //锁表,行级锁
         walletMapper.lockWalletTable();
 
         Wallet userWalletCoin = new Wallet();
@@ -211,8 +216,8 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public ApiResponseResult modifyWalletDepositToChangeInto(Wallet wallet)
-            throws Exception
-    {
+            throws Exception {
+
         walletMapper.lockWalletTable();
 
         Wallet userWalletCoin = new Wallet();
@@ -353,8 +358,8 @@ public class WalletServiceImpl implements WalletService {
 
     @Transactional
     @Override
-    public ApiResponseResult modifyChargeMoneyInfo(Wallet wallet) throws Exception
-    {
+    public ApiResponseResult modifyChargeMoneyInfo(Wallet wallet) throws Exception {
+
         BigDecimal recommendLockRation = RewardConfigureUtils.getInstance().getRecommendLockRation();
         Integer recommendNumber = (RewardConfigureUtils.getInstance().getRecommendNumber());
 
@@ -366,9 +371,11 @@ public class WalletServiceImpl implements WalletService {
         }
         List<TranscationVo> transcationVoList = transcationMapper.selectUserCoinTransactionList((1), (1), userWalletCoin
                 .getUserId(), wallet.getCoinName());
-        if ((null == transcationVoList) || (transcationVoList.size() == 0)) {
+        if (null == transcationVoList || transcationVoList.size() == 0) {
+
             String str = "";
         }
+
         Object voList = dictionaryMapper.selectDictionaryListById((4), "DEDUCT_FORMALITIES");
         if (null == voList) {
             return ApiResponseResult.build(2012, "error", "未查询到数据字典内容信息", "");
@@ -413,7 +420,9 @@ public class WalletServiceImpl implements WalletService {
         if ((address != null) && (!address.equals(""))) {
             return ApiResponseResult.build(2013, "error", "您已添加过该币种", "");
         }
-        String url = "http://39.105.26.249:9090/register";
+
+        String uri = "";                //第三方API接口路径
+        uri = url + "/register";
 
         Wallet wallet = new Wallet();
         wallet.setPasswd(user.getPasswd());
@@ -426,16 +435,16 @@ public class WalletServiceImpl implements WalletService {
 
         String json = JSONArray.toJSONString(map);
 
-        String str = HttpUtils.sendPost(url, json);
-        if ((str == null) || (str.equals(""))) {
+        String str = HttpUtils.sendPost(uri, json);
+        if (str == null || str.equals("")) {
             return ApiResponseResult.build(2010, "error", "开通钱包失败", "");
         }
         mapOne = (Map)JSONArray.parse(str);
 
         Map<String, Object> mapTwo = new HashMap();
         for (String string : mapOne.keySet()) {
-            if (string.equals("body"))
-            {
+            if (string.equals("body")) {
+
                 mapTwo = (Map)mapOne.get("body");
 
                 wallet.setAddress(mapTwo.get("address").toString());
@@ -446,6 +455,7 @@ public class WalletServiceImpl implements WalletService {
         wallet.setKeystore(ObjectUtils.getUUID());
         wallet.setCoinImg("https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=1701349413,5323685&fm=173&app=25&f=JPEG?w=400&h=240&s=219B1DDD6A2255074C38E0700300D07A");
 
+        //新增钱包信息
         Integer num = walletMapper.insertWalletInfo(wallet);
         if (num == 0) {
             return ApiResponseResult.build(2010, "error", "开通钱包失败", "");
@@ -458,90 +468,85 @@ public class WalletServiceImpl implements WalletService {
 
         UserVo userInfo = userMapper.findUserExist(phone);
         if (null == userInfo) {
+
             return ApiResponseResult.build(2010, "error", "该用户不存在", "");
         }
 
         PageHelper.startPage(currentPage, currentSize);
 
-
         List<WalletListInfo> walletVoList = new ArrayList();
 
         List<WalletVo> voList = walletMapper.selectUserWalletInfo(currentPage,currentSize,userInfo.getId(), coinName);
         if (null == voList) {
-            return ApiResponseResult.build(2011, "error", "未查询到用户钱包必中信息", "");
-        }
-        Map<String, String> map = new HashMap();
 
-        Map<String, Object> mapPut = new HashMap();
-        Map<String, Object> mapThree = new HashMap();
-        Map<String, Object> mapFour = new HashMap();
+            return ApiResponseResult.build(2011, "error", "未查询到用户钱包币种信息", "");
+        }
+
+        Map<String, String> map = new HashMap();
 
         WalletListInfo walletVo = null;
 
-        String url = "http://39.105.26.249:9090/address";
+        String uri = "";                //第三方API接口路径
 
-        String str = "";
+        String str = "";                //接收第三方返回的数据
 
-        String address = "";
-        for (WalletVo vo : voList)
-        {
+        String address = "";            //ETH地址
+        for (WalletVo vo : voList) {
+
             map = new HashMap();
 
             walletVo = new WalletListInfo();
-            if (!vo.getCoinName().equals("ETH"))
-            {
-                address = walletMapper.findWalletAddressByUserId(vo.getUserId(), "ETH");
+            if (!vo.getCoinName().equals("ETH")) {
 
+                uri = url + "/token/balance";
+
+                address = walletMapper.findWalletAddressByUserId(vo.getUserId(), "ETH");
                 map.put("contractAddr", vo.getContractAddr());
                 map.put("from", address);
 
-                url = "http://39.105.26.249:9090/token/balance";
-
                 walletVo.setWalletTotal(new BigDecimal("1"));
-            }
-            else
-            {
-                map.put("address", vo.getAddress());
+            }else {
 
+                uri = url + "/address";
+
+                map.put("address", vo.getAddress());
                 address = vo.getAddress();
 
                 walletVo.setWalletTotal(new BigDecimal("3000"));
             }
             BigDecimal price = new BigDecimal("0");
 
-            str = HttpUtils.sendGet(url, map, (2));
-            if ((str != null) && (!str.equals("")))
-            {
-                System.out.println(str);
+            str = HttpUtils.sendGet(uri, map, (2));
+            if (str == null || str.equals("")) {
 
-                mapThree = (Map)JSONArray.parse(str);
-                for (String string : mapThree.keySet()) {
-                    if (string.equals("body"))
-                    {
-                        mapFour = (Map)mapThree.get("body");
+                return ApiResponseResult.build(2011, "error", "提币失败", "");
+            }
 
-                        price = new BigDecimal(mapFour.get("balance").toString());
-                    }
-                }
+            price = ObjectUtils.getPrice(str);
+
+            //是否能拿到币种金额
+            Integer compareZero = price.compareTo(BigDecimal.ZERO);
+            if(compareZero == -1){
+
+                return ApiResponseResult.build(2011, "error", "出现异常", "");
             }
-            else
-            {
-                price = new BigDecimal("0");
-            }
+
             walletVo.setId(vo.getId());
             walletVo.setAddress(address);
             walletVo.setCoinName(vo.getCoinName());
 
             walletVo.setAmount(price);
             walletVo.setCoinImg(vo.getCoinImg());
+            walletVo.setContractAddr(vo.getContractAddr());
 
             walletVoList.add(walletVo);
         }
-        Object pageInfo = new PageInfo(walletVoList);
+
+        PageInfo<WalletListInfo> pageInfo = new PageInfo(walletVoList);
         PageBean<WalletListInfo> pageBean = new PageBean();
         pageBean.setCurrentPage(currentPage);
         pageBean.setCurrentSize(currentSize);
-        pageBean.setTotalNum(((PageInfo)pageInfo).getTotal());
+        pageBean.setTotalNum(pageInfo.getTotal());
         pageBean.setItems(walletVoList);
 
         return ApiResponseResult.build(200, "success", "查询用户钱包币种列表数据", pageBean);
@@ -549,13 +554,15 @@ public class WalletServiceImpl implements WalletService {
 
     @Transactional
     @Override
-    public ApiResponseResult modifyWithdrawMoney(WalletUtilsVo wallet)
-            throws Exception
-    {
+    public ApiResponseResult modifyWithdrawMoney(WalletUtilsVo wallet) throws Exception {
+
+        //查看当前用户是否存在
         UserVo userInfo = userMapper.findUserExist(wallet.getPhone());
         if (null == userInfo) {
             return ApiResponseResult.build(2010, "error", "该用户不存在", "");
         }
+
+        //当前用户转账锁钱包表
         walletMapper.lockWalletTable();
 
         int trun = new BigDecimal(wallet.getValue()).compareTo(BigDecimal.ZERO);
@@ -566,29 +573,26 @@ public class WalletServiceImpl implements WalletService {
         if (userWalletCoin == null) {
             return ApiResponseResult.build(2011, "error", "未查询到用户下的币种信息", "");
         }
-        String url = "";
+
+        String uri = "";                //第三方API接口路径
 
         Map<String, String> amountMap = new HashMap();
         Map<String, String> txMap = new HashMap();
-        Map<String, Object> mapOne = new HashMap();
-        Map<String, Object> mapTwo = new HashMap();
-        Map<String, Object> mapThree = new HashMap();
-        Map<String, Object> mapFour = new HashMap();
-        if (userWalletCoin.getContractAddr() != null && !userWalletCoin.getContractAddr().equals(""))
-        {
-            url = "http://39.105.26.249:9090/token/balance";
+
+        if (userWalletCoin.getContractAddr() != null && !userWalletCoin.getContractAddr().equals("")) {
+
+            uri = url+ "/token/balance";
             amountMap.put("contractAddr", userWalletCoin.getContractAddr());
             amountMap.put("from", userWalletCoin.getAddress());
-        }
-        else
-        {
-            url = "http://39.105.26.249:9090/address";
+        } else {
+
+            uri = url + "/address";
             amountMap.put("address", userWalletCoin.getAddress());
         }
         String str = "";
         BigDecimal price = new BigDecimal("0");
 
-        str = HttpUtils.sendGet(url, amountMap, (2));
+        str = HttpUtils.sendGet(uri, amountMap, (2));
 
         if(str == null || str.equals("")){
 
@@ -596,27 +600,18 @@ public class WalletServiceImpl implements WalletService {
         }
 
         price = ObjectUtils.getPrice(str);
+        //看是否出异常
+        Integer compareZero = price.compareTo(BigDecimal.ZERO);
+        if(compareZero == -1){
 
-        /*if (str != null && !str.equals(""))
-        {
-            mapThree = (Map)JSONArray.parse(str);
-            for (String string : mapThree.keySet()) {
-                if (string.equals("body"))
-                {
-                    mapFour = (Map)mapThree.get("body");
+            return ApiResponseResult.build(2011, "error", "出现异常", "");
+        }
 
-                    price = new BigDecimal(mapFour.get("balance").toString());
-                }
-            }
-        } else {
-            price = new BigDecimal("0");
-        }*/
         //拿出币种数量和转账数量比较
         int compare = price.compareTo(new BigDecimal(wallet.getValue()));
         if (compare == 0 || compare == -1) {
             return ApiResponseResult.build(2011, "error", "币种数量不足", "");
         }
-        url = "http://39.105.26.249:9090/sendTx";
 
         txMap.put("sign", userWalletCoin.getPasswd());
         txMap.put("to", wallet.getAddress());
@@ -625,16 +620,18 @@ public class WalletServiceImpl implements WalletService {
         //txMap.put("gasPrice", "7810");
         if (userWalletCoin.getContractAddr() != null && !userWalletCoin.getContractAddr().equals("")) {
 
-            url = "http://39.105.26.249:9090/token/sendTx";
+            uri = url + "/token/sendTx";
 
             txMap.put("contractAddr", userWalletCoin.getContractAddr());
             txMap.put("from", userWalletCoin.getAddress());
         }else {
 
+            uri = url + "/sendTx";
             txMap.put("from", userWalletCoin.getAddress());
         }
+
         String json = JSONArray.toJSONString(txMap);
-        str = HttpUtils.sendPost(url, json);
+        str = HttpUtils.sendPost(uri, json);
 
         if (str == null || str.equals("")) {
 
@@ -642,6 +639,7 @@ public class WalletServiceImpl implements WalletService {
         }
 
         String hash = ObjectUtils.getHash(str);         //拿出成功的hash
+
         if(hash == null || hash.equals("")){
 
             return ApiResponseResult.build(2011, "error", "出现异常", "");
@@ -649,23 +647,7 @@ public class WalletServiceImpl implements WalletService {
 
         wallet.setHash(hash);                           //转账成功的hash值
 
-        /*mapOne = (Map)JSONArray.parse(str);
-
-        System.out.println(mapOne);
-        for (String string : mapOne.keySet()) {
-            if (string.equals("tx")) {
-
-                mapTwo = (Map)mapOne.get("tx");
-
-                wallet.setHash(mapTwo.get("result").toString());
-            }
-            if (string.equals("body")) {
-
-                mapTwo = (Map)mapOne.get("body");
-                wallet.setHash(mapTwo.get("hash").toString());
-            }
-        }*/
-
+        //新增转账记录
         Integer num = insertWalletTurnTo(wallet, userWalletCoin);
         if (num == 0) {
             return ApiResponseResult.build(2011, "error", "新增交易记录失败", "");
@@ -687,13 +669,15 @@ public class WalletServiceImpl implements WalletService {
         }
 
         List<Wallet> walletList = walletMapper.findUserWalletInfo(userInfo.getId());
-        if ((null == walletList) && (walletList.size() == 0)) {
+        if (null == walletList && walletList.size() == 0) {
             return ApiResponseResult.build(2013, "error", "该用户还未添加过钱包", "");
         }
 
         Wallet walletVo = walletList.get(0);
 
-        String url = "http://39.105.26.249:9090/token";
+        String uri = "";                //第三方API接口路径
+
+        uri = url + "/token";
 
         Map<String, Object> mapOne = new HashMap();
         Map<String, Object> mapTwo = new HashMap();
@@ -701,15 +685,18 @@ public class WalletServiceImpl implements WalletService {
         Map<String, String> map = new HashMap();
         map.put("contractAddr", contractAddr);
 
-        String str = HttpUtils.sendGet(url, map, 2);
-        if ((str == null) || (str.equals(""))) {
+        String str = HttpUtils.sendGet(uri, map, 2);
+        if (str == null || str.equals("")) {
+
             return ApiResponseResult.build(2011, "error", "出现异常", "");
         }
         mapOne = (Map)JSONArray.parse(str);
-        if ((mapOne.get("type").toString().equals("error")) && (mapOne.get("code").toString().equals("1"))) {
+        if (mapOne.get("type").toString().equals("error") && mapOne.get("code").toString().equals("1")) {
+
             return ApiResponseResult.build(2012, "error", "币种不存在", "");
         }
-        if ((mapOne.get("type").toString().equals("error")) && (!mapOne.get("code").toString().equals("1"))) {
+        if (mapOne.get("type").toString().equals("error") && !mapOne.get("code").toString().equals("1")) {
+
             return ApiResponseResult.build(2012, "error", "系统异常", "");
         }
 
@@ -733,6 +720,7 @@ public class WalletServiceImpl implements WalletService {
             wallet.setContractAddr(contractAddr);
         }
 
+        //新增合约币信息
         Integer num = walletMapper.insertWalletInfo(wallet);
         if (num == 0) {
             return ApiResponseResult.build(2015, "error", "添加合约币信息失败", "");
@@ -743,67 +731,77 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public ApiResponseResult queryAccountList() throws Exception {
 
-        String url = "http://39.105.26.249:9090/accounts";
+        String uri = "";                //第三方API接口路径
+        uri = url + "/accounts";
 
         Map<String, String> map = new HashMap();
-        String str = HttpUtils.sendGet(url, map, 2);
+        String str = HttpUtils.sendGet(uri, map, 2);
         if ((str == null) || (str.equals(""))) {
+
             return ApiResponseResult.build(2011, "error", "未查询到账户数据", "");
         }
         return ApiResponseResult.build(200, "success", "查询所有钱包账户", str);
     }
 
     @Override
-    public ApiResponseResult blockNumber()
-    {
-        String url = "http://39.105.26.249:9090/blockNumber";
+    public ApiResponseResult blockNumber() {
+
+        String uri = "";                //第三方API接口路径
+        uri = url + "/blockNumber";
 
         Map<String, String> map = new HashMap();
 
-        String str = HttpUtils.sendGet(url, map, (2));
-        if ((str == null) || (str.equals(""))) {
+        String str = HttpUtils.sendGet(uri, map, (2));
+        if (str == null || str.equals("")) {
+
             return ApiResponseResult.build(2011, "error", "未查询到阻塞数信息", "");
         }
         return ApiResponseResult.build(200, "success", "查询阻塞数信息", JSONArray.parseObject(str));
     }
 
     @Override
-    public ApiResponseResult queryUserWalletInfo(String phone, String earnerPhone)
-            throws Exception {
+    public ApiResponseResult queryUserWalletInfo(String phone, String earnerPhone) throws Exception {
 
         UserVo user = userMapper.findUserExist(phone);
         if (null == user) {
+
             return ApiResponseResult.build(2013, "error", "当前用户不存在", "");
         }
         UserVo earnerUser = userMapper.findUserExist(earnerPhone);
         if (null == earnerUser) {
+
             return ApiResponseResult.build(2013, "error", "被转账用户不存在", "");
         }
         List<Wallet> walletList = walletMapper.findUserWalletInfo(user.getId());
-        if ((walletList == null) || (walletList.size() == 0)) {
+        if (walletList == null || walletList.size() == 0) {
+
             return ApiResponseResult.build(2013, "error", "该用户没有钱包信息", "");
         }
         List<Wallet> earnerWalletList = walletMapper.findUserWalletInfo(earnerUser.getId());
-        if ((earnerWalletList == null) || (earnerWalletList.size() == 0)) {
+        if (earnerWalletList == null || earnerWalletList.size() == 0) {
+
             return ApiResponseResult.build(2013, "error", "被转账用户没有钱包信息", "");
         }
+
         List<WalletStatusVo> voList = new ArrayList();
         WalletStatusVo walletStatusVo = null;
-        for (Wallet wallet : walletList)
-        {
+
+        for (Wallet wallet : walletList) {
             walletStatusVo = new WalletStatusVo();
-            for (Wallet wallet1 : earnerWalletList)
-            {
+            for (Wallet wallet1 : earnerWalletList) {
+
                 walletStatusVo.setCoinName(wallet.getCoinName());
                 walletStatusVo.setStatus(false);
-                if (wallet.getCoinName().equals(wallet1.getCoinName()))
-                {
+
+                if (wallet.getCoinName().equals(wallet1.getCoinName())) {
+
                     walletStatusVo.setStatus(true);
                     break;
                 }
             }
             voList.add(walletStatusVo);
         }
+
         return ApiResponseResult.build(200, "success", "当前用户与转账用户的币种比较", voList);
     }
 
@@ -847,9 +845,8 @@ public class WalletServiceImpl implements WalletService {
         return num;
     }
 
-    public Integer insertWalletRechargeTurnTo(Wallet wallet, Wallet userWalletCoin, BigDecimal deductionPrice)
-            throws Exception
-    {
+    public Integer insertWalletRechargeTurnTo(Wallet wallet, Wallet userWalletCoin, BigDecimal deductionPrice) throws Exception {
+
         Transcation transcation = new Transcation();
         transcation.setUserId(userWalletCoin.getUserId());
         transcation.setCoinName(wallet.getCoinName());
@@ -866,9 +863,8 @@ public class WalletServiceImpl implements WalletService {
         return num;
     }
 
-    public Integer insertWalletDeductionTurnTo(Wallet wallet, Wallet userWalletCoin, BigDecimal deductionPrice)
-            throws Exception
-    {
+    public Integer insertWalletDeductionTurnTo(Wallet wallet, Wallet userWalletCoin, BigDecimal deductionPrice) throws Exception {
+
         Transcation transcation = new Transcation();
         transcation.setUserId(userWalletCoin.getUserId());
         transcation.setCoinName(wallet.getCoinName());
@@ -885,9 +881,8 @@ public class WalletServiceImpl implements WalletService {
         return num;
     }
 
-    public Integer insertWalletToChangeInto(Wallet wallet, Wallet walletCoin, Wallet userWalletCoin)
-            throws Exception
-    {
+    public Integer insertWalletToChangeInto(Wallet wallet, Wallet walletCoin, Wallet userWalletCoin) throws Exception {
+
         Transcation transcation = new Transcation();
         transcation.setUserId(walletCoin.getUserId());
         transcation.setCoinName(wallet.getCoinName());
@@ -904,9 +899,8 @@ public class WalletServiceImpl implements WalletService {
         return num;
     }
 
-    public Integer insertWalletDepositTurnTo(Wallet wallet, Wallet walletBean)
-            throws Exception
-    {
+    public Integer insertWalletDepositTurnTo(Wallet wallet, Wallet walletBean) throws Exception{
+
         Transcation transcation = new Transcation();
         transcation.setUserId(wallet.getUserId());
         transcation.setCoinName(walletBean.getCoinName());
@@ -923,9 +917,8 @@ public class WalletServiceImpl implements WalletService {
         return num;
     }
 
-    public Integer insertWalletDepositToChangeInfo(Wallet wallet, Wallet walletBean)
-            throws Exception
-    {
+    public Integer insertWalletDepositToChangeInfo(Wallet wallet, Wallet walletBean) throws Exception {
+
         Transcation transcation = new Transcation();
         transcation.setUserId(wallet.getUserId());
         transcation.setCoinName(walletBean.getCoinName());
@@ -942,8 +935,7 @@ public class WalletServiceImpl implements WalletService {
         return num;
     }
 
-    public Integer insertWalletDepositToChangeInfoOrTurnTo(Wallet wallet, Wallet walletBean, BigDecimal deductionPrice)
-            throws Exception {
+    public Integer insertWalletDepositToChangeInfoOrTurnTo(Wallet wallet, Wallet walletBean, BigDecimal deductionPrice) throws Exception {
 
         Transcation transcation = new Transcation();
         transcation.setUserId(wallet.getUserId());
@@ -961,9 +953,8 @@ public class WalletServiceImpl implements WalletService {
         return num;
     }
 
-    public static void main(String[] args)
-            throws Exception
-    {
+    public static void main(String[] args) throws Exception {
+
         String str = "0x00000000000000000000000000000000000000000000003635c9adc5dea00000";
 
         String hex = "0xfff";
