@@ -64,6 +64,13 @@ public class ObjectUtils {
 
                 if(json.get("error") != null && !json.get("error").equals("")){
 
+                    JSONObject error = (JSONObject)json.get("error");
+
+                    if(error.get("message").toString().indexOf("price") != -1){
+
+                        hash = "-1";
+                    }
+
                     return hash;
                 }
 
@@ -76,6 +83,14 @@ public class ObjectUtils {
                 JSONObject json = (JSONObject)body.get("tx");
 
                 if(json.get("error") != null && !json.get("error").equals("")){
+
+                    JSONObject error = (JSONObject)json.get("error");
+
+                    if(error.get("message").toString().indexOf("price") != -1){
+
+                        hash = "-1";
+                        return hash;
+                    }
 
                     return hash;
                 }
@@ -148,6 +163,24 @@ public class ObjectUtils {
         return uuid;
     }
 
+
+    public static void main(String[] args) {
+
+        String error = "{\"error\":{\"code\":-32000,\"message\":\"insufficient funds for gas * price + value\"}}";
+
+        JSONObject jsonObject = JSONObject.parseObject(error);
+        JSONObject body = (JSONObject)jsonObject.get("error");
+
+
+        if(body.get("message").toString().indexOf("price")!=-1){
+
+            System.out.println(body.get("message"));
+            System.out.println("123");
+        }
+
+
+
+    }
 
 
 }

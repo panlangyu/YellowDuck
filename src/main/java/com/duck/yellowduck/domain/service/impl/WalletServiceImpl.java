@@ -601,6 +601,7 @@ public class WalletServiceImpl implements WalletService {
 
         price = ObjectUtils.getPrice(str);
         //看是否出异常
+
         Integer compareZero = price.compareTo(BigDecimal.ZERO);
         if(compareZero == -1){
 
@@ -640,6 +641,10 @@ public class WalletServiceImpl implements WalletService {
 
         String hash = ObjectUtils.getHash(str);         //拿出成功的hash
 
+        if(hash != null && hash.equals("-1")){
+
+            return ApiResponseResult.build(2011, "error", "旷工费不足", "");
+        }
         if(hash == null || hash.equals("")){
 
             return ApiResponseResult.build(2011, "error", "出现异常", "");
@@ -955,11 +960,15 @@ public class WalletServiceImpl implements WalletService {
 
     public static void main(String[] args) throws Exception {
 
-        String str = "0x00000000000000000000000000000000000000000000003635c9adc5dea00000";
+        BigDecimal bigDecimal = new BigDecimal("-1");
 
-        String hex = "0xfff";
-        Integer x = (Integer.parseInt(str, 16));
-        System.out.println(x);
+        BigDecimal price = new BigDecimal("-1");
+
+        if(bigDecimal.toString().equals("-1")){
+
+            System.out.println("1234");
+        }
+
     }
 
 

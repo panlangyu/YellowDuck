@@ -155,15 +155,13 @@ public class TransferServiceImpl implements TransferService {
         if(compareZero == -1){
 
             return ApiResponseResult.build(2011, "error", "出现异常", "");
-        }
+       }
 
         //拿出金额做比较
         int compare = price.compareTo(new BigDecimal(wallet.getValue()));
         if (compare == 0 || compare == -1) {
             return ApiResponseResult.build(2011, "error", "币种数量不足", "");
         }
-        //url = "http://39.105.26.249:9090/sendTx";
-
 
         txMap.put("sign", userWallet.getPasswd());
         txMap.put("to", address);
@@ -194,6 +192,10 @@ public class TransferServiceImpl implements TransferService {
 
         String hash = ObjectUtils.getHash(str);         //拿出成功的hash
 
+        if(hash != null && hash.equals("-1")){
+
+            return ApiResponseResult.build(2011, "error", "旷工费不足", "");
+        }
         if(hash == null || hash.equals("")){
 
             return ApiResponseResult.build(2011, "error", "出现异常", "");
