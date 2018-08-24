@@ -155,11 +155,12 @@ public class TransferServiceImpl implements TransferService {
         if(compareZero == -1){
 
             return ApiResponseResult.build(2011, "error", "出现异常", "");
-       }
+        }
 
         //拿出金额做比较
         int compare = price.compareTo(new BigDecimal(wallet.getValue()));
         if (compare == 0 || compare == -1) {
+
             return ApiResponseResult.build(2011, "error", "币种数量不足", "");
         }
 
