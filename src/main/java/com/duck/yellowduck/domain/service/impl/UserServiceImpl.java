@@ -24,10 +24,10 @@ public class UserServiceImpl implements UserService {
 
         Integer result = null;
 
-        UserVo userInfo = this.userMapper.findUserExist(user.getPhone());
+        UserVo userInfo = userMapper.findUserExist(user.getPhone());
         if (null == userInfo)
         {
-            result = this.userMapper.insertUserInfo(user);
+            result = userMapper.insertUserInfo(user);
 
             if (result == 0) {
                 return ApiResponseResult.build(2011, "error", "新增失败", result);
@@ -36,7 +36,7 @@ public class UserServiceImpl implements UserService {
             return ApiResponseResult.build(200, "success", "同步数据成功", result);
         }
 
-        result = this.userMapper.modifyUserInfo(user);
+        result = userMapper.modifyUserInfo(user);
         if (result == 0) {
             return ApiResponseResult.build(2011, "error", "修改失败", result);
         }
@@ -46,9 +46,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public ApiResponseResult queryUserByPhone(String phone) throws Exception {
 
-        UserVo user = this.userMapper.findUserExist(phone);
+        UserVo user = userMapper.findUserExist(phone);
 
         if (null == user) {
+
             return ApiResponseResult.build(2011, "error", "该用户不存在", "");
         }
 

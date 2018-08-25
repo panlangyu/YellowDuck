@@ -331,7 +331,7 @@
     </insert>
 
 
-    <!-- ������������������ETH������������ -->
+    <!-- 查询用户ETH是否添加 -->
     <select id="findWalletAddressByUserId" resultType="java.lang.String">
 
         SELECT address FROM duck_wallet
@@ -408,6 +408,26 @@
         </trim>
 
     </select>
+
+    <!-- 查询用户是否已拥有ETH -->
+   <!-- <select id="findUserWalletCount" resultType="java.lang.Integer">
+
+        SELECT COUNT(*) FROM duck_wallet
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            <if test="coinName != null and coinName.length() > 0">
+                AND coinName = #{coinName}
+            </if>
+
+        </trim>
+
+
+    </select>-->
 
 
 

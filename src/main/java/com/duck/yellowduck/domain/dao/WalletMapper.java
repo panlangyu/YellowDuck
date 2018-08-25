@@ -67,11 +67,11 @@ public interface WalletMapper {
 
 
     public String findWalletAddressByUserId(@Param("userId") Integer userId,
-                                             @Param("coinName") String coinName)throws Exception;
+                                            @Param("coinName") String coinName)throws Exception;
 
 
     public Wallet findWalletByUserIdAndAddress(@Param("userId") Integer userId,
-                                                @Param("contractAddr") String contractAddr)throws Exception;
+                                               @Param("contractAddr") String contractAddr)throws Exception;
 
 
     public List<Wallet> findUserWalletInfo(@Param("userId") Integer userId)throws Exception;
