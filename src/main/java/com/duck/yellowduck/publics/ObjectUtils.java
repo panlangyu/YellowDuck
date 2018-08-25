@@ -11,6 +11,35 @@ public class ObjectUtils {
 
 
     /**
+     * 返回錢包的地址
+     * @param str
+     * @return
+     */
+    public static String getAddress(String str){
+
+        String hash = "";
+
+        JSONObject json = JSONObject.parseObject(str);
+
+        System.out.println(json);
+
+        if(json.getString("type").equals("error")){
+
+            return hash;
+        }
+
+        JSONObject body = (JSONObject)json.get("body");
+
+        if(body.toString() != null && !body.toString().equals("") && !body.toString().equals("null")){
+
+            hash = body.getString("address");
+        }
+
+        return hash;
+    }
+
+
+    /**
      * 用户钱包总额
      * @param str
      * @return
@@ -21,13 +50,13 @@ public class ObjectUtils {
 
         //JSONObject jsonObject = new JSONObject();
 
-        if(str != null && !str.equals("") && !str.equals("null")){
+        //if(str != null && !str.equals("") && !str.equals("null")){
 
             JSONObject body = JSONObject.parseObject(str);
 
             System.out.println(body.get("body"));
 
-            if(body.get("body") != null && !body.get("body").equals("")){
+            if(body.get("body") != null && !body.get("body").equals("") && !body.get("body").toString().equals("{}")){
 
                 JSONObject json = (JSONObject)body.get("body");
 
@@ -39,7 +68,7 @@ public class ObjectUtils {
 
                 price = new BigDecimal(json.get("balance").toString());
             }
-        }
+       // }
         return price;
     }
 
@@ -52,13 +81,13 @@ public class ObjectUtils {
 
         String hash = "";
 
-        if(str != null && !str.equals("") && !str.equals("null")){
+       // if(str != null && !str.equals("") && !str.equals("null")){
 
             JSONObject body = JSONObject.parseObject(str);
 
             System.out.println(body.get("body"));
 
-            if(body.get("body") != null && !body.get("body").equals("")){
+            if(body.get("body") != null && !body.get("body").equals("") && !body.get("body").toString().equals("{}")){
 
                 JSONObject json = (JSONObject)body.get("body");
 
@@ -78,7 +107,7 @@ public class ObjectUtils {
 
             }
 
-            if(body.get("tx") != null && !body.get("tx").equals("")){
+            if(body.get("tx") != null && !body.get("tx").equals("") && !body.get("tx").toString().equals("{}")){
 
                 JSONObject json = (JSONObject)body.get("tx");
 
@@ -98,7 +127,7 @@ public class ObjectUtils {
                 hash = json.get("result").toString();
             }
 
-        }
+      //  }
         return hash;
     }
 
@@ -123,35 +152,37 @@ public class ObjectUtils {
 
     public static String getRemark(String remark, Integer typeCode)
     {
-        if ((remark != null) && (!remark.equals("")))
+        if (remark != null && !remark.equals(""))
         {
             if (typeCode == 2) {
                 remark = "转出";
             }
             return remark;
         }
-        if ((remark == null) || (remark.equals(""))) {
+        if (remark == null || remark.equals("")) {
+
             switch (typeCode) {
                 case 1:
-                    remark = "����,����(freeAmount)����,����(availableAmount)����,��������";
+                    remark = "转入,冻结(freeAmount)增加,可用(availableAmount)减少,本金不变";
                     break;
                 case 2:
-                    remark = "����,����(freeAmount)����,����(availableAmount)����,��������";
+                    remark = "转出,冻结(freeAmount)减少,可用(availableAmount)增加,本金不变";
                     break;
                 case 3:
-                    remark = "����";
+                    remark = "直推";
                     break;
                 case 4:
-                    remark = "����";
+                    remark = "利息";
                     break;
                 case 5:
-                    remark = "������";
+                    remark = "团队奖";
                     break;
                 case 6:
-                    remark = "����������";
+                    remark = "扣取手续费";
                     break;
                 default:
-                    remark = "����������������";
+                    remark = "只有以上六种类型";
+                    break;
             }
         }
         return remark;

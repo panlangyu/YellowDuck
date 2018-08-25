@@ -44,7 +44,7 @@ public class HttpUtils
         }
         catch (Exception e)
         {
-            System.out.println("����GET��������������" + e);
+            System.out.println("发送 GET 请求出现异常" + e);
             e.printStackTrace();
         }
         finally

@@ -413,12 +413,14 @@ public class WalletServiceImpl implements WalletService {
         
         UserVo userInfo = userMapper.findUserExist(user.getPhone());
         if (null == userInfo) {
+
             return ApiResponseResult.build(2010, "error", "该用户不存在", "");
         }
         
-        String address = walletMapper.findWalletAddressByUserId(userInfo.getId(), "ETH");
-        if ((address != null) && (!address.equals(""))) {
-            return ApiResponseResult.build(2013, "error", "您已添加过该币种", "");
+        String addressExist = walletMapper.findWalletAddressByUserId(userInfo.getId(), "ETH");
+        if (addressExist != null && !addressExist.equals("")) {
+
+            return ApiResponseResult.build(2010, "error", "您已添加过该币种", "");
         }
 
         String uri = "";                //第三方API接口路径
@@ -428,7 +430,7 @@ public class WalletServiceImpl implements WalletService {
         wallet.setPasswd(user.getPasswd());
         wallet.setUserId(userInfo.getId());
 
-        Map<String, Object> mapOne = new HashMap();
+        //Map<String, Object> mapOne = new HashMap();
         Map<String, String> map = new HashMap();
         map.put("phone", user.getPhone());
         map.put("txpw", wallet.getPasswd());
@@ -436,10 +438,19 @@ public class WalletServiceImpl implements WalletService {
         String json = JSONArray.toJSONString(map);
 
         String str = HttpUtils.sendPost(uri, json);
-        if (str == null || str.equals("")) {
-            return ApiResponseResult.build(2010, "error", "开通钱包失败", "");
+        if (str == null || str.equals("") || str.equals("null")) {
+
+            return ApiResponseResult.build(2010, "error", "系统异常", "");
         }
-        mapOne = (Map)JSONArray.parse(str);
+
+        String address = ObjectUtils.getAddress(str);
+
+        if(address == null || address.equals("")){
+
+            return ApiResponseResult.build(2010, "error", "系统异常", "");
+        }
+
+       /* mapOne = (Map)JSONArray.parse(str);
 
         Map<String, Object> mapTwo = new HashMap();
         for (String string : mapOne.keySet()) {
@@ -449,7 +460,8 @@ public class WalletServiceImpl implements WalletService {
 
                 wallet.setAddress(mapTwo.get("address").toString());
             }
-        }
+        }*/
+        wallet.setAddress(address);
         wallet.setCoinName("ETH");
         wallet.setPrivateKey(ObjectUtils.getUUID());
         wallet.setKeystore(ObjectUtils.getUUID());
