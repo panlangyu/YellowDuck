@@ -63,13 +63,13 @@ logging:
 #绑定IP servert.host IP
 server:
   context-path: /yellowduck
-  port: 8080
-  address: 192.168.10.125
+  port: 8082
+  #address: 192.168.10.125
   tomcat:
     uri-encoding: UTF-8
 
 #配置第三方访问路径
 yellowduck:
-#  url: "http://39.105.26.249:9090"
+  url: "http://39.105.26.249:9090"
 #  url: "http://127.0.0.1:9090"
-  url: "http://192.168.10.103:9090"
+#  url: "http://192.168.10.103:9090"

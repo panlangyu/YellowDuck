@@ -3,20 +3,73 @@
 <mapper namespace="com.duck.yellowduck.domain.dao.CoinMapper">
 
 
-    <!-- ������������������ -->
+    <!-- 封装币种信息 -->
     <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.CoinVo">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
         <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
         <result column="coinImg" jdbcType="VARCHAR" property="coinImg"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="marketPrice" jdbcType="DECIMAL" property="marketPrice"/>
+        <result column="status" jdbcType="INTEGER" property="status"/>
+    </resultMap>
+
+    <!-- 封装整个实体类 -->
+    <resultMap id="BaseResultMapCoin" type="com.duck.yellowduck.domain.model.model.Coin">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
+        <result column="coinImg" jdbcType="VARCHAR" property="coinImg"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="marketPrice" jdbcType="DECIMAL" property="marketPrice"/>
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="updateTime" jdbcType="TIMESTAMP" property="updateTime"/>
         <result column="status" jdbcType="INTEGER" property="status"/>
     </resultMap>
 
 
-    <!-- ��������?��������������? -->
+    <!-- 公用参数 -->
+    <sql id="Base_Column_List">
+
+        id,
+        `name`,
+        coinName,
+        coinImg,
+        address,
+        marketPrice,
+        createTime,
+        updateTime,
+        `status`
+
+    </sql>
+
+    <!-- 查询单条币种信息,按地址查询,也可查所有 -->
+    <select id="selectCoinByAddress" resultMap="BaseResultMapCoin" parameterType="java.lang.String">
+
+        SELECT
+
+         <include refid="Base_Column_List"/>
+
+        FROM duck_coin
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="address != null and address.length() > 0">
+
+                AND  address = #{address}
+
+            </if>
+
+        </trim>
+
+
+    </select>
+
+
+    <!-- 查询币种信息 -->
     <select id="selectCoinList" resultMap="BaseResultMap">
 
-          SELECT id,coinName,coinImg,address,`status` FROM VAH_T_COIN
+          SELECT id,`name`,coinName,coinImg,address,marketPrice,`status` FROM duck_coin
 
     </select>
 

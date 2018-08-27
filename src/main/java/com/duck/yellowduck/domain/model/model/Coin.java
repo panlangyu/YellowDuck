@@ -1,16 +1,30 @@
 package com.duck.yellowduck.domain.model.model;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
-public class Coin
-{
-    private Integer id;
-    private String coinName;
-    private String coinImg;
-    private Date createTime;
-    private Date updateTime;
-    private String address;
-    private Integer status;
+/**
+ * 币种表(Model)
+ */
+public class Coin {
+
+    private Integer id;                 //编号
+
+    private String name;                //币种全称
+
+    private String coinName;            //币种名称
+
+    private String address;             //币种地址
+
+    private String coinImg;             //币种图像
+
+    private BigDecimal marketPrice;     //市场价格
+
+    private Date createTime;            //创建时间
+
+    private Date updateTime;            //修改时间
+
+    private Integer status;             //状态
 
     public Integer getId()
     {
@@ -80,5 +94,21 @@ public class Coin
     public void setStatus(Integer status)
     {
         this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public BigDecimal getMarketPrice() {
+        return marketPrice;
+    }
+
+    public void setMarketPrice(BigDecimal marketPrice) {
+        this.marketPrice = marketPrice;
     }
 }

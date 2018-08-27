@@ -2,6 +2,7 @@ package com.duck.yellowduck.domain.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.duck.yellowduck.domain.dao.*;
+import com.duck.yellowduck.domain.model.model.Coin;
 import com.duck.yellowduck.domain.model.model.Transcation;
 import com.duck.yellowduck.domain.model.model.User;
 import com.duck.yellowduck.domain.model.model.Wallet;
@@ -503,6 +504,9 @@ public class WalletServiceImpl implements WalletService {
         String str = "";                //接收第三方返回的数据
 
         String address = "";            //ETH地址
+
+        Coin coin = new Coin();         //币种对象
+
         for (WalletVo vo : voList) {
 
             map = new HashMap();
@@ -516,7 +520,17 @@ public class WalletServiceImpl implements WalletService {
                 map.put("contractAddr", vo.getContractAddr());
                 map.put("from", address);
 
-                walletVo.setWalletTotal(new BigDecimal("1"));
+                coin = coinMapper.selectCoinByAddress(vo.getContractAddr());
+                if(null == coin){
+
+                    walletVo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
+                }else{
+
+                    walletVo.setWalletTotal(coin.getMarketPrice());         //市场价格
+                }
+
+                //walletVo.setWalletTotal(new BigDecimal("1"));
+
             }else {
 
                 uri = url + "/address";
@@ -524,7 +538,16 @@ public class WalletServiceImpl implements WalletService {
                 map.put("address", vo.getAddress());
                 address = vo.getAddress();
 
-                walletVo.setWalletTotal(new BigDecimal("3000"));
+                coin = coinMapper.selectCoinByAddress("☺");             //特殊符号查询ETH
+                //walletVo.setWalletTotal(new BigDecimal("3000"));
+                if(null == coin){
+
+                    walletVo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
+                }else{
+
+                    walletVo.setWalletTotal(coin.getMarketPrice());         //市场价格
+                }
+
             }
             BigDecimal price = new BigDecimal("0");
 
