@@ -108,7 +108,7 @@ public class TransferServiceImpl implements TransferService {
             address = earnerWallet.getAddress();                //被抓账用户有该币种地址时
         }else{
 
-            address = apiResponse.getData().toString();         //被转账地址
+            address = ((Wallet)apiResponse.getData()).getAddress();         //被转账地址
         }
 
         //锁钱包表
