@@ -88,9 +88,9 @@ public class TransferServiceImpl implements TransferService {
         //查询被转账用户是否存在
         UserVo earnerUser = userMapper.findUserExist(wallet.getEarnerPhone());
         if (null == earnerUser) {
+
             return ApiResponseResult.build(2013, "error", "被转账用户不存在", "");
         }
-
 
         String address = "";            //被转账地址
         //查询被当前用户是否有钱包信息
@@ -117,6 +117,7 @@ public class TransferServiceImpl implements TransferService {
         //判断金额是否 大于 0
         int trun = new BigDecimal(wallet.getValue()).compareTo(BigDecimal.ZERO);
         if ((trun == 0) || (trun == -1)) {
+
             return ApiResponseResult.build(2010, "error", "请输入大于 0 的正数", "");
         }
 

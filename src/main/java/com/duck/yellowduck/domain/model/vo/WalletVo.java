@@ -7,21 +7,23 @@ import java.math.BigDecimal;
  */
 public class WalletVo {
 
-    private Integer id;
+    private Integer id;                //编号
 
-    private String address;
+    private Integer coinId;            //币种编号
 
-    private String contractAddr;
+    private String address;            //ETH地址
 
-    private BigDecimal amount;
+    private String contractAddr;       //合约币地址
 
-    private String coinName;
+    private BigDecimal amount;         //钱包总额
 
-    private String coinImg;
+    private String coinName;           //币种名称
 
-    private Integer userId;
+    private String coinImg;            //币种图像
 
-    private BigDecimal walletTotal;
+    private Integer userId;            //用户编号
+
+    private BigDecimal walletTotal;    //市场总额
 
     public Integer getId() {
         return id;
@@ -29,6 +31,14 @@ public class WalletVo {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getCoinId() {
+        return coinId;
+    }
+
+    public void setCoinId(Integer coinId) {
+        this.coinId = coinId;
     }
 
     public String getAddress() {

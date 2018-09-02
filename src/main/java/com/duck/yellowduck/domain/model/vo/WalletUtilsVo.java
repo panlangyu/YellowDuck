@@ -6,23 +6,23 @@ package com.duck.yellowduck.domain.model.vo;
 public class WalletUtilsVo {
 
 
-    private Integer id;
+    private Integer id;                 //钱包编号
 
-    private String phone;
+    private String phone;               //手机号码
 
-    private String coinName;
+    private String coinName;            //币种名称
 
-    private String contractAddr;
+    private String contractAddr;        //合约币地址
 
-    private String from;
+    private String from;                //ETH地址
 
-    private String address;
+    private String address;             //转入地址
 
-    private String value;
+    private String value;               //转入数量
 
-    private String hash;
+    private String hash;                //转账成功Hash值
 
-    private String remark;
+    private String remark;              //备注
 
     public Integer getId()
     {

@@ -1,14 +1,14 @@
 package com.duck.yellowduck.publics;
 
+
 import com.alibaba.fastjson.JSONObject;
 import java.math.BigDecimal;
 import java.util.UUID;
 
 /**
- * 辅助工具类
+ * 处理业务冗余代码
  */
 public class ObjectUtils {
-
 
     /**
      * 返回錢包的地址
@@ -48,27 +48,25 @@ public class ObjectUtils {
 
         BigDecimal price = new BigDecimal("0");
 
-        //JSONObject jsonObject = new JSONObject();
+        // if(str != null && !str.equals("") && !str.equals("null")){
 
-        //if(str != null && !str.equals("") && !str.equals("null")){
+        JSONObject body = JSONObject.parseObject(str);
 
-            JSONObject body = JSONObject.parseObject(str);
+        System.out.println(body.get("body"));
 
-            System.out.println(body.get("body"));
+        if(body.get("body") != null && !body.get("body").equals("") && !body.get("body").toString().equals("{}")){
 
-            if(body.get("body") != null && !body.get("body").equals("") && !body.get("body").toString().equals("{}")){
+            JSONObject json = (JSONObject)body.get("body");
 
-                JSONObject json = (JSONObject)body.get("body");
+            if(json.get("error") != null && !json.get("error").equals("")){
 
-                if(json.get("error") != null && !json.get("error").equals("")){
-
-                    price = new BigDecimal("-1");
-                    return price;
-                }
-
-                price = new BigDecimal(json.get("balance").toString());
+                price = new BigDecimal("-1");
+                return price;
             }
-       // }
+
+            price = new BigDecimal(json.get("balance").toString());
+        }
+        // }
         return price;
     }
 
@@ -81,87 +79,149 @@ public class ObjectUtils {
 
         String hash = "";
 
-       // if(str != null && !str.equals("") && !str.equals("null")){
+        //if(str != null && !str.equals("") && !str.equals("null")){
 
-            JSONObject body = JSONObject.parseObject(str);
+        JSONObject body = JSONObject.parseObject(str);
 
-            System.out.println(body.get("body"));
+        System.out.println(body.get("body"));
 
-            if(body.get("body") != null && !body.get("body").equals("") && !body.get("body").toString().equals("{}")){
+        if(body.get("body") != null && !body.get("body").equals("") && !body.get("body").toString().equals("{}")){
 
-                JSONObject json = (JSONObject)body.get("body");
+            JSONObject json = (JSONObject)body.get("body");
 
-                if(json.get("error") != null && !json.get("error").equals("")){
+            if(json.get("error") != null && !json.get("error").equals("")){
 
-                    JSONObject error = (JSONObject)json.get("error");
+                JSONObject error = (JSONObject)json.get("error");
 
-                    if(error.get("message").toString().indexOf("price") != -1){
+                if(error.get("message").toString().indexOf("price") != -1){
 
-                        hash = "-1";
-                    }
+                    hash = "-1";
+                }
 
+                return hash;
+            }
+
+            hash = json.get("hash").toString();
+
+        }
+
+        if(body.get("tx") != null && !body.get("tx").equals("") && !body.get("tx").toString().equals("{}")){
+
+            JSONObject json = (JSONObject)body.get("tx");
+
+            if(json.get("error") != null && !json.get("error").equals("")){
+
+                JSONObject error = (JSONObject)json.get("error");
+
+                if(error.get("message").toString().indexOf("price") != -1){
+
+                    hash = "-1";
                     return hash;
                 }
 
-                hash = json.get("hash").toString();
-
+                return hash;
             }
 
-            if(body.get("tx") != null && !body.get("tx").equals("") && !body.get("tx").toString().equals("{}")){
+            hash = json.get("result").toString();
+        }
 
-                JSONObject json = (JSONObject)body.get("tx");
-
-                if(json.get("error") != null && !json.get("error").equals("")){
-
-                    JSONObject error = (JSONObject)json.get("error");
-
-                    if(error.get("message").toString().indexOf("price") != -1){
-
-                        hash = "-1";
-                        return hash;
-                    }
-
-                    return hash;
-                }
-
-                hash = json.get("result").toString();
-            }
-
-      //  }
+        // }
         return hash;
+    }
+
+    /**
+     *
+     * @param str
+     * @return
+     */
+    public static String getNum(String str){
+
+        String coinName = "";
+
+        JSONObject json = JSONObject.parseObject(str);
+
+        System.out.println(json);
+
+        if (json.get("type").toString().equals("ok")) {
+
+            JSONObject body = (JSONObject)json.get("body");
+
+            if (body.toString().equals("body")) {
+
+                coinName = body.get("symbol").toString();
+                return coinName;
+            }
+        }
+        if (json.get("type").toString().equals("error") && json.get("code").toString().equals("1")) {
+
+            coinName = "-1";
+            return coinName;
+        }
+        if (json.get("type").toString().equals("error") && !json.get("code").toString().equals("1")) {
+
+            coinName = "-2";
+            return coinName;
+        }
+
+        return coinName;
     }
 
 
 
-    public static String getWalletRemark(String remark, Integer typeCode){
-        if ((remark == null) || (remark.equals(""))) {
-            switch (typeCode)
-            {
+
+
+
+
+    /**
+     * 处理转账信息的备注, 如果没填写备注信息的话,分配类型名称
+     * @param remark
+     * @param typeCode
+     * @return
+     */
+    public static String getWalletRemark(String remark,Integer typeCode){
+
+        if(remark == null || remark.equals("")){
+            switch (typeCode){
+
                 case 1:
                     remark = "转入";
                     break;
                 case 2:
                     remark = "转出";
                     break;
+                case 6:
+                    remark = "扣取手续费";
+                    break;
                 default:
-                    remark = "只支持以上两种类型";
+                    remark = "只有以上三种类型";
+                    break;
             }
         }
+
         return remark;
     }
 
-    public static String getRemark(String remark, Integer typeCode)
-    {
-        if (remark != null && !remark.equals(""))
-        {
-            if (typeCode == 2) {
+
+    /**
+     * 处理转账信息的备注, 如果没填写备注信息的话,分配类型名称
+     * @param remark
+     * @param typeCode
+     * @return
+     */
+    public static String getRemark(String remark,Integer typeCode){
+
+        if(remark != null && !remark.equals("")){
+
+            if(typeCode == 2){
                 remark = "转出";
             }
             return remark;
         }
-        if (remark == null || remark.equals("")) {
 
-            switch (typeCode) {
+
+        if(remark == null || remark.equals("")){
+            switch (typeCode){
+
                 case 1:
                     remark = "转入,冻结(freeAmount)增加,可用(availableAmount)减少,本金不变";
                     break;
@@ -184,34 +244,47 @@ public class ObjectUtils {
                     remark = "只有以上六种类型";
                     break;
             }
+
         }
+
         return remark;
     }
 
+
+    /**
+     * 生成UUID
+     * @return
+     */
     public static String getUUID(){
-        String uuid = UUID.randomUUID().toString().replaceAll("-", "");
+
+        String uuid = UUID.randomUUID().toString().replaceAll("-","");
 
         return uuid;
     }
 
-
     public static void main(String[] args) {
 
-        String error = "{\"error\":{\"code\":-32000,\"message\":\"insufficient funds for gas * price + value\"}}";
 
-        JSONObject jsonObject = JSONObject.parseObject(error);
-        JSONObject body = (JSONObject)jsonObject.get("error");
+        String message = "{\"body\":\"4302\",\"code\":1,\"type\":\"error\"}";
 
+        JSONObject json = JSONObject.parseObject(message);
 
-        if(body.get("message").toString().indexOf("price")!=-1){
+        //JSONObject body = jsonObject.get("");
 
-            System.out.println(body.get("message"));
-            System.out.println("123");
+        if (json.get("type").toString().equals("error") && json.get("code").toString().equals("1")) {
+
+            System.out.println(111);
+            //return ApiResponseResult.build(2012, "error", "币种不存在", "");
+        }
+        if (json.get("type").toString().equals("error") && !json.get("code").toString().equals("1")) {
+
+            System.out.println(222);
+            //return ApiResponseResult.build(2012, "error", "系统异常", "");
         }
 
 
-
     }
+
 
 
 }

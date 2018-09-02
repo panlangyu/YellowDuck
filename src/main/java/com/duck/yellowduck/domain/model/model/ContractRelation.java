@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * ETH钱包Model
+ * 合约币,用户关联Model
  */
-public class Wallet {
+public class ContractRelation {
 
     private Integer id;                     //编号
 
-    private Integer coinId;                 //币种名称
+    private Integer coinId;                 //币种编号
 
     private String coinName;                //币种名称
 
@@ -168,4 +168,7 @@ public class Wallet {
     public void setRemark(String remark) {
         this.remark = remark;
     }
+
+
+
 }

@@ -5,6 +5,7 @@
     <!-- 封装给客户端的Vo数据 -->
     <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.WalletVo">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="coinId" jdbcType="INTEGER" property="coinId"/>
         <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
         <result column="coinImg" jdbcType="VARCHAR" property="coinImg"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
@@ -15,13 +16,14 @@
     <!-- 封装条件 -->
     <resultMap id="BaseResultMapWallet" type="com.duck.yellowduck.domain.model.model.Wallet">
         <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="coinId" jdbcType="INTEGER" property="coinId"/>
         <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="contractAddr" jdbcType="VARCHAR" property="contractAddr"/>
         <result column="privateKey" jdbcType="VARCHAR" property="privateKey"/>
         <result column="passwd" jdbcType="VARCHAR" property="passwd"/>
         <result column="keystore" jdbcType="VARCHAR" property="keystore"/>
-        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="create_time"/>
         <result column="userId" jdbcType="INTEGER" property="userId"/>
     </resultMap>
 
@@ -47,7 +49,7 @@
     <!-- 查询用户钱包下的币种信息 -->
     <select id="selectUserWalletInfo" resultMap="BaseResultMap">
 
-        SELECT id,coinName,coinImg,address,contractAddr,userId FROM duck_wallet
+        <!--SELECT id,coinName,coinImg,address,contractAddr,userId FROM duck_wallet
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
 
@@ -58,7 +60,39 @@
                 AND coinName = #{coinName}
             </if>
 
+        </trim>-->
+
+        SELECT w.id,w.coinId,c.coinName,c.coinImg,w.address,w.contractAddr,userId FROM duck_wallet AS w
+        INNER JOIN duck_coin AS c ON w.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userid = #{userId}
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                AND c.coinName = #{coinName}
+            </if>
+
         </trim>
+
+        UNION ALL
+
+        SELECT r.id,r.coinId,c.coinName,c.coinImg,r.address,r.contractAddr,userId FROM duck_contract_relation AS r
+        INNER JOIN duck_coin AS c ON r.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userid = #{userId}
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                AND c.coinName = #{coinName}
+            </if>
+
+        </trim>
+
+
 
     </select>
 
@@ -116,7 +150,7 @@
                 amount = amount - #{amount},
                 availableAmount = availableAmount - #{amount},
             </if>
-            updateTime=NOW(),
+            update_time=NOW(),
         </trim>
 
     </update>
@@ -133,7 +167,7 @@
                 availableAmount = availableAmount + #{amount},
             </if>
 
-            updateTime=NOW(),
+            update_time=NOW(),
         </trim>
 
 
@@ -145,7 +179,48 @@
 
         SELECT
 
-        <include refid="Base_Column_List"/>
+        <include refid="Base_Column_ListWallet"/>
+
+        FROM duck_wallet AS w
+        INNER JOIN duck_coin AS c ON w.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            <if test="coinName != null and coinName.length() > 0">
+                AND c.coinName = #{coinName}
+            </if>
+
+        </trim>
+
+        UNION ALL
+
+        SELECT
+
+        <include refid="Base_Column_ListContract"/>
+
+        FROM duck_contract_relation AS r
+        INNER JOIN duck_coin AS c ON r.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            <if test="coinName != null and coinName.length() > 0">
+                AND c.coinName = #{coinName}
+            </if>
+
+        </trim>
+
+
+        <!--SELECT
+
+        <include refid="Base_Column_ListInfo"/>
 
         FROM duck_wallet
 
@@ -159,7 +234,7 @@
                 AND coinName = #{coinName}
             </if>
 
-        </trim>
+        </trim>-->
 
     </select>
 
@@ -185,7 +260,7 @@
 
         ) AS freeAmount
         FROM DUCK_TRANSCATION
-        WHERE TO_DAYS( NOW( ) ) - TO_DAYS(createTime) = 1
+        WHERE TO_DAYS( NOW( ) ) - TO_DAYS(create_time) = 1
 
         <if test="userId != null and userId != 0">
             AND userId = #{userId}
@@ -211,7 +286,7 @@
                 freeAmount = freeAmount + #{amount},
                 availableAmount = availableAmount - #{amount},
             </if>
-            updateTime=NOW(),
+            update_time=NOW(),
         </trim>
 
     </update>
@@ -227,7 +302,7 @@
                 freeAmount = freeAmount - #{amount},
                 availableAmount = availableAmount + #{amount},
             </if>
-            updateTime=NOW(),
+            update_time=NOW(),
         </trim>
 
     </update>
@@ -247,8 +322,8 @@
         address,
         privateKey,
         passwd,
-        createTime,
-        updateTime,
+        create_time,
+        update_time,
         keystore,
         userId,
         freeAmount,
@@ -277,10 +352,10 @@
 
     <!-- ������������������,������������������ 0 ��?  ��������������������������������?,  ������3��������������������������������? -->
     <select id="selectUserWalletInterest" resultType="com.duck.yellowduck.domain.model.model.Wallet">
-        SELECT w.id,coinId,coinName,w.address,w.createTime,w.updateTime,userId,freeAmount,amount,availableAmount FROM duck_wallet w
+        SELECT w.id,coinId,coinName,w.address,w.create_time,w.update_time,userId,freeAmount,amount,availableAmount FROM duck_wallet w
         INNER JOIN DUCK_COIN c ON w.`coinId`=c.`id`
         WHERE freeAmount != 0
-        AND TO_DAYS( NOW() ) - TO_DAYS(w.updateTime) &lt;= 3
+        AND TO_DAYS( NOW() ) - TO_DAYS(w.update_time) &lt;= 3
     </select>
 
 
@@ -295,27 +370,29 @@
                 amount = amount + #{amount},
                 interest = interest + #{amount},
             </if>
-            updateTime = NOW(),
+            update_time = NOW(),
         </trim>
 
     </update>
 
-    <!-- ������������������ -->
+    <!-- 新增ETH钱包信息 -->
     <insert id="insertWalletInfo" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
 
         INSERT INTO duck_wallet(
+                coinId,
                 coinName,
                 coinImg,
                 address,
                 contractAddr,
                 privateKey,
                 passwd,
-                createTime,
-                updateTime,
+                create_time,
+                update_time,
                 keystore,
                 userId
                 )
         VALUES(
+            #{coinId},
             #{coinName},
             #{coinImg},
             #{address},
@@ -350,7 +427,7 @@
 
     </select>
 
-    <!-- ������������������ETH������������ -->
+    <!-- 查询合约币是否存在 -->
     <select id="findWalletByUserIdAndAddress" resultMap="BaseResultMapWallet">
 
         SELECT
@@ -374,9 +451,43 @@
     </select>
 
 
-    <!-- ��������������������?��������������? -->
+    <!-- 查询用户币种信息 -->
     <select id="findUserWalletInfo" resultMap="BaseResultMapWallet" parameterType="java.lang.Integer">
+
         SELECT
+
+        <include refid="Base_Column_ListWallet"/>
+
+        FROM duck_wallet AS w
+        INNER JOIN duck_coin AS c ON w.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+        </trim>
+
+        UNION ALL
+
+        SELECT
+
+        <include refid="Base_Column_ListContract"/>
+
+        FROM duck_contract_relation AS r
+        INNER JOIN duck_coin AS c ON r.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+        </trim>
+
+
+        <!--SELECT
 
         <include refid="Base_Column_List"/>
 
@@ -390,7 +501,7 @@
 
         </trim>
 
-        ORDER BY createTime
+        ORDER BY create_time-->
 
     </select>
 
@@ -432,7 +543,7 @@
 
 
 
-    <!-- 请求参数 -->
+    <!-- 查询参数 -->
     <sql id="Base_Column_List">
         id,
         coinName,
@@ -441,7 +552,33 @@
         privateKey,
         passwd,
         keystore,
-        createTime,
+        create_time,
+        userId
+    </sql>
+
+    <!-- 查询ETH参数 -->
+    <sql id="Base_Column_ListWallet">
+        w.id,
+        w.coinId,
+        c.coinName,
+        w.address,
+        w.contractAddr,
+        passwd,
+        keystore,
+        create_time,
+        userId
+    </sql>
+
+    <!-- 查询合约币参数 -->
+    <sql id="Base_Column_ListContract">
+        r.id,
+        r.coinId,
+        c.coinName,
+        r.address,
+        r.contractAddr,
+        passwd,
+        keystore,
+        create_time,
         userId
     </sql>
 
