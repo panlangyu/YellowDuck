@@ -4,7 +4,6 @@ import com.duck.yellowduck.domain.model.model.User;
 import com.duck.yellowduck.domain.model.model.Wallet;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 import com.duck.yellowduck.domain.model.vo.WalletUtilsVo;
-import com.duck.yellowduck.domain.model.vo.WalletVXUtilsVo;
 import com.duck.yellowduck.domain.service.WalletService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -193,6 +192,13 @@ public class WalletController {
         return apiResponse;
     }
 
+
+
+
+
+
+
+
     @ApiOperation(value="用户创建钱包", notes="创建钱包")
     @ApiImplicitParam(name="user", value="用户对象user", dataType="User")
     @RequestMapping(value="/createWalletInfo", method=RequestMethod.POST)
@@ -343,8 +349,7 @@ public class WalletController {
 
             apiResponseResult = this.walletService.findWalletListInfo(phone);
 
-        }
-        catch (Exception e) {
+        }catch (Exception e) {
             e.printStackTrace();
 
             return ApiResponseResult.build(2016, "error", "出现异常", "");

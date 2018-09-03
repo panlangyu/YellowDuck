@@ -6,6 +6,8 @@ package com.duck.yellowduck.domain.model.vo;
  */
 public class WalletVXUtilsVo {
 
+    private Integer id;                 //钱包编号
+
     private String phone;               //用户手机号
 
     private String earnerPhone;         //被转账用户手机号
@@ -23,6 +25,14 @@ public class WalletVXUtilsVo {
     private String remark;              //备注
 
     private Boolean status;             //状态
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getPhone()
     {

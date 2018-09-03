@@ -79,7 +79,7 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
         BigDecimal staticLessNumber = RewardConfigureUtils.getInstance().getStaticLessNumber();
         BigDecimal staticLessRation = RewardConfigureUtils.getInstance().getStaticLessRation();
 
-        this.walletMapper.lockWalletTable();
+        //this.walletMapper.lockWalletTable();
 
         List<Wallet> walletList = this.walletMapper.selectUserWalletInterest();
         if (null == walletList) {
@@ -160,7 +160,7 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
     {
         BigDecimal recommendUnLockRation = RewardConfigureUtils.getInstance().getRecommendUnLockRation();
 
-        this.walletMapper.lockWalletTable();
+        //this.walletMapper.lockWalletTable();
 
         List<DirectPrizeVo> voList = this.directPrizeMapper.selectDirectPrizeList();
         if (null == voList) {
@@ -204,7 +204,7 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
                 if (null == userWallet) {
                     continue;
                 }
-                Wallet directWallet = this.walletMapper.selectUserWalletByCoinId(directPrizeVo.getCoverRefereeId(), "");
+                Wallet directWallet = this.walletMapper.selectUserWalletETHAddress(directPrizeVo.getCoverRefereeId(), 0);
                 if (null == directWallet) {
                     continue;
                 }
@@ -241,7 +241,7 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
     public ApiResponseResult dynamicAward()
             throws Exception
     {
-        this.walletMapper.lockWalletTable();
+        //this.walletMapper.lockWalletTable();
 
         BigDecimal dynamicPrincipal = RewardConfigureUtils.getInstance().getDynamicPrincipal();
         BigDecimal dynamicRation = RewardConfigureUtils.getInstance().getDynamicRation();

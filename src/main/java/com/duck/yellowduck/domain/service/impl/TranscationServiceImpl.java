@@ -163,7 +163,7 @@ public class TranscationServiceImpl implements TranscationService {
         if (null == userInfo) {
             return ApiResponseResult.build(2010, "error", "该用户不存在", "");
         }
-        Wallet wallet = this.walletMapper.selectUserWalletByCoinId(userInfo.getId(), coinName);
+        Wallet wallet = this.walletMapper.selectUserWalletETHAddress(userInfo.getId(),0);
         if (null == wallet) {
             return ApiResponseResult.build(2010, "error", "该用户下没有该币种", "");
         }

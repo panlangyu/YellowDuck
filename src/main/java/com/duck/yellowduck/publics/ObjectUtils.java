@@ -132,6 +132,34 @@ public class ObjectUtils {
     }
 
 
+    public static String getNum(String str) {
+        String coinName = "";
+
+        JSONObject json = JSONObject.parseObject(str);
+
+        System.out.println(json);
+        if (json.get("type").toString().equals("ok"))
+        {
+            JSONObject body = (JSONObject)json.get("body");
+            if (body.toString().equals("body"))
+            {
+                coinName = body.get("symbol").toString();
+                return coinName;
+            }
+        }
+        if ((json.get("type").toString().equals("error")) && (json.get("code").toString().equals("1")))
+        {
+            coinName = "-1";
+            return coinName;
+        }
+        if ((json.get("type").toString().equals("error")) && (!json.get("code").toString().equals("1")))
+        {
+            coinName = "-2";
+            return coinName;
+        }
+        return coinName;
+    }
+
 
     public static String getWalletRemark(String remark, Integer typeCode){
         if ((remark == null) || (remark.equals(""))) {

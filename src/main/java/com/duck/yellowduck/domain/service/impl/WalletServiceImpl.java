@@ -2,10 +2,7 @@ package com.duck.yellowduck.domain.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.duck.yellowduck.domain.dao.*;
-import com.duck.yellowduck.domain.model.model.Coin;
-import com.duck.yellowduck.domain.model.model.Transcation;
-import com.duck.yellowduck.domain.model.model.User;
-import com.duck.yellowduck.domain.model.model.Wallet;
+import com.duck.yellowduck.domain.model.model.*;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 import com.duck.yellowduck.domain.model.vo.*;
 import com.duck.yellowduck.domain.service.WalletService;
@@ -30,6 +27,9 @@ public class WalletServiceImpl implements WalletService {
 
     @Autowired
     private WalletMapper walletMapper;                         //钱包Mapper
+
+    @Autowired
+    private ContractRelationMapper contractRelationMapper;     //合约币Mapper
 
     @Autowired
     private TranscationMapper transcationMapper;               //钱包交易记录Mapper
@@ -94,7 +94,7 @@ public class WalletServiceImpl implements WalletService {
     public ApiResponseResult modifyWalletTurnOut(Wallet wallet) throws Exception {
 
         //锁表,行级锁
-        walletMapper.lockWalletTable();
+        //walletMapper.lockWalletTable();
 
         Wallet userWalletCoin = new Wallet();
         if (userWalletCoin == null) {
@@ -203,7 +203,7 @@ public class WalletServiceImpl implements WalletService {
 
         Map<String, Object> map = new HashMap();
 
-        Wallet wallet = walletMapper.selectUserWalletByCoinId(userId, "");
+        Wallet wallet = walletMapper.selectUserWalletETHAddress(userId, 0);
         if (null == wallet) {
             return ApiResponseResult.build(2013, "error", "未查询到有该币种信息", "");
         }
@@ -219,7 +219,7 @@ public class WalletServiceImpl implements WalletService {
     public ApiResponseResult modifyWalletDepositToChangeInto(Wallet wallet)
             throws Exception {
 
-        walletMapper.lockWalletTable();
+        //walletMapper.lockWalletTable();
 
         Wallet userWalletCoin = new Wallet();
         if (userWalletCoin == null) {
@@ -269,7 +269,7 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public ApiResponseResult modifyWalletDepositTurnOut(Wallet wallet) throws Exception {
 
-        walletMapper.lockWalletTable();
+        //walletMapper.lockWalletTable();
 
         Wallet userWalletCoin = new Wallet();
         if (userWalletCoin == null) {
@@ -364,7 +364,7 @@ public class WalletServiceImpl implements WalletService {
         BigDecimal recommendLockRation = RewardConfigureUtils.getInstance().getRecommendLockRation();
         Integer recommendNumber = (RewardConfigureUtils.getInstance().getRecommendNumber());
 
-        walletMapper.lockWalletTable();
+        //walletMapper.lockWalletTable();
 
         Wallet userWalletCoin = new Wallet();
         if (userWalletCoin == null) {
@@ -462,11 +462,20 @@ public class WalletServiceImpl implements WalletService {
                 wallet.setAddress(mapTwo.get("address").toString());
             }
         }*/
+
+        Coin coin = this.coinMapper.selectCoinByAddress("☺");
+        if (null == coin) {
+
+            return ApiResponseResult.build(2013, "error", "该币种不存在", "");
+        }
+
         wallet.setAddress(address);
+        wallet.setCoinId(coin.getId());
         wallet.setCoinName("ETH");
         wallet.setPrivateKey(ObjectUtils.getUUID());
         wallet.setKeystore(ObjectUtils.getUUID());
-        wallet.setCoinImg("https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=1701349413,5323685&fm=173&app=25&f=JPEG?w=400&h=240&s=219B1DDD6A2255074C38E0700300D07A");
+        wallet.setCoinImg("http://airdrop.atmall.org:8761/image/ic_eth_coin_logo.png");
+        //wallet.setCoinImg("https://ss0.baidu.com/6ONWsjip0QIZ8tyhnq/it/u=1701349413,5323685&fm=173&app=25&f=JPEG?w=400&h=240&s=219B1DDD6A2255074C38E0700300D07A");
 
         //新增钱包信息
         Integer num = walletMapper.insertWalletInfo(wallet);
@@ -526,9 +535,8 @@ public class WalletServiceImpl implements WalletService {
                     walletVo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
                 }else{
 
-                    walletVo.setWalletTotal(coin.getMarketPrice());         //市场价格
+                    walletVo.setWalletTotal(coin.getMarketPrice());            //市场价格
                 }
-
                 //walletVo.setWalletTotal(new BigDecimal("1"));
 
             }else {
@@ -545,16 +553,16 @@ public class WalletServiceImpl implements WalletService {
                     walletVo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
                 }else{
 
-                    walletVo.setWalletTotal(coin.getMarketPrice());         //市场价格
+                    walletVo.setWalletTotal(coin.getMarketPrice());            //市场价格
                 }
 
             }
             BigDecimal price = new BigDecimal("0");
 
             str = HttpUtils.sendGet(uri, map, (2));
-            if (str == null || str.equals("")) {
+            if (str == null || str.equals("") || str.equals("null")) {
 
-                return ApiResponseResult.build(2011, "error", "提币失败", "");
+                return ApiResponseResult.build(2011, "error", "系统异常", "");
             }
 
             price = ObjectUtils.getPrice(str);
@@ -563,7 +571,7 @@ public class WalletServiceImpl implements WalletService {
             Integer compareZero = price.compareTo(BigDecimal.ZERO);
             if(compareZero == -1){
 
-                return ApiResponseResult.build(2011, "error", "出现异常", "");
+                return ApiResponseResult.build(2011, "error", "系统异常", "");
             }
 
             walletVo.setId(vo.getId());
@@ -594,19 +602,33 @@ public class WalletServiceImpl implements WalletService {
         //查看当前用户是否存在
         UserVo userInfo = userMapper.findUserExist(wallet.getPhone());
         if (null == userInfo) {
+
             return ApiResponseResult.build(2010, "error", "该用户不存在", "");
         }
 
+        Wallet userWalletCoin = null;
+
+        if(wallet.getCoinName() != null && wallet.getCoinName().equals("ETH")){
+
+            userWalletCoin = walletMapper.selectUserWalletETHAddress(userInfo.getId(), wallet.getId());
+        }else {
+
+            userWalletCoin = walletMapper.selectUserWalletContractAddrInfo(userInfo.getId(), wallet.getId());
+        }
+
+        //Wallet userWalletCoin = walletMapper.selectUserWalletById(userInfo.getId(), wallet.getId());
+        if (userWalletCoin == null) {
+
+            return ApiResponseResult.build(2011, "error", "用户未拥有该币种", "");
+        }
+
         //当前用户转账锁钱包表
-        walletMapper.lockWalletTable();
+        walletMapper.lockWalletTable(userWalletCoin.getId());
 
         int trun = new BigDecimal(wallet.getValue()).compareTo(BigDecimal.ZERO);
         if (trun == 0 || trun == -1) {
+
             return ApiResponseResult.build(2010, "error", "请输入大于 0 的正数", "");
-        }
-        Wallet userWalletCoin = walletMapper.selectUserWalletByCoinId(userInfo.getId(), wallet.getCoinName());
-        if (userWalletCoin == null) {
-            return ApiResponseResult.build(2011, "error", "未查询到用户下的币种信息", "");
         }
 
         String uri = "";                //第三方API接口路径
@@ -627,7 +649,7 @@ public class WalletServiceImpl implements WalletService {
         String str = "";
         BigDecimal price = new BigDecimal("0");
 
-        str = HttpUtils.sendGet(uri, amountMap, (2));
+        str = HttpUtils.sendGet(uri, amountMap, 2);
 
         if(str == null || str.equals("")){
 
@@ -640,12 +662,13 @@ public class WalletServiceImpl implements WalletService {
         Integer compareZero = price.compareTo(BigDecimal.ZERO);
         if(compareZero == -1){
 
-            return ApiResponseResult.build(2011, "error", "出现异常", "");
+            return ApiResponseResult.build(2011, "error", "系统异常", "");
         }
 
         //拿出币种数量和转账数量比较
         int compare = price.compareTo(new BigDecimal(wallet.getValue()));
         if (compare == 0 || compare == -1) {
+
             return ApiResponseResult.build(2011, "error", "币种数量不足", "");
         }
 
@@ -682,7 +705,7 @@ public class WalletServiceImpl implements WalletService {
         }
         if(hash == null || hash.equals("")){
 
-            return ApiResponseResult.build(2011, "error", "出现异常", "");
+            return ApiResponseResult.build(2011, "error", "系统异常", "");
         }
 
         wallet.setHash(hash);                           //转账成功的hash值
@@ -703,13 +726,15 @@ public class WalletServiceImpl implements WalletService {
             return ApiResponseResult.build(2013, "error", "该用户不存在", "");
         }
 
-        Wallet walletByAddress = walletMapper.findWalletByUserIdAndAddress(userInfo.getId(), contractAddr);
-        if (walletByAddress != null) {
+        ContractRelation relation = contractRelationMapper.findWalletByUserIdAndAddress(userInfo.getId(), contractAddr);
+        if (relation != null) {
+
             return ApiResponseResult.build(2013, "error", "您已添加过该币种", "");
         }
 
         List<Wallet> walletList = walletMapper.findUserWalletInfo(userInfo.getId());
         if (null == walletList && walletList.size() == 0) {
+
             return ApiResponseResult.build(2013, "error", "该用户还未添加过钱包", "");
         }
 
@@ -726,21 +751,40 @@ public class WalletServiceImpl implements WalletService {
         map.put("contractAddr", contractAddr);
 
         String str = HttpUtils.sendGet(uri, map, 2);
-        if (str == null || str.equals("")) {
+        if (str == null || str.equals("") || str.equals("null")) {
 
-            return ApiResponseResult.build(2011, "error", "出现异常", "");
-        }
-        mapOne = (Map)JSONArray.parse(str);
-        if (mapOne.get("type").toString().equals("error") && mapOne.get("code").toString().equals("1")) {
-
-            return ApiResponseResult.build(2012, "error", "币种不存在", "");
-        }
-        if (mapOne.get("type").toString().equals("error") && !mapOne.get("code").toString().equals("1")) {
-
-            return ApiResponseResult.build(2012, "error", "系统异常", "");
+            return ApiResponseResult.build(2011, "error", "系统异常", "");
         }
 
-        Wallet wallet = new Wallet();
+        String coinName = ObjectUtils.getNum(str);
+
+        if (coinName.equals("-1")) {
+
+            return ApiResponseResult.build(Integer.valueOf(2012), "error", "币种不存在", "");
+        }
+        if (coinName.equals("-2")) {
+
+            return ApiResponseResult.build(Integer.valueOf(2012), "error", "系统异常", "");
+        }
+
+        ContractRelation contractRelation = new ContractRelation();
+
+        Coin coin = coinMapper.selectCoinByAddress(contractAddr);
+        if (null == coin) {
+
+            return ApiResponseResult.build(Integer.valueOf(2013), "error", "该币种不存在", "");
+        }
+        contractRelation.setCoinId(coin.getId());
+
+        contractRelation.setUserId(userInfo.getId());
+        contractRelation.setPrivateKey(ObjectUtils.getUUID());
+        contractRelation.setKeystore(ObjectUtils.getUUID());
+        contractRelation.setCoinImg("http://airdrop.atmall.org:8761/image/ic_bnl_coin_logo.png");
+        contractRelation.setPasswd(walletVo.getPasswd());
+        contractRelation.setAddress(walletVo.getAddress());
+        contractRelation.setContractAddr(contractAddr);
+
+        /*Wallet wallet = new Wallet();
         if (mapOne.get("type").toString().equals("ok")) {
 
             for (String string : mapOne.keySet()) {
@@ -758,14 +802,15 @@ public class WalletServiceImpl implements WalletService {
             wallet.setPasswd(walletVo.getPasswd());
             wallet.setAddress(walletVo.getAddress());
             wallet.setContractAddr(contractAddr);
-        }
+        }*/
 
         //新增合约币信息
-        Integer num = walletMapper.insertWalletInfo(wallet);
+        Integer num = contractRelationMapper.insertContractRelationInfo(contractRelation);
         if (num == 0) {
+
             return ApiResponseResult.build(2015, "error", "添加合约币信息失败", "");
         }
-        return ApiResponseResult.build(200, "success", "添加合约币信息成功", wallet);
+        return ApiResponseResult.build(200, "success", "添加合约币信息成功", contractRelation);
     }
 
     @Override
@@ -831,13 +876,13 @@ public class WalletServiceImpl implements WalletService {
             for (Wallet wallet1 : earnerWalletList) {
 
                 walletStatusVo.setCoinName(wallet.getCoinName());
-                walletStatusVo.setStatus(false);
+                //walletStatusVo.setStatus(false);
 
-                if (wallet.getCoinName().equals(wallet1.getCoinName())) {
+                //if (wallet.getCoinName().equals(wallet1.getCoinName())) {
 
-                    walletStatusVo.setStatus(true);
-                    break;
-                }
+                    //walletStatusVo.setStatus(true);
+                   // break;
+               // }
             }
             voList.add(walletStatusVo);
         }

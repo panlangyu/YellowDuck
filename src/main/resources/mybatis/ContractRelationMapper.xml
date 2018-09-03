@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.duck.yellowduck.domain.dao.ContractRelationMapper">
+
+    <!-- 封装合约币信息数据 -->
+    <resultMap id="BaseResultMapWallet" type="com.duck.yellowduck.domain.model.model.ContractRelation">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="coinId" jdbcType="INTEGER" property="coinId"/>
+        <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="contractAddr" jdbcType="VARCHAR" property="contractAddr"/>
+        <result column="privateKey" jdbcType="VARCHAR" property="privateKey"/>
+        <result column="passwd" jdbcType="VARCHAR" property="passwd"/>
+        <result column="keystore" jdbcType="VARCHAR" property="keystore"/>
+        <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="userId" jdbcType="INTEGER" property="userId"/>
+    </resultMap>
+
+
+    <!-- 新增合约币信息 -->
+    <insert id="insertContractRelationInfo" parameterType="com.duck.yellowduck.domain.model.model.ContractRelation">
+
+        INSERT INTO duck_contract_relation(
+
+        <trim suffix="" suffixOverrides=",">
+            <if test="userId != null and userId != 0">
+                userId,
+            </if>
+            <if test="coinId != null and coinId != 0">
+                coinId,
+            </if>
+            <if test="contractAddr != null and contractAddr.length() > 0">
+                contractAddr,
+            </if>
+            <if test="privateKey != null and privateKey.length() > 0">
+                privateKey,
+            </if>
+            <if test="passwd != null and passwd.length() > 0">
+                passwd,
+            </if>
+
+            create_time,
+            update_time,
+
+            <if test="keystore != null and keystore.length() > 0">
+                keystore,
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                remark,
+            </if>
+
+        </trim>
+
+        )
+        VALUES(
+
+        <trim suffix="" suffixOverrides=",">
+
+            <if test="userId != null and userId != 0">
+                #{userId},
+            </if>
+            <if test="coinId != null and coinId != 0">
+                #{coinId},
+            </if>
+            <if test="contractAddr != null and contractAddr.length() > 0">
+                #{contractAddr},
+            </if>
+            <if test="privateKey != null and privateKey.length() > 0">
+                #{privateKey},
+            </if>
+            <if test="passwd != null and passwd.length() > 0">
+                #{passwd},
+            </if>
+
+            NOW(),
+            NOW(),
+
+            <if test="keystore != null and keystore.length() > 0">
+                #{keystore},
+            </if>
+            <if test="remark != null and remark.length() > 0">
+                #{remark},
+            </if>
+
+        </trim>
+
+        )
+
+    </insert>
+
+
+    <!-- 查询合约币是否存在 -->
+    <select id="findWalletByUserIdAndAddress" resultMap="BaseResultMapWallet">
+
+        SELECT
+
+        <include refid="Base_Column_List"/>
+
+        FROM duck_wallet
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            <if test="contractAddr != null and contractAddr.length() > 0">
+                AND contractAddr = #{contractAddr}
+            </if>
+
+        </trim>
+
+    </select>
+
+
+
+
+
+    <!-- 查询参数 -->
+    <sql id="Base_Column_List">
+        id,
+        coinId,
+        coinName,
+        address,
+        contractAddr,
+        privateKey,
+        passwd,
+        keystore,
+        createTime,
+        userId
+    </sql>
+
+
+</mapper>

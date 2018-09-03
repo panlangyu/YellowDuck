@@ -26,7 +26,13 @@ public interface WalletMapper {
                                                 @Param("coinName") String coinName)throws Exception;
 
 
-    public List<Wallet> lockWalletTable() throws Exception;
+    /**
+     * 给当前操作的行加锁(共享锁)
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public List<Wallet> lockWalletTable(@Param("id")Integer id) throws Exception;
 
     public Wallet selectUserWalletCoinById(WalletUtilsVo walletUtilsVo)throws Exception;
 
@@ -39,9 +45,25 @@ public interface WalletMapper {
 
     public Integer modifyWalletToChangeInto(Wallet wallet)throws Exception;
 
+    /**
+     * 查询用户ETH单条信息
+     * @param userId
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public Wallet selectUserWalletETHAddress(@Param("userId") Integer userId,
+                                             @Param("id") Integer id)throws Exception;
 
-    public Wallet selectUserWalletByCoinId(@Param("userId") Integer userId,
-                                            @Param("coinName") String coinName)throws Exception;
+    /**
+     * 查询用户ETH下合约币的单条信息
+     * @param userId
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public Wallet selectUserWalletContractAddrInfo(@Param("userId") Integer userId,
+                                                   @Param("id") Integer id)throws Exception;
 
 
     public Map<String, Object> selectYesterdayProfit(@Param("userId") Integer userId,

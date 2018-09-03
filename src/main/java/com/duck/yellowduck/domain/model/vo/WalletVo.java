@@ -9,6 +9,8 @@ public class WalletVo {
 
     private Integer id;
 
+    private Integer coinId;     //币种编号
+
     private String address;
 
     private String contractAddr;
@@ -29,6 +31,14 @@ public class WalletVo {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getCoinId() {
+        return coinId;
+    }
+
+    public void setCoinId(Integer coinId) {
+        this.coinId = coinId;
     }
 
     public String getAddress() {
