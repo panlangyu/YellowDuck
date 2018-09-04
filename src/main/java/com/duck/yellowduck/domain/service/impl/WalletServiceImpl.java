@@ -2,6 +2,8 @@ package com.duck.yellowduck.domain.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.duck.yellowduck.domain.dao.*;
+import com.duck.yellowduck.domain.enums.WalletEnum;
+import com.duck.yellowduck.domain.exception.WalletException;
 import com.duck.yellowduck.domain.model.model.*;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 import com.duck.yellowduck.domain.model.vo.*;
@@ -415,13 +417,15 @@ public class WalletServiceImpl implements WalletService {
         UserVo userInfo = userMapper.findUserExist(user.getPhone());
         if (null == userInfo) {
 
-            return ApiResponseResult.build(2010, "error", "该用户不存在", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_USER_INFO);
+            //return ApiResponseResult.build(2010, "error", "该用户不存在", "");
         }
 
         String addressExist = walletMapper.findWalletAddressByUserId(userInfo.getId(), "ETH");
         if (addressExist != null && !addressExist.equals("")) {
 
-            return ApiResponseResult.build(2010, "error", "您已添加过该币种", "");
+            throw new WalletException(WalletEnum.WALLET_REPEAT_INFO);
+            //return ApiResponseResult.build(2010, "error", "已添加过该币种", "");
         }
 
         String uri = "";                //第三方API接口路径
@@ -441,32 +445,23 @@ public class WalletServiceImpl implements WalletService {
         String str = HttpUtils.sendPost(uri, json);
         if (str == null || str.equals("") || str.equals("null")) {
 
-            return ApiResponseResult.build(2010, "error", "系统异常", "");
+            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+            //return ApiResponseResult.build(2010, "error", "系统异常", "");
         }
 
         String address = ObjectUtils.getAddress(str);
 
         if(address == null || address.equals("")){
 
-            return ApiResponseResult.build(2010, "error", "系统异常", "");
+            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+            //return ApiResponseResult.build(2010, "error", "系统异常", "");
         }
-
-       /* mapOne = (Map)JSONArray.parse(str);
-
-        Map<String, Object> mapTwo = new HashMap();
-        for (String string : mapOne.keySet()) {
-            if (string.equals("body")) {
-
-                mapTwo = (Map)mapOne.get("body");
-
-                wallet.setAddress(mapTwo.get("address").toString());
-            }
-        }*/
 
         Coin coin = this.coinMapper.selectCoinByAddress("☺");
         if (null == coin) {
 
-            return ApiResponseResult.build(2013, "error", "该币种不存在", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_EXISTENT_ERROR);
+            //return ApiResponseResult.build(2013, "error", "该币种不存在", "");
         }
 
         wallet.setAddress(address);
@@ -480,7 +475,9 @@ public class WalletServiceImpl implements WalletService {
         //新增钱包信息
         Integer num = walletMapper.insertWalletInfo(wallet);
         if (num == 0) {
-            return ApiResponseResult.build(2010, "error", "开通钱包失败", "");
+
+            throw new WalletException(WalletEnum.WALLET_INSERT_FALL);
+            //return ApiResponseResult.build(2010, "error", "开通钱包失败", "");
         }
         return ApiResponseResult.build(200, "success", "开通钱包成功", str);
     }
@@ -491,7 +488,8 @@ public class WalletServiceImpl implements WalletService {
         UserVo userInfo = userMapper.findUserExist(phone);
         if (null == userInfo) {
 
-            return ApiResponseResult.build(2010, "error", "该用户不存在", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_USER_INFO);
+            //return ApiResponseResult.build(2010, "error", "该用户不存在", "");
         }
 
         PageHelper.startPage(currentPage, currentSize);
@@ -514,7 +512,8 @@ public class WalletServiceImpl implements WalletService {
 
         if (null == voList) {
 
-            return ApiResponseResult.build(2011, "error", "未查询到用户钱包币种信息", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_LIST_INFO);
+            //return ApiResponseResult.build(2011, "error", "未查询到用户钱包币种信息", "");
         }
 
         Map<String, String> map = new HashMap();
@@ -550,7 +549,6 @@ public class WalletServiceImpl implements WalletService {
 
                     walletVo.setWalletTotal(coin.getMarketPrice());            //市场价格
                 }
-                //walletVo.setWalletTotal(new BigDecimal("1"));
 
             }else {
 
@@ -560,7 +558,6 @@ public class WalletServiceImpl implements WalletService {
                 address = vo.getAddress();
 
                 coin = coinMapper.selectCoinByAddress("☺");             //特殊符号查询ETH
-                //walletVo.setWalletTotal(new BigDecimal("3000"));
                 if(null == coin){
 
                     walletVo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
@@ -575,7 +572,8 @@ public class WalletServiceImpl implements WalletService {
             str = HttpUtils.sendGet(uri, map, (2));
             if (str == null || str.equals("") || str.equals("null")) {
 
-                return ApiResponseResult.build(2011, "error", "系统异常", "");
+                throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+                //return ApiResponseResult.build(2011, "error", "系统异常", "");
             }
 
             price = ObjectUtils.getPrice(str);
@@ -584,7 +582,8 @@ public class WalletServiceImpl implements WalletService {
             Integer compareZero = price.compareTo(BigDecimal.ZERO);
             if(compareZero == -1){
 
-                return ApiResponseResult.build(2011, "error", "系统异常", "");
+                throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+                //return ApiResponseResult.build(2011, "error", "系统异常", "");
             }
 
             walletVo.setId(vo.getId());
@@ -616,7 +615,8 @@ public class WalletServiceImpl implements WalletService {
         UserVo userInfo = userMapper.findUserExist(wallet.getPhone());
         if (null == userInfo) {
 
-            return ApiResponseResult.build(2010, "error", "该用户不存在", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_USER_INFO);
+            //return ApiResponseResult.build(2010, "error", "该用户不存在", "");
         }
 
         Wallet userWalletCoin = null;
@@ -632,7 +632,8 @@ public class WalletServiceImpl implements WalletService {
         //Wallet userWalletCoin = walletMapper.selectUserWalletById(userInfo.getId(), wallet.getId());
         if (userWalletCoin == null) {
 
-            return ApiResponseResult.build(2011, "error", "用户未拥有该币种", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_USER_REPEAT);
+            //return ApiResponseResult.build(2011, "error", "用户未拥有该币种", "");
         }
 
         //当前用户转账锁钱包表
@@ -641,7 +642,8 @@ public class WalletServiceImpl implements WalletService {
         int trun = new BigDecimal(wallet.getValue()).compareTo(BigDecimal.ZERO);
         if (trun == 0 || trun == -1) {
 
-            return ApiResponseResult.build(2010, "error", "请输入大于 0 的正数", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_GT_ZERO);
+            //return ApiResponseResult.build(2010, "error", "请输入大于 0 的正数", "");
         }
 
         String uri = "";                //第三方API接口路径
@@ -664,9 +666,10 @@ public class WalletServiceImpl implements WalletService {
 
         str = HttpUtils.sendGet(uri, amountMap, 2);
 
-        if(str == null || str.equals("")){
+        if(str == null || str.equals("") || str.equals("null")){
 
-            return ApiResponseResult.build(2010, "error", "余额不足", "");
+            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+            //return ApiResponseResult.build(2010, "error", "余额不足", "");
         }
 
         price = ObjectUtils.getPrice(str);
@@ -675,14 +678,16 @@ public class WalletServiceImpl implements WalletService {
         Integer compareZero = price.compareTo(BigDecimal.ZERO);
         if(compareZero == -1){
 
-            return ApiResponseResult.build(2011, "error", "系统异常", "");
+            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+            //return ApiResponseResult.build(2011, "error", "系统异常", "");
         }
 
         //拿出币种数量和转账数量比较
         int compare = price.compareTo(new BigDecimal(wallet.getValue()));
         if (compare == 0 || compare == -1) {
 
-            return ApiResponseResult.build(2011, "error", "币种数量不足", "");
+            throw new WalletException(WalletEnum.WALLET_AMOUNT_INSUFFICIENT);
+            //return ApiResponseResult.build(2011, "error", "币种数量不足", "");
         }
 
         txMap.put("sign", userWalletCoin.getPasswd());
@@ -705,20 +710,23 @@ public class WalletServiceImpl implements WalletService {
         String json = JSONArray.toJSONString(txMap);
         str = HttpUtils.sendPost(uri, json);
 
-        if (str == null || str.equals("")) {
+        if (str == null || str.equals("") || str.equals("null")) {
 
-            return ApiResponseResult.build(2011, "error", "提币失败", "");
+            throw new WalletException(WalletEnum.WALLET_CURRENCY_FAILURE);
+            //return ApiResponseResult.build(2011, "error", "提币失败", "");
         }
 
         String hash = ObjectUtils.getHash(str);         //拿出成功的hash
 
         if(hash != null && hash.equals("-1")){
 
-            return ApiResponseResult.build(2011, "error", "旷工费不足", "");
+            throw new WalletException(WalletEnum.WALLET_ABSENTEEISM_REPEAT);
+            //return ApiResponseResult.build(2011, "error", "旷工费不足", "");
         }
         if(hash == null || hash.equals("")){
 
-            return ApiResponseResult.build(2011, "error", "系统异常", "");
+            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+            //return ApiResponseResult.build(2011, "error", "系统异常", "");
         }
 
         wallet.setHash(hash);                           //转账成功的hash值
@@ -726,7 +734,9 @@ public class WalletServiceImpl implements WalletService {
         //新增转账记录
         Integer num = insertWalletTurnTo(wallet, userWalletCoin);
         if (num == 0) {
-            return ApiResponseResult.build(2011, "error", "新增交易记录失败", "");
+
+            throw new WalletException(WalletEnum.WALLET_INSERT_COINNAME);
+            //return ApiResponseResult.build(2011, "error", "添加失败", "");
         }
         return ApiResponseResult.build(200, "success", "提币成功", num);
     }
@@ -736,19 +746,23 @@ public class WalletServiceImpl implements WalletService {
 
         UserVo userInfo = userMapper.findUserExist(phone);
         if (null == userInfo) {
-            return ApiResponseResult.build(2013, "error", "该用户不存在", "");
+
+            throw new WalletException(WalletEnum.WALLET_NOT_USER_INFO);
+            //return ApiResponseResult.build(2013, "error", "该用户不存在", "");
         }
 
         ContractRelation relation = contractRelationMapper.findWalletByUserIdAndAddress(userInfo.getId(), contractAddr);
         if (relation != null) {
 
-            return ApiResponseResult.build(2013, "error", "您已添加过该币种", "");
+            throw new WalletException(WalletEnum.WALLET_REPEAT_INFO);
+            //return ApiResponseResult.build(2013, "error", "您已添加过该币种", "");
         }
 
         List<Wallet> walletList = walletMapper.findUserWalletInfo(userInfo.getId());
         if (null == walletList && walletList.size() == 0) {
 
-            return ApiResponseResult.build(2013, "error", "该用户还未添加过钱包", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_LIST_INFO);
+            //return ApiResponseResult.build(2013, "error", "该用户还未添加过钱包", "");
         }
 
         Wallet walletVo = walletList.get(0);
@@ -766,18 +780,21 @@ public class WalletServiceImpl implements WalletService {
         String str = HttpUtils.sendGet(uri, map, 2);
         if (str == null || str.equals("") || str.equals("null")) {
 
-            return ApiResponseResult.build(2011, "error", "系统异常", "");
+            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+            //return ApiResponseResult.build(2011, "error", "系统异常", "");
         }
 
         String coinName = ObjectUtils.getNum(str);
 
         if (coinName.equals("-1")) {
 
-            return ApiResponseResult.build(Integer.valueOf(2012), "error", "币种不存在", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_EXISTENT_ERROR);
+            //return ApiResponseResult.build(Integer.valueOf(2012), "error", "币种不存在", "");
         }
         if (coinName.equals("-2")) {
 
-            return ApiResponseResult.build(Integer.valueOf(2012), "error", "系统异常", "");
+            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+            //return ApiResponseResult.build(Integer.valueOf(2012), "error", "系统异常", "");
         }
 
         ContractRelation contractRelation = new ContractRelation();
@@ -785,7 +802,8 @@ public class WalletServiceImpl implements WalletService {
         Coin coin = coinMapper.selectCoinByAddress(contractAddr);
         if (null == coin) {
 
-            return ApiResponseResult.build(Integer.valueOf(2013), "error", "该币种不存在", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_EXISTENT_ERROR);
+            //return ApiResponseResult.build(Integer.valueOf(2013), "error", "该币种不存在", "");
         }
         contractRelation.setCoinId(coin.getId());
 
@@ -821,13 +839,14 @@ public class WalletServiceImpl implements WalletService {
         Integer num = contractRelationMapper.insertContractRelationInfo(contractRelation);
         if (num == 0) {
 
-            return ApiResponseResult.build(2015, "error", "添加合约币信息失败", "");
+            throw new WalletException(WalletEnum.WALLET_INSERT_COINNAME);
+            //return ApiResponseResult.build(2015, "error", "添加合约币信息失败", "");
         }
-        return ApiResponseResult.build(200, "success", "添加合约币信息成功", contractRelation);
+        return ApiResponseResult.build(200, "success", "添加成功", contractRelation);
     }
 
     @Override
-    public ApiResponseResult queryAccountList() throws Exception {
+    public ApiResponseResult queryAccountList(){
 
         String uri = "";                //第三方API接口路径
         uri = url + "/accounts";
@@ -836,13 +855,14 @@ public class WalletServiceImpl implements WalletService {
         String str = HttpUtils.sendGet(uri, map, 2);
         if ((str == null) || (str.equals(""))) {
 
-            return ApiResponseResult.build(2011, "error", "未查询到账户数据", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_ACCOUNT_INFO);
         }
+
         return ApiResponseResult.build(200, "success", "查询所有钱包账户", str);
     }
 
     @Override
-    public ApiResponseResult blockNumber() {
+    public ApiResponseResult blockNumber(){
 
         String uri = "";                //第三方API接口路径
         uri = url + "/blockNumber";
@@ -852,9 +872,10 @@ public class WalletServiceImpl implements WalletService {
         String str = HttpUtils.sendGet(uri, map, (2));
         if (str == null || str.equals("")) {
 
-            return ApiResponseResult.build(2011, "error", "未查询到阻塞数信息", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_BLOCK_INFO);
         }
         return ApiResponseResult.build(200, "success", "查询阻塞数信息", JSONArray.parseObject(str));
+
     }
 
     @Override
@@ -863,22 +884,26 @@ public class WalletServiceImpl implements WalletService {
         UserVo user = userMapper.findUserExist(phone);
         if (null == user) {
 
-            return ApiResponseResult.build(2013, "error", "当前用户不存在", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_USER_INFO);
+            //return ApiResponseResult.build(2013, "error", "当前用户不存在", "");
         }
         UserVo earnerUser = userMapper.findUserExist(earnerPhone);
         if (null == earnerUser) {
 
-            return ApiResponseResult.build(2013, "error", "被转账用户不存在", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_BEI_USER_INFO);
+            //return ApiResponseResult.build(2013, "error", "被转账用户不存在", "");
         }
         List<Wallet> walletList = walletMapper.findUserWalletInfo(user.getId());
         if (walletList == null || walletList.size() == 0) {
 
-            return ApiResponseResult.build(2013, "error", "该用户没有钱包信息", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_USER_REPEAT);
+            //return ApiResponseResult.build(2013, "error", "该用户没有钱包信息", "");
         }
         List<Wallet> earnerWalletList = walletMapper.findUserWalletInfo(earnerUser.getId());
         if (earnerWalletList == null || earnerWalletList.size() == 0) {
 
-            return ApiResponseResult.build(2013, "error", "被转账用户没有钱包信息", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_BER_USER_REPEAT);
+            //return ApiResponseResult.build(2013, "error", "被转账用户没有钱包信息", "");
         }
 
         List<WalletStatusVo> voList = new ArrayList();
@@ -909,16 +934,40 @@ public class WalletServiceImpl implements WalletService {
         UserVo user = userMapper.findUserExist(phone);
         if (null == user) {
 
-            return ApiResponseResult.build(2013, "error", "当前用户不存在", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_USER_INFO);
+            //return ApiResponseResult.build(2013, "error", "当前用户不存在", "");
         }
 
         List<WalletStatusVo> voList = walletMapper.findWalletListInfo(user.getId());
         if (null == voList || voList.size() == 0) {
 
-            return ApiResponseResult.build(2013, "error", "该用户未拥有币种信息", "");
+            throw new WalletException(WalletEnum.WALLET_NOT_USER_REPEAT);
+            //return ApiResponseResult.build(2013, "error", "该用户未拥有币种信息", "");
         }
 
         return ApiResponseResult.build(200, "success", "用户币种列表", voList);
+    }
+
+    @Override
+    public ApiResponseResult findWalletAddressByUserId(String phone) throws Exception {
+
+        //查询当前用户是否存在
+        UserVo user = userMapper.findUserExist(phone);
+
+        if(null == user){
+
+            throw new WalletException(WalletEnum.WALLET_NOT_USER_INFO);
+            //return ApiResponseResult.build(2011,"error","该用户不存在","");
+        }
+
+        String address = walletMapper.findWalletAddressByUserId(user.getId(),"ETH");
+        if(address == null || address.equals("")){
+
+            throw new WalletException(WalletEnum.WALLET_NOT_INSERT_ETH_INFO);
+            //return ApiResponseResult.build(2011,"error","用户未拥有ETH钱包","");
+        }
+
+        return ApiResponseResult.build(200,"success","用户ETH钱包地址",address);
     }
 
 

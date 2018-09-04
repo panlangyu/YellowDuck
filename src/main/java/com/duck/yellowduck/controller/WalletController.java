@@ -33,7 +33,7 @@ public class WalletController {
     public ApiResponseResult queryUserWalletTotal(@RequestParam("userId") Integer userId) {
         ApiResponseResult apiResponse = new ApiResponseResult();
         try {
-            apiResponse = this.walletService.selectUserWalletTotal(userId);
+            apiResponse = walletService.selectUserWalletTotal(userId);
         }
         catch (Exception e){
             e.printStackTrace();
@@ -58,7 +58,7 @@ public class WalletController {
         ApiResponseResult apiResponse = new ApiResponseResult();
         try {
 
-            apiResponse = this.walletService.selectUserWalletCoinList(currentPage, currentSize, userId, coinName);
+            apiResponse = walletService.selectUserWalletCoinList(currentPage, currentSize, userId, coinName);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -75,7 +75,7 @@ public class WalletController {
         ApiResponseResult apiResponse = new ApiResponseResult();
         try {
 
-            apiResponse = this.walletService.modifyWalletTurnOut(wallet);
+            apiResponse = walletService.modifyWalletTurnOut(wallet);
 
         }
         catch (Exception e) {
@@ -100,7 +100,7 @@ public class WalletController {
         ApiResponseResult apiResponse = new ApiResponseResult();
         try {
 
-            apiResponse = this.walletService.selectUserWalletCoinStraightOrInterest(currentPage, currentSize, userId);
+            apiResponse = walletService.selectUserWalletCoinStraightOrInterest(currentPage, currentSize, userId);
 
         }
         catch (Exception e) {
@@ -124,7 +124,7 @@ public class WalletController {
         ApiResponseResult apiResponse = new ApiResponseResult();
         try {
 
-            apiResponse = this.walletService.selectYesterdayProfit(userId, coinId);
+            apiResponse = walletService.selectYesterdayProfit(userId, coinId);
 
         }
         catch (Exception e) {
@@ -144,7 +144,7 @@ public class WalletController {
         ApiResponseResult apiResponse = new ApiResponseResult();
 
         try {
-            apiResponse = this.walletService.modifyWalletDepositToChangeInto(wallet);
+            apiResponse = walletService.modifyWalletDepositToChangeInto(wallet);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -162,7 +162,7 @@ public class WalletController {
 
         ApiResponseResult apiResponse = new ApiResponseResult();
         try {
-            apiResponse = this.walletService.modifyWalletDepositTurnOut(wallet);
+            apiResponse = walletService.modifyWalletDepositTurnOut(wallet);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -181,7 +181,7 @@ public class WalletController {
         ApiResponseResult apiResponse = new ApiResponseResult();
         try {
 
-            apiResponse = this.walletService.modifyChargeMoneyInfo(wallet);
+            apiResponse = walletService.modifyChargeMoneyInfo(wallet);
 
         }
         catch (Exception e) {
@@ -207,7 +207,7 @@ public class WalletController {
         ApiResponseResult apiResponse = new ApiResponseResult();
         try {
 
-            apiResponse = this.walletService.createWalletInfo(user);
+            apiResponse = walletService.createWalletInfo(user);
 
         }
         catch (Exception e) {
@@ -236,7 +236,7 @@ public class WalletController {
         ApiResponseResult apiResponseResult = new ApiResponseResult();
         try {
 
-            apiResponseResult = this.walletService.findUserWalletList(currentPage,currentSize,phone,id,coinName);
+            apiResponseResult = walletService.findUserWalletList(currentPage,currentSize,phone,id,coinName);
 
         }
         catch (Exception e) {
@@ -256,7 +256,7 @@ public class WalletController {
         ApiResponseResult apiResponseResult = new ApiResponseResult();
         try {
 
-            apiResponseResult = this.walletService.modifyWithdrawMoney(wallet);
+            apiResponseResult = walletService.modifyWithdrawMoney(wallet);
         }
         catch (Exception e)
         {
@@ -279,7 +279,7 @@ public class WalletController {
         ApiResponseResult apiResponseResult = new ApiResponseResult();
         try
         {
-            apiResponseResult = this.walletService.queryContractAddr(phone, contractAddr);
+            apiResponseResult = walletService.queryContractAddr(phone, contractAddr);
         }
         catch (Exception e)
         {
@@ -293,26 +293,15 @@ public class WalletController {
     @ApiOperation(value="查询所有账户", notes="所有账户")
     @RequestMapping(value="/queryAccountInfo", method= RequestMethod.GET)
     public ApiResponseResult queryAccountInfo() {
-        ApiResponseResult apiResponseResult = new ApiResponseResult();
-        try {
 
-            apiResponseResult = this.walletService.queryAccountList();
-
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
-
-            return ApiResponseResult.build(2016, "error", "出现异常", "");
-        }
-        return apiResponseResult;
+        return walletService.queryAccountList();
     }
 
     @ApiOperation(value="查询阻塞数信息", notes="阻塞数")
     @RequestMapping(value="/blockNumber", method=RequestMethod.GET)
-    public ApiResponseResult blockNumber() {
+    public ApiResponseResult blockNumber(){
 
-        return this.walletService.blockNumber();
+        return walletService.blockNumber();
     }
 
     @ApiOperation(value="查询两个用户之间的币种比较", notes="币种比较")
@@ -327,7 +316,7 @@ public class WalletController {
         ApiResponseResult apiResponseResult = new ApiResponseResult();
         try {
 
-            apiResponseResult = this.walletService.queryUserWalletInfo(phone, earnerPhone);
+            apiResponseResult = walletService.queryUserWalletInfo(phone, earnerPhone);
 
         }
         catch (Exception e) {
@@ -349,7 +338,7 @@ public class WalletController {
         ApiResponseResult apiResponseResult = new ApiResponseResult();
         try {
 
-            apiResponseResult = this.walletService.findWalletListInfo(phone);
+            apiResponseResult = walletService.findWalletListInfo(phone);
 
         }catch (Exception e) {
             e.printStackTrace();
@@ -361,7 +350,24 @@ public class WalletController {
     }
 
 
+    @ApiOperation(value="查询用户ETH钱包地址", notes="ETH钱包地址")
+    @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true)
+    @RequestMapping(value="/queryWalletAddressByUserId", method=RequestMethod.GET)
+    public ApiResponseResult queryWalletAddressByUserId(@RequestParam("phone")String phone){
 
+        ApiResponseResult apiResponseResult = new ApiResponseResult();
+        try {
+
+            apiResponseResult = walletService.findWalletAddressByUserId(phone);
+
+        }catch (Exception e) {
+            e.printStackTrace();
+
+            return ApiResponseResult.build(2016, "error", "出现异常", "");
+        }
+
+        return apiResponseResult;
+    }
 
 
 

@@ -48,8 +48,7 @@ public interface WalletService {
     public ApiResponseResult queryContractAddr(String phone, String contractAddr)
             throws Exception;
 
-    public ApiResponseResult queryAccountList()
-            throws Exception;
+    public ApiResponseResult queryAccountList();
 
     public ApiResponseResult blockNumber();
 
@@ -64,6 +63,12 @@ public interface WalletService {
      */
     public ApiResponseResult findWalletListInfo(String phone)throws Exception;
 
-
+    /**
+     * 查询用户ETH地址
+     * @param phone
+     * @return
+     * @throws Exception
+     */
+    public ApiResponseResult findWalletAddressByUserId(String phone)throws Exception;
 
 }
