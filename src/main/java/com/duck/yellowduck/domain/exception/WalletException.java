@@ -2,9 +2,8 @@ package com.duck.yellowduck.domain.exception;
 
 import com.duck.yellowduck.domain.enums.WalletEnum;
 
-public class WalletException
-        extends RuntimeException
-{
+public class WalletException extends RuntimeException {
+
     private WalletEnum walletEnum;
 
     public WalletException(WalletEnum walletEnum)

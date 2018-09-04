@@ -3,6 +3,7 @@ package com.duck.yellowduck.controller;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 import com.duck.yellowduck.domain.model.vo.WalletVXUtilsVo;
 import com.duck.yellowduck.domain.service.TransferService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("transfer")
+@Api(value="聊天转账", tags={"用户聊天转账"})
 public class TransferController {
 
     @Autowired

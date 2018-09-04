@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/wallet")
-@Api(value="钱包业务接口", tags={"wallet service"})
+@Api(value="钱包业务接口", tags={"钱包功能"})
 public class WalletController {
 
     Logger logger = Logger.getLogger(WalletController.class.getSimpleName());
@@ -26,7 +26,7 @@ public class WalletController {
     private WalletService walletService;                //钱包Service
 
 
-
+    /*
     @ApiOperation(value="查询用户个人钱包总额", notes="根据userId查询个人钱包币种数量总额")
     @ApiImplicitParam(name="userId", value="用户编号userId", dataType="Integer", paramType="query", required=true)
     @RequestMapping(value="/queryUserWalletTotal", method=RequestMethod.GET)
@@ -191,7 +191,7 @@ public class WalletController {
         }
         return apiResponse;
     }
-
+*/
 
 
 
@@ -223,18 +223,20 @@ public class WalletController {
             @ApiImplicitParam(name="currentPage", value="当前页码", dataType="Integer", paramType="query", required=true),
             @ApiImplicitParam(name="currentSize", value="页面容量", dataType="Integer", paramType="query", required=true),
             @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true),
+            @ApiImplicitParam(name="id", value="钱包编号", dataType="Integer", paramType="query", required=false),
             @ApiImplicitParam(name="coinName", value="币种名称", dataType="String", paramType="query", required=false)
     })
     @RequestMapping(value="/queryUserWalletList", method=RequestMethod.GET)
     public ApiResponseResult queryUserWalletList(@RequestParam("currentPage") Integer currentPage,
                                                  @RequestParam("currentSize") Integer currentSize,
                                                  @RequestParam("phone") String phone,
+                                                 @RequestParam(value="id",required = false) Integer id,
                                                  @RequestParam(value="coinName", required=false) String coinName) {
 
         ApiResponseResult apiResponseResult = new ApiResponseResult();
         try {
 
-            apiResponseResult = this.walletService.findUserWalletList(currentPage,currentSize,phone,coinName);
+            apiResponseResult = this.walletService.findUserWalletList(currentPage,currentSize,phone,id,coinName);
 
         }
         catch (Exception e) {

@@ -65,7 +65,11 @@
 
         </trim>-->
 
-        SELECT w.id,w.coinId,c.coinName,c.coinImg,w.address,w.contractAddr,userId FROM duck_wallet AS w
+        SELECT
+
+        <include refid="Base_Column_ETHWallet"/>
+
+        FROM duck_wallet AS w
         INNER JOIN duck_coin AS c ON w.coinId = c.id
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
@@ -81,7 +85,11 @@
 
         UNION ALL
 
-        SELECT r.id,r.coinId,c.coinName,c.coinImg,r.address,r.contractAddr,userId FROM duck_contract_relation AS r
+        SELECT
+
+        <include refid="Base_Column_ContractWallet"/>
+
+        FROM duck_contract_relation AS r
         INNER JOIN duck_coin AS c ON r.coinId = c.id
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
@@ -95,9 +103,56 @@
 
         </trim>
 
+    </select>
 
+    <!-- 查询币种详情单条ETH信息 -->
+    <select id="selectETHCoinInfoById" resultMap="BaseResultMap">
+
+        SELECT
+
+        <include refid="Base_Column_ETHWallet"/>
+
+        FROM duck_wallet AS w
+        INNER JOIN duck_coin AS c ON w.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            <if test="id != null and id != 0">
+                AND w.id = #{id}
+            </if>
+
+        </trim>
 
     </select>
+
+    <!-- 查询币种详情单条合约币信息 -->
+    <select id="selectContractCoinInfoById" resultMap="BaseResultMap">
+
+        SELECT
+
+        <include refid="Base_Column_ContractWallet"/>
+
+        FROM duck_contract_relation AS r
+        INNER JOIN duck_coin AS c ON r.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            <if test="id != null and id != 0">
+                AND r.id = #{id}
+            </if>
+
+        </trim>
+
+    </select>
+
 
 
     <!-- 锁住钱包表,行级锁 -->
@@ -114,7 +169,7 @@
 
         </trim>
 
-       LOCK IN SHARE MODE;
+        LOCK IN SHARE MODE;
 
     </select>
 
@@ -641,6 +696,31 @@
         create_time,
         userId
     </sql>
+
+    <!-- 查询用户列表ETH信息 -->
+    <sql id="Base_Column_ETHWallet">
+        w.id,
+        w.coinId,
+        c.coinName,
+        c.coinImg,
+        w.address,
+        w.contractAddr,
+        userId
+    </sql>
+
+    <!-- 查询用户列表合约币信息 -->
+    <sql id="Base_Column_ContractWallet">
+        r.id,
+        r.coinId,
+        c.coinName,
+        c.coinImg,
+        r.address,
+        r.contractAddr,
+        userId
+    </sql>
+
+
+
 
     <!-- 查询ETH参数 -->
     <sql id="Base_Column_ListWallet">

@@ -21,9 +21,36 @@ public interface WalletMapper {
 
 
     public List<WalletVo> selectUserWalletInfo(@Param("currentPage") Integer currentPage,
+                                               @Param("currentSize") Integer currentSize,
+                                               @Param("userId") Integer userId,
+                                               @Param("coinName") String coinName)throws Exception;
+
+    /**
+     * 查询币种详情ETH币种信息
+     * @param currentPage
+     * @param currentSize
+     * @param userId
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public List<WalletVo> selectETHCoinInfoById(@Param("currentPage") Integer currentPage,
                                                 @Param("currentSize") Integer currentSize,
                                                 @Param("userId") Integer userId,
-                                                @Param("coinName") String coinName)throws Exception;
+                                                @Param("id") Integer id)throws Exception;
+    /**
+     * 查询币种详情合约币信息
+     * @param currentPage
+     * @param currentSize
+     * @param userId
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    public List<WalletVo> selectContractCoinInfoById(@Param("currentPage") Integer currentPage,
+                                                     @Param("currentSize") Integer currentSize,
+                                                     @Param("userId") Integer userId,
+                                                     @Param("id") Integer id)throws Exception;
 
 
     /**

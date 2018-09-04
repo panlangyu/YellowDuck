@@ -12,11 +12,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @Configuration
 @EnableSwagger2
-public class Swagger2
-{
+public class Swagger2 {
+
     @Bean
-    public Docket createRestApi()
-    {
+    public Docket createRestApi() {
+
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(apiInfo()).select()
                 .apis(RequestHandlerSelectors
@@ -24,12 +24,12 @@ public class Swagger2
                 .paths(PathSelectors.any()).build();
     }
 
-    private ApiInfo apiInfo()
-    {
-        return new ApiInfoBuilder().title("Spring Boot中使用Swagger2构建RESTful APIs")
-                .description("更多Spring Boot相关文章请关注http://blog.didispace.com/")
-                .termsOfServiceUrl("http://blog.didispace.com/")
-                .contact("程序猿PLY")
+    private ApiInfo apiInfo() {
+
+        return new ApiInfoBuilder().title("HUC钱包测试文档")
+                .description("")
+                .termsOfServiceUrl("")
+                .contact("SpringBoot swagger2")
                 .version("1.0").build();
     }
 

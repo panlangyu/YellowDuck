@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/transaction")
-@Api(value="钱包业务接口", tags={"transaction service"})
+@Api(value="钱包交易信息", tags={"交易信息"})
 public class TranscationController
 {
     @Autowired

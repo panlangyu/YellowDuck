@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
-@Api(value="用户业务接口", tags={"user service"})
-public class UserController
-{
+@Api(value="用户业务接口", tags={"用户功能"})
+public class UserController {
+
     @Autowired
     private UserService userService;                //用户Service
 
@@ -38,7 +38,7 @@ public class UserController
     }
 
     @ApiOperation(value="查询当前用户信息", notes="按 手机号(phone)查询当前用户信息")
-    @ApiImplicitParam(name="phone", value="������", dataType="String", paramType="query", required=true)
+    @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true)
     @RequestMapping(value={"/queryUserByPhone"}, method=RequestMethod.GET)
     public ApiResponseResult queryUserByPhone(@RequestParam("phone") String phone){
 

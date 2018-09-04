@@ -184,7 +184,7 @@ public class WalletServiceImpl implements WalletService {
             walletCoinVo.setAmount(walletVo.getAmount());
             if (map != null) {
                 if ((map.get("straightPush") != null) && (map.get("interest") == null)) {
-                    
+
                 }
             }
             walletCoinVoList.add(walletCoinVo);
@@ -229,7 +229,7 @@ public class WalletServiceImpl implements WalletService {
         if (null == voList) {
             return ApiResponseResult.build(2010, "error", "未查询到数据字典内容信息", "");
         }
-        
+
         DictionaryVo dictionaryVo = (DictionaryVo)voList.get(0);
         BigDecimal deductionPrice = userWalletCoin.getAvailableAmount().multiply(new BigDecimal(dictionaryVo.getValue()));
 
@@ -411,13 +411,13 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public ApiResponseResult createWalletInfo(User user) throws Exception {
-        
+
         UserVo userInfo = userMapper.findUserExist(user.getPhone());
         if (null == userInfo) {
 
             return ApiResponseResult.build(2010, "error", "该用户不存在", "");
         }
-        
+
         String addressExist = walletMapper.findWalletAddressByUserId(userInfo.getId(), "ETH");
         if (addressExist != null && !addressExist.equals("")) {
 
@@ -486,7 +486,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public ApiResponseResult findUserWalletList(Integer currentPage,Integer currentSize,String phone, String coinName) throws Exception {
+    public ApiResponseResult findUserWalletList(Integer currentPage,Integer currentSize,String phone,Integer id,String coinName) throws Exception {
 
         UserVo userInfo = userMapper.findUserExist(phone);
         if (null == userInfo) {
@@ -498,7 +498,20 @@ public class WalletServiceImpl implements WalletService {
 
         List<WalletListInfo> walletVoList = new ArrayList();
 
-        List<WalletVo> voList = walletMapper.selectUserWalletInfo(currentPage,currentSize,userInfo.getId(), coinName);
+        List<WalletVo> voList = null;                       //用户币种列表,单条信息
+
+        // 查询用户列表数据
+        if(coinName == null || coinName.equals("")){
+
+            voList = walletMapper.selectUserWalletInfo(currentPage,currentSize,userInfo.getId(), coinName);
+        }else if(coinName != null && !coinName.equals("") && coinName.equals("ETH") ){
+
+            voList = walletMapper.selectETHCoinInfoById(currentPage,currentSize,userInfo.getId(), id);
+        }else{
+
+            voList = walletMapper.selectContractCoinInfoById(currentPage,currentSize,userInfo.getId(), id);
+        }
+
         if (null == voList) {
 
             return ApiResponseResult.build(2011, "error", "未查询到用户钱包币种信息", "");
@@ -880,9 +893,9 @@ public class WalletServiceImpl implements WalletService {
 
                 //if (wallet.getCoinName().equals(wallet1.getCoinName())) {
 
-                    //walletStatusVo.setStatus(true);
-                   // break;
-               // }
+                //walletStatusVo.setStatus(true);
+                // break;
+                // }
             }
             voList.add(walletStatusVo);
         }

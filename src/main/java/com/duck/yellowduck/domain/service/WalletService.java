@@ -39,7 +39,7 @@ public interface WalletService {
     public ApiResponseResult createWalletInfo(User user)
             throws Exception;
 
-    public ApiResponseResult findUserWalletList(Integer currentPage,Integer currentSize,String phone, String coinName)
+    public ApiResponseResult findUserWalletList(Integer currentPage,Integer currentSize,String phone,Integer id, String coinName)
             throws Exception;
 
     public ApiResponseResult modifyWithdrawMoney(WalletUtilsVo walletUtilsVo)
