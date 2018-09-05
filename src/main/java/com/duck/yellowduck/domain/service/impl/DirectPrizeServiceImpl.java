@@ -1,6 +1,5 @@
 package com.duck.yellowduck.domain.service.impl;
 
-import com.duck.yellowduck.domain.dao.DictionaryMapper;
 import com.duck.yellowduck.domain.dao.DirectPrizeMapper;
 import com.duck.yellowduck.domain.dao.InvestmentMapper;
 import com.duck.yellowduck.domain.dao.TranscationMapper;
@@ -16,7 +15,6 @@ import com.duck.yellowduck.domain.model.vo.WalletVo;
 import com.duck.yellowduck.domain.service.DirectPrizeService;
 import com.duck.yellowduck.publics.ObjectUtils;
 import com.duck.yellowduck.publics.RewardConfigureUtils;
-import java.io.PrintStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -46,17 +44,12 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
     private WalletMapper walletMapper;
 
     @Autowired
-    private DictionaryMapper dictionaryMapper;
-
-    @Autowired
     private TranscationMapper transcationMapper;
 
     @Autowired
     private InvestmentMapper investmentMapper;
 
-    public void timedTask()
-            throws Exception
-    {
+    public void timedTask() throws Exception {
         this.dayLimit = RewardConfigureUtils.getInstance().getDayLimit();
 
         int compare = this.dayLimit.compareTo(BigDecimal.ZERO);
@@ -76,10 +69,7 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
 
         BigDecimal staticGreaterNumber = RewardConfigureUtils.getInstance().getStaticGreaterNumber();
         BigDecimal staticGreaterRation = RewardConfigureUtils.getInstance().getStaticGreaterRation();
-        BigDecimal staticLessNumber = RewardConfigureUtils.getInstance().getStaticLessNumber();
         BigDecimal staticLessRation = RewardConfigureUtils.getInstance().getStaticLessRation();
-
-        this.walletMapper.lockWalletTable();
 
         List<Wallet> walletList = this.walletMapper.selectUserWalletInterest();
         if (null == walletList) {
@@ -155,12 +145,9 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
     }
 
     @Transactional
-    public ApiResponseResult directPrize()
-            throws Exception
-    {
-        BigDecimal recommendUnLockRation = RewardConfigureUtils.getInstance().getRecommendUnLockRation();
+    public ApiResponseResult directPrize() throws Exception {
 
-        this.walletMapper.lockWalletTable();
+        BigDecimal recommendUnLockRation = RewardConfigureUtils.getInstance().getRecommendUnLockRation();
 
         List<DirectPrizeVo> voList = this.directPrizeMapper.selectDirectPrizeList();
         if (null == voList) {
@@ -204,7 +191,7 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
                 if (null == userWallet) {
                     continue;
                 }
-                Wallet directWallet = this.walletMapper.selectUserWalletByCoinId(directPrizeVo.getCoverRefereeId(), "");
+                Wallet directWallet = this.walletMapper.selectUserWalletETHAddress(directPrizeVo.getCoverRefereeId(), 0);
                 if (null == directWallet) {
                     continue;
                 }
@@ -222,7 +209,7 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
                 directWallet.setAmount(directPrizeVo.getAmountAvailable());
                 num = insertWalletTurnTo(userWallet, directWallet, wallet.getAmount());
 
-                num = insertWalletToChargeTo(userWallet, directWallet, directPrize.getAmount());
+                //num = insertWalletToChargeTo(userWallet, directWallet, directPrize.getAmount());
             }
             catch (Exception e)
             {
@@ -238,47 +225,13 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
     }
 
     @Transactional
-    public ApiResponseResult dynamicAward()
-            throws Exception
-    {
-        this.walletMapper.lockWalletTable();
-
-        BigDecimal dynamicPrincipal = RewardConfigureUtils.getInstance().getDynamicPrincipal();
-        BigDecimal dynamicRation = RewardConfigureUtils.getInstance().getDynamicRation();
-        Integer outRecommendNumbers = RewardConfigureUtils.getInstance().getOutRecommendNumbers();
-        BigDecimal outPrincipalLimint = RewardConfigureUtils.getInstance().getOutPrincipalLimint();
-        BigDecimal outRecommendMultiple = RewardConfigureUtils.getInstance().getOutRecommendMultiple();
-        BigDecimal outMultiple = RewardConfigureUtils.getInstance().getOutMultiple();
-        Integer factorialNumber = RewardConfigureUtils.getInstance().getFactorialNumber();
-
-        List<User> userListInfo = new ArrayList();
-
-        List<User> relationshipList = new ArrayList();
-
-        List<WalletVo> voList = new ArrayList();
-
-        List<WalletVo> newWalletList = new ArrayList();
-
-        List<WalletVo> walletVoList = new ArrayList();
-
-        Wallet wallet = null;
-
-        BigDecimal deductionPrice = dynamicRation.divide(new BigDecimal("100"));
-
-        Integer num = null;
-
-        BigDecimal sum = null;
-
-        Boolean flag = Boolean.valueOf(false);
-
-        Integer count = Integer.valueOf(0);
+    public ApiResponseResult dynamicAward() throws Exception {
 
         return null;
     }
 
-    public Integer insertWalletTurnTo(Wallet userWallet, Wallet directWallet, BigDecimal deductionPrice)
-            throws Exception
-    {
+    public Integer insertWalletTurnTo(Wallet userWallet, Wallet directWallet, BigDecimal deductionPrice) throws Exception {
+
         Transcation transcation = new Transcation();
         transcation.setUserId(directWallet.getUserId());
 
@@ -296,9 +249,8 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
         return num;
     }
 
-    public Integer insertWalletToChargeTo(Wallet userWallet, Wallet directWallet, BigDecimal deductionPrice)
-            throws Exception
-    {
+    public Integer insertWalletToChargeTo(Wallet userWallet, Wallet directWallet) throws Exception {
+
         Transcation transcation = new Transcation();
         transcation.setUserId(userWallet.getUserId());
 
@@ -315,9 +267,8 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
         return num;
     }
 
-    public Integer insertWalletInterestTurnTo(Wallet userWallet, BigDecimal deductionPrice)
-            throws Exception
-    {
+    public Integer insertWalletInterestTurnTo(Wallet userWallet, BigDecimal deductionPrice) throws Exception {
+
         Transcation transcation = new Transcation();
         transcation.setUserId(userWallet.getUserId());
 
@@ -335,9 +286,8 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
         return num;
     }
 
-    public Integer insertWalletInterestToChargeTo(Wallet userWallet, BigDecimal deductionPrice)
-            throws Exception
-    {
+    public Integer insertWalletInterestToChargeTo(Wallet userWallet, BigDecimal deductionPrice) throws Exception {
+
         Transcation transcation = new Transcation();
         transcation.setUserId(userWallet.getUserId());
 
@@ -355,12 +305,4 @@ public class DirectPrizeServiceImpl implements DirectPrizeService {
         return num;
     }
 
-    public static void main(String[] args)
-    {
-        for (int i = 1; i <= 100; i++) {
-            if (i % 5 == 0) {
-                System.out.println(i);
-            }
-        }
-    }
 }

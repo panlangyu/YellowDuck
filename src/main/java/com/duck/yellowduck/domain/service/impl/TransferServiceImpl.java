@@ -11,7 +11,6 @@ import com.duck.yellowduck.domain.model.model.Wallet;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 import com.duck.yellowduck.domain.model.vo.TransferVo;
 import com.duck.yellowduck.domain.model.vo.UserVo;
-import com.duck.yellowduck.domain.model.vo.WalletUtilsVo;
 import com.duck.yellowduck.domain.model.vo.WalletVXUtilsVo;
 import com.duck.yellowduck.domain.service.TransferService;
 import com.duck.yellowduck.domain.service.WalletService;
@@ -21,12 +20,10 @@ import com.duck.yellowduck.publics.ObjectUtils;
 import com.duck.yellowduck.publics.PageBean;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import io.swagger.annotations.Scope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +55,7 @@ public class TransferServiceImpl implements TransferService {
 
     @Transactional
     @Override
-    public ApiResponseResult chatAndTransfer(WalletVXUtilsVo wallet) throws Exception {
+    public ApiResponseResult chatAndTransfer(WalletVXUtilsVo wallet) {
 
         ApiResponseResult apiResponse = new ApiResponseResult();
 
@@ -66,14 +63,24 @@ public class TransferServiceImpl implements TransferService {
         UserVo user = userMapper.findUserExist(wallet.getPhone());
         if (null == user) {
 
-            return ApiResponseResult.build(2013, "error", "当前用户不存在", "");
+            throw new TransferException(TransferEnum.TRANSFER_NOT_USER_INFO);
         }
 
         //查询当前用户是否有钱包信息
-        Wallet userWallet = walletMapper.selectUserWalletByCoinId(user.getId(), wallet.getCoinName());
+        Wallet userWallet = null;
+
+        if(wallet.getCoinName() != null && wallet.getCoinName().equals("ETH")){
+
+            userWallet = walletMapper.selectUserWalletETHAddress(user.getId(), wallet.getId());
+        }else {
+
+            userWallet = walletMapper.selectUserWalletContractAddrInfo(user.getId(), wallet.getId());
+        }
+
+        //Wallet userWallet = walletMapper.selectUserWalletETHAddress(user.getId(), wallet.getId());
         if (null == userWallet) {
 
-            return ApiResponseResult.build(2011, "error", "用户未拥有该币种", "");
+            throw new TransferException(TransferEnum.TRANSFER_NOT_TRANSFER_REPEAT);
         }
 
         //验证密码输入是否正确
@@ -81,7 +88,7 @@ public class TransferServiceImpl implements TransferService {
 
             if( !userWallet.getPasswd().equals(wallet.getPasswd())){
 
-                return ApiResponseResult.build(2011, "error", "密码输入不正确", "");
+                throw new TransferException(TransferEnum.TRANSFER_PASSWD_FAIL);
             }
         }
 
@@ -89,17 +96,25 @@ public class TransferServiceImpl implements TransferService {
         UserVo earnerUser = userMapper.findUserExist(wallet.getEarnerPhone());
         if (null == earnerUser) {
 
-            return ApiResponseResult.build(2013, "error", "被转账用户不存在", "");
+            throw new TransferException(TransferEnum.TRANSFER_NOT_BEI_TRANSFER_INFO);
         }
 
         String address = "";            //被转账地址
         //查询被当前用户是否有钱包信息
-        Wallet earnerWallet = walletMapper.selectUserWalletByCoinId(earnerUser.getId(), wallet.getCoinName());
+        Wallet earnerWallet = null;
+        if(wallet.getCoinName() != null && wallet.getCoinName().equals("ETH")){
+
+            earnerWallet = walletMapper.selectUserWalletETHAddress(user.getId(), wallet.getId());
+        }else {
+
+            earnerWallet = walletMapper.selectUserWalletContractAddrInfo(user.getId(), wallet.getId());
+        }
+
+        //Wallet userWallet = walletMapper.selectUserWalletETHAddress(user.getId(), wallet.getId());
         if (null == earnerWallet) {
 
             //添加合约币信息
             apiResponse = walletService.queryContractAddr(wallet.getEarnerPhone(),userWallet.getContractAddr());
-
         }
 
         //判断用户是否拥有该币种
@@ -112,13 +127,13 @@ public class TransferServiceImpl implements TransferService {
         }
 
         //锁钱包表
-        walletMapper.lockWalletTable();
+        walletMapper.lockWalletTable(userWallet.getId());
 
         //判断金额是否 大于 0
         int trun = new BigDecimal(wallet.getValue()).compareTo(BigDecimal.ZERO);
-        if ((trun == 0) || (trun == -1)) {
+        if (trun == 0 || trun == -1) {
 
-            return ApiResponseResult.build(2010, "error", "请输入大于 0 的正数", "");
+            throw new TransferException(TransferEnum.TRANSFER_NOT_GT_ZERO);
         }
 
         String uri = "";            //接收第三方URL
@@ -144,9 +159,9 @@ public class TransferServiceImpl implements TransferService {
 
         str = HttpUtils.sendGet(uri, amountMap, 2);            //查询用户币种数量
 
-        if(str == null || str.equals("")){
+        if(str == null || str.equals("") || str.equals("null")){
 
-            return ApiResponseResult.build(2010, "error", "余额不足", "");
+            throw new TransferException(TransferEnum.TRANSFER_SYSTEM_ERR);
         }
 
         price = ObjectUtils.getPrice(str);                          //拿出币种数量
@@ -155,14 +170,14 @@ public class TransferServiceImpl implements TransferService {
         Integer compareZero = price.compareTo(BigDecimal.ZERO);
         if(compareZero == -1){
 
-            return ApiResponseResult.build(2011, "error", "出现异常", "");
+            throw new TransferException(TransferEnum.TRANSFER_SYSTEM_ERR);
         }
 
         //拿出金额做比较
         int compare = price.compareTo(new BigDecimal(wallet.getValue()));
         if (compare == 0 || compare == -1) {
 
-            return ApiResponseResult.build(2011, "error", "币种数量不足", "");
+            throw new TransferException(TransferEnum.TRANSFER_AMOUNT_INSUFFICIENT);
         }
 
         txMap.put("sign", userWallet.getPasswd());
@@ -187,20 +202,20 @@ public class TransferServiceImpl implements TransferService {
 
         str = HttpUtils.sendPost(uri, json);
 
-        if (str == null || str.equals("")) {
+        if (str == null || str.equals("") || str.equals("null")) {
 
-            return ApiResponseResult.build(2010, "error", "提币失败", "");
+            throw new TransferException(TransferEnum.TRANSFER_SYSTEM_ERR);
         }
 
         String hash = ObjectUtils.getHash(str);         //拿出成功的hash
 
         if(hash != null && hash.equals("-1")){
 
-            return ApiResponseResult.build(2011, "error", "旷工费不足", "");
+            throw new TransferException(TransferEnum.TRANSFER_ABSENTEEISM_REPEAT);
         }
         if(hash == null || hash.equals("")){
 
-            return ApiResponseResult.build(2011, "error", "出现异常", "");
+            throw new TransferException(TransferEnum.TRANSFER_SYSTEM_ERR);
         }
 
         wallet.setHash(hash);                           //转账成功的hash值
@@ -218,12 +233,13 @@ public class TransferServiceImpl implements TransferService {
 
     @Override
     public ApiResponseResult findUserTransferInfo(Integer currentPage, Integer currentSize,
-                                                  String phone, String startTime) throws Exception {
+                                                  String phone, String startTime) {
 
         //查询当前用户是否存在
         UserVo user = userMapper.findUserExist(phone);
         if (null == user) {
-            return ApiResponseResult.build(2013, "error", "该用户不存在", "");
+
+            throw new TransferException(TransferEnum.TRANSFER_NOT_USER_INFO);
         }
 
         String endTime = "";
@@ -239,7 +255,8 @@ public class TransferServiceImpl implements TransferService {
         List<TransferVo> voList = transferMapper.findUserTransferInfo(currentPage,currentSize,user.getId(),startTime,endTime);
 
         if (null == voList) {
-            return ApiResponseResult.build(2011, "error", "未查询到用户转账信息", "");
+
+            throw new TransferException(TransferEnum.TRANSFER_NOT_INFO);
         }
 
         PageInfo<TransferVo> pageInfo = new PageInfo(voList);
@@ -258,7 +275,7 @@ public class TransferServiceImpl implements TransferService {
      * @return
      * @throws Exception
      */
-    public Integer insertTransferTurnTo(WalletVXUtilsVo wallet) throws Exception {
+    public Integer insertTransferTurnTo(WalletVXUtilsVo wallet) {
 
 
         Transfer transfer = new Transfer();
@@ -283,7 +300,7 @@ public class TransferServiceImpl implements TransferService {
      * @return
      * @throws Exception
      */
-    public Integer insertTransferToCharge(WalletVXUtilsVo wallet) throws Exception {
+    public Integer insertTransferToCharge(WalletVXUtilsVo wallet) {
 
 
         Transfer transfer = new Transfer();

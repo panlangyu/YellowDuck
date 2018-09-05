@@ -27,7 +27,7 @@
     </sql>
 
 
-    <!-- ������������������������,��������������?,������������������ -->
+    <!-- 按手机号码查询用户信息 -->
     <select id="findUserExist" parameterType="java.lang.String" resultMap="BaseResultMap">
 
         SELECT
@@ -47,7 +47,7 @@
     </select>
 
 
-    <!-- ������������������ -->
+    <!-- 添加用户信息 -->
     <insert id="insertUserInfo" parameterType="com.duck.yellowduck.domain.model.model.User">
 
         INSERT INTO duck_user(
@@ -153,7 +153,7 @@
 
     </update>
 
-    <!-- ������������������������ -->
+    <!-- 按编号查询用户信息 -->
     <select id="findUserById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
 
         SELECT

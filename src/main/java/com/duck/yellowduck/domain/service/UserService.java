@@ -3,11 +3,18 @@ package com.duck.yellowduck.domain.service;
 import com.duck.yellowduck.domain.model.model.User;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 
-public abstract interface UserService
-{
-    public abstract ApiResponseResult synchronousUserInfo(User paramUser)
-            throws Exception;
+/**
+ * 用户Service
+ */
+public interface UserService {
 
-    public abstract ApiResponseResult queryUserByPhone(String paramString)
-            throws Exception;
+    /** 同步用户信息 **/
+    ApiResponseResult synchronousUserInfo(User user);
+
+    /** 查询用户信息 **/
+    ApiResponseResult queryUserByPhone(String phone);
+
+
+
+
 }

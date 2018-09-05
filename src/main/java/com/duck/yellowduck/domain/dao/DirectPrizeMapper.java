@@ -7,16 +7,13 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public  interface DirectPrizeMapper
-{
-    public  Integer selectDirectPrizeCount(@Param("refereeId") Integer refereeId)
-            throws Exception;
+public interface DirectPrizeMapper {
 
-    public  List<DirectPrizeVo> selectDirectPrizeList();
+    Integer selectDirectPrizeCount(@Param("refereeId") Integer refereeId);
 
-    public  Integer insertDirectPrizeInfo(DirectPrize directPrize)
-            throws Exception;
+    List<DirectPrizeVo> selectDirectPrizeList();
 
-    public  Integer modifyDirectPrizeInfo(DirectPrize directPrize)
-            throws Exception;
+    Integer insertDirectPrizeInfo(DirectPrize directPrize);
+
+    Integer modifyDirectPrizeInfo(DirectPrize directPrize);
 }

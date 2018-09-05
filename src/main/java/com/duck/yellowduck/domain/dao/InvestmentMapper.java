@@ -6,14 +6,12 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public  interface InvestmentMapper
-{
-    public  Integer insertUserInvestmentInfo(List<Investment> list)
-            throws Exception;
+public  interface InvestmentMapper {
 
-    public  Investment selectInvestmentByWalletId(@Param("walletId") Integer walletId)
-            throws Exception;
+    Integer insertUserInvestmentInfo(List<Investment> list);
 
-    public  Integer modifyInvestmentInfo(Investment investment)
-            throws Exception;
+    Investment selectInvestmentByWalletId(@Param("walletId") Integer walletId);
+
+    Integer modifyInvestmentInfo(Investment investment);
+
 }

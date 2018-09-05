@@ -16,11 +16,11 @@ public class ExampleTimer
     private DirectPrizeService directPrizeService;
 
     @Scheduled(cron="00 28 15 * * ?")
-    public void timerCron()
-            throws Exception
-    {
+    public void timerCron() throws Exception {
         System.out.println("current time : " + this.dateFormat.format(new Date()));
 
         //this.directPrizeService.timedTask();
     }
+
+
 }

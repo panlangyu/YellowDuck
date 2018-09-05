@@ -13,38 +13,15 @@ import java.util.List;
 @Repository
 public interface TransferMapper {
 
-    /**
-     * 用户转账记录
-     * @param currentPage
-     * @param currentSize
-     * @param userId
-     * @param startTime
-     * @param endTime
-     * @return
-     * @throws Exception
-     */
-    public List<TransferVo> findUserTransferInfo(@Param("currentPage")Integer currentPage,
-                                                 @Param("currentSize")Integer currentSize,
-                                                 @Param("userId")Integer userId,
-                                                 @Param("startTime")String startTime,
-                                                 @Param("endTime")String endTime)throws Exception;
+    /** 用户转账记录 **/
+    List<TransferVo> findUserTransferInfo(@Param("currentPage")Integer currentPage,@Param("currentSize")Integer currentSize,
+                                          @Param("userId")Integer userId, @Param("startTime")String startTime,
+                                          @Param("endTime")String endTime);
 
+    /** 用户转账记录 转出 **/
+    Integer insertTransferTurnTo(Transfer transfer);
 
-    /**
-     * 用户转账记录 转出
-     * @param transfer
-     * @return
-     * @throws Exception
-     */
-    public Integer insertTransferTurnTo(Transfer transfer)throws Exception;
-
-
-    /**
-     * 用户转账记录 转入
-     * @param transfer
-     * @return
-     * @throws Exception
-     */
-    public Integer insertTransferToCharge(Transfer transfer)throws Exception;
+    /** 用户转账记录 转入 **/
+    Integer insertTransferToCharge(Transfer transfer);
 
 }

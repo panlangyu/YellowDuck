@@ -18,23 +18,31 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 @EnableSwagger2
 @Profile({"dev", "test"})
-public class MySwagger2
-        extends WebMvcConfigurerAdapter
-{
+public class MySwagger2 extends WebMvcConfigurerAdapter{
+
+
     @Bean
-    public Docket createRestApi()
-    {
-        return new Docket(DocumentationType.SWAGGER_2).apiInfo(apiInfo()).select().apis(RequestHandlerSelectors.basePackage("pro.bechat.wallet")).paths(PathSelectors.any()).build();
+    public Docket createRestApi() {
+
+        return new Docket(DocumentationType.SWAGGER_2)
+                .apiInfo(apiInfo()).select()
+                .apis(RequestHandlerSelectors.basePackage("com.duck.yellowduck.controller"))
+                .paths(PathSelectors.any())
+                .build();
     }
 
-    public void addResourceHandlers(ResourceHandlerRegistry registry)
-    {
-        registry.addResourceHandler(new String[] { "/**" }).addResourceLocations(new String[] { "classpath:/META-INF/resources/" }).setCachePeriod(Integer.valueOf(0));
-        registry.addResourceHandler(new String[] { "/static/**" }).addResourceLocations(new String[] { "classpath:/static/" }).setCachePeriod(Integer.valueOf(0));
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler(new String[] { "/**" }).addResourceLocations(new String[] { "classpath:/META-INF/resources/" }).setCachePeriod(0);
+        registry.addResourceHandler(new String[] { "/static/**" }).addResourceLocations(new String[] { "classpath:/static/" }).setCachePeriod(0);
     }
 
-    private ApiInfo apiInfo()
-    {
-        return new ApiInfoBuilder().title("Spring Boot������Swagger2����RESTful APIs").description("����Spring Boot����������������http://blog.didispace.com/").termsOfServiceUrl("http://blog.didispace.com/").contact("������DD").version("1.0").build();
+    private ApiInfo apiInfo(){
+        return new ApiInfoBuilder().title("HUC钱包接口测试文档")
+                .description("")
+                .termsOfServiceUrl("")
+                .contact("")
+                .version("1.0").build();
     }
+
+
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/red")
-@Api(value="用户发红包", tags={"redEnvelopes service"})
+@Api(value="用户发红包", tags={"红包功能"})
 public class RedEnvelopesController {
 
 

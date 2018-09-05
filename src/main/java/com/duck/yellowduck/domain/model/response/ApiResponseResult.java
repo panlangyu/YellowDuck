@@ -39,8 +39,8 @@ public class ApiResponseResult
         this.data = data;
     }
 
-    public static ApiResponseResult failure(Object message, Integer code)
-    {
+    public static ApiResponseResult failure(Object message, Integer code) {
+
         return new ApiResponseResult(message, code);
     }
 

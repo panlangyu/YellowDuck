@@ -1,6 +1,5 @@
 package com.duck.yellowduck.publics;
 
-
 import com.alibaba.fastjson.JSONObject;
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -9,6 +8,7 @@ import java.util.UUID;
  * 处理业务冗余代码
  */
 public class ObjectUtils {
+
 
     /**
      * 返回錢包的地址
@@ -154,10 +154,6 @@ public class ObjectUtils {
         }
         if (json.get("type").toString().equals("error") && json.get("code").toString().equals("1")) {
 
-            coinName = "-1";
-            return coinName;
-        }
-        if (json.get("type").toString().equals("error") && !json.get("code").toString().equals("1")) {
 
             coinName = "-2";
             return coinName;

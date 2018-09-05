@@ -1,19 +1,31 @@
 package com.duck.yellowduck.publics;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-public class CalendarUtil
-{
-    public static String[] assemblyDate(String startTime)
-            throws Exception
-    {
+/**
+ * 日期工具
+ */
+public class CalendarUtil {
+
+    /** 抽取月份日期 **/
+    public static String[] assemblyDate(String startTime) {
+
         String[] str = new String[2];
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
 
-        Date date = sdf.parse(startTime);
+        Date date = null;
+
+        try{
+            date = sdf.parse(startTime);
+
+        }catch (ParseException e){
+
+            e.printStackTrace();
+        }
 
         Calendar cal = Calendar.getInstance();
 
@@ -34,4 +46,6 @@ public class CalendarUtil
 
         return str;
     }
+
+
 }

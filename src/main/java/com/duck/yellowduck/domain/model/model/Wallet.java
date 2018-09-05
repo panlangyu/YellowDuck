@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 /**
- * ETH钱包Model
+ * 钱包Model
  */
 public class Wallet {
 
     private Integer id;                     //编号
 
-    private Integer coinId;                 //币种名称
+    private Integer coinId;                 //币种编号
 
     private String coinName;                //币种名称
 
@@ -47,14 +47,6 @@ public class Wallet {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getCoinId() {
-        return coinId;
-    }
-
-    public void setCoinId(Integer coinId) {
-        this.coinId = coinId;
     }
 
     public String getCoinName() {

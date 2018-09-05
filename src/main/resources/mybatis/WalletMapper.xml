@@ -29,21 +29,11 @@
 
     <!-- 封装币种信息 -->
     <resultMap id="BaseResultWallet" type="com.duck.yellowduck.domain.model.vo.WalletStatusVo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="contractAddr" jdbcType="VARCHAR" property="contractAddr"/>
     </resultMap>
-
-
-    <!-- 查询用户钱包总额 -->
-    <select id="selectUserWalletTotal" resultType="BigDecimal" >
-        SELECT SUM(amount) FROM duck_wallet
-
-        <trim prefix="WHERE" prefixOverrides="AND | OR">
-            <if test="userId != null and userId != 0">
-                AND userid = #{userId}
-            </if>
-        </trim>
-
-    </select>
 
 
     <!-- 查询用户钱包下的币种信息 -->
@@ -62,7 +52,11 @@
 
         </trim>-->
 
-        SELECT w.id,w.coinId,c.coinName,c.coinImg,w.address,w.contractAddr,userId FROM duck_wallet AS w
+        SELECT
+
+        <include refid="Base_Column_ETHWallet"/>
+
+        FROM duck_wallet AS w
         INNER JOIN duck_coin AS c ON w.coinId = c.id
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
@@ -78,7 +72,11 @@
 
         UNION ALL
 
-        SELECT r.id,r.coinId,c.coinName,c.coinImg,r.address,r.contractAddr,userId FROM duck_contract_relation AS r
+        SELECT
+
+        <include refid="Base_Column_ContractWallet"/>
+
+        FROM duck_contract_relation AS r
         INNER JOIN duck_coin AS c ON r.coinId = c.id
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
@@ -92,26 +90,64 @@
 
         </trim>
 
+    </select>
 
+    <!-- 查询币种详情单条ETH信息 -->
+    <select id="selectETHCoinInfoById" resultMap="BaseResultMap">
+
+        SELECT
+
+        <include refid="Base_Column_ETHWallet"/>
+
+        FROM duck_wallet AS w
+        INNER JOIN duck_coin AS c ON w.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            <if test="id != null and id != 0">
+                AND w.id = #{id}
+            </if>
+
+        </trim>
 
     </select>
+
+    <!-- 查询币种详情单条合约币信息 -->
+    <select id="selectContractCoinInfoById" resultMap="BaseResultMap">
+
+        SELECT
+
+        <include refid="Base_Column_ContractWallet"/>
+
+        FROM duck_contract_relation AS r
+        INNER JOIN duck_coin AS c ON r.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+            <if test="id != null and id != 0">
+                AND r.id = #{id}
+            </if>
+
+        </trim>
+
+    </select>
+
 
 
     <!-- 锁住钱包表,行级锁 -->
-    <select id="lockWalletTable" resultType="com.duck.yellowduck.domain.model.model.Wallet">
+    <select id="lockWalletTable" resultType="com.duck.yellowduck.domain.model.model.Wallet" parameterType="java.lang.Integer">
 
         /*SELECT * FROM duck_wallet FOR UPDATE*/
 
-        SELECT * FROM duck_wallet LOCK IN SHARE MODE;
-
-    </select>
-
-    <!-- 查询单条钱包币种信息 -->
-    <select id="selectUserWalletCoinById" resultMap="BaseResultMapWallet" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
-
-        SELECT
-        <include refid="Base_Column_List"/>
-        FROM duck_wallet
+        SELECT * FROM duck_wallet
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
             <if test="id != null and id != 0">
@@ -120,62 +156,14 @@
 
         </trim>
 
-    </select>
-
-    <!-- 按照address去查询钱包信息 -->
-    <select id="selectUserWalletCoinByAddress" resultMap="BaseResultMapWallet" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
-
-        SELECT
-        <include refid="Base_Column_List"/>
-        FROM duck_wallet
-
-        <trim prefix="WHERE" prefixOverrides="AND | OR">
-            <if test="address != null and address.length() > 0">
-                AND address = #{address}
-            </if>
-
-        </trim>
+        LOCK IN SHARE MODE;
 
     </select>
 
 
-    <!-- 钱包转账 -->
-    <update id="modifyWalletTurnOut" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
 
-        UPDATE duck_wallet
-
-        <trim prefix="SET" suffixOverrides="," suffix="WHERE id=#{id}">
-
-            <if test="amount != null and amount != 0">
-                amount = amount - #{amount},
-                availableAmount = availableAmount - #{amount},
-            </if>
-            update_time=NOW(),
-        </trim>
-
-    </update>
-
-    <!-- 钱包转入 -->
-    <update id="modifyWalletToChangeInto" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
-
-        UPDATE duck_wallet
-
-        <trim prefix="SET" suffixOverrides="," suffix="WHERE id=#{id}">
-
-            <if test="amount != null and amount != 0">
-                amount = amount + #{amount},
-                availableAmount = availableAmount + #{amount},
-            </if>
-
-            update_time=NOW(),
-        </trim>
-
-
-    </update>
-
-
-    <!-- 查询用户拥有单条钱包信息 -->
-    <select id="selectUserWalletByCoinId" resultType="com.duck.yellowduck.domain.model.model.Wallet">
+    <!-- 查询用户拥有单条钱包信息,ETH -->
+    <select id="selectUserWalletETHAddress" resultType="com.duck.yellowduck.domain.model.model.Wallet">
 
         SELECT
 
@@ -190,13 +178,17 @@
                 AND userId = #{userId}
             </if>
 
-            <if test="coinName != null and coinName.length() > 0">
-                AND c.coinName = #{coinName}
+            <if test="id != null and id != 0">
+                AND w.id = #{id}
             </if>
 
         </trim>
 
-        UNION ALL
+    </select>
+
+
+    <!-- 查询合约币信息 -->
+    <select id="selectUserWalletContractAddrInfo" resultType="com.duck.yellowduck.domain.model.model.Wallet">
 
         SELECT
 
@@ -211,146 +203,14 @@
                 AND userId = #{userId}
             </if>
 
-            <if test="coinName != null and coinName.length() > 0">
-                AND c.coinName = #{coinName}
+            <if test="id != null and id != 0">
+                AND r.id = #{id}
             </if>
 
         </trim>
-
-
-        <!--SELECT
-
-        <include refid="Base_Column_ListInfo"/>
-
-        FROM duck_wallet
-
-        <trim prefix="WHERE" prefixOverrides="AND | OR">
-
-            <if test="userId != null and userId != 0">
-                AND userId = #{userId}
-            </if>
-
-            <if test="coinName != null and coinName.length() > 0">
-                AND coinName = #{coinName}
-            </if>
-
-        </trim>-->
-
     </select>
 
 
-    <!-- ������������������ ��? ������������ (������������)+(������������) -->
-    <select id="selectYesterdayProfit" resultType="Map">
-        SELECT
-        SUM(amount) AS yesterdayProfit,
-        (
-        SELECT freeAmount FROM duck_wallet
-
-        <trim prefix="WHERE" prefixOverrides="AND | OR">
-
-            <if test="userId != null and userId != 0">
-                AND userId = #{userId}
-            </if>
-
-            <if test="coinId != null and coinId != 0">
-                AND coinId = #{coinId}
-            </if>
-
-        </trim>
-
-        ) AS freeAmount
-        FROM DUCK_TRANSCATION
-        WHERE TO_DAYS( NOW( ) ) - TO_DAYS(create_time) = 1
-
-        <if test="userId != null and userId != 0">
-            AND userId = #{userId}
-        </if>
-
-        <if test="coinId != null and coinId != 0">
-            AND coinId = #{coinId}
-        </if>
-        <!--<if test="coinType != null and coinType.length() > 0">
-            AND coinType = #{coinType}
-        </if>-->
-
-    </select>
-
-    <!-- ������������������(��? ������ ��������? ������������ ��������������������?) -->
-    <update id="modifyWalletDepositToChangeInto" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
-
-        UPDATE duck_wallet
-
-        <trim prefix="SET" suffixOverrides="," suffix="WHERE id=#{id}">
-
-            <if test="amount != null and amount != 0">
-                freeAmount = freeAmount + #{amount},
-                availableAmount = availableAmount - #{amount},
-            </if>
-            update_time=NOW(),
-        </trim>
-
-    </update>
-
-    <!-- ������������������(��? ������������ ��������? ������ ��������������������?) -->
-    <update id="modifyWalletDepositTurnOut" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
-
-        UPDATE duck_wallet
-
-        <trim prefix="SET" suffixOverrides="," suffix="WHERE id=#{id}">
-
-            <if test="amount != null and amount != 0">
-                freeAmount = freeAmount - #{amount},
-                availableAmount = availableAmount + #{amount},
-            </if>
-            update_time=NOW(),
-        </trim>
-
-    </update>
-
-
-    <!-- ������������������������ -->
-    <insert id="insertUserWalletInfo" parameterType="java.util.List">
-
-        <!--<selectKey resultType ="java.lang.Integer" keyProperty= "id" order= "AFTER">
-
-             SELECT LAST_INSERT_ID()
-
-         </selectKey>-->
-
-        INSERT INTO duck_wallet(
-        coinId,
-        address,
-        privateKey,
-        passwd,
-        create_time,
-        update_time,
-        keystore,
-        userId,
-        freeAmount,
-        amount,
-        availableAmount
-        )
-        VALUES
-        <foreach collection="list"  item="item" separator=",">
-            (
-            #{item.coinId},
-            #{item.address},
-            #{item.privateKey},
-            #{item.passwd},
-            now(),
-            now(),
-            #{item.keystore},
-            #{item.userId},
-            DEFAULT ,
-            DEFAULT ,
-            DEFAULT
-            )
-        </foreach>
-
-    </insert>
-
-
-    <!-- ������������������,������������������ 0 ��?  ��������������������������������?,  ������3��������������������������������? -->
     <select id="selectUserWalletInterest" resultType="com.duck.yellowduck.domain.model.model.Wallet">
         SELECT w.id,coinId,coinName,w.address,w.create_time,w.update_time,userId,freeAmount,amount,availableAmount FROM duck_wallet w
         INNER JOIN DUCK_COIN c ON w.`coinId`=c.`id`
@@ -359,7 +219,6 @@
     </select>
 
 
-    <!-- ������������������������ ������������ -->
     <update id="modifyUserWalletInterest" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
         UPDATE duck_wallet
 
@@ -508,7 +367,8 @@
     <!-- 查询用户下的币种信息,名称 -->
     <select id="findWalletListInfo" parameterType="java.lang.Integer" resultMap="BaseResultWallet">
 
-        SELECT coinName FROM duck_wallet
+        SELECT w.id,c.coinName,w.address,w.contractAddr FROM duck_wallet w
+        INNER JOIN duck_coin c ON w.coinId = c.id
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
 
@@ -517,28 +377,56 @@
             </if>
 
         </trim>
+
+        UNION ALL
+
+        SELECT r.id,c.coinName,r.address,r.contractAddr FROM duck_contract_relation r
+        INNER JOIN duck_coin c ON r.coinId = c.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+        </trim>
+
+
+        <!--SELECT coinName FROM duck_wallet
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+        </trim>-->
+
+
+
+
 
     </select>
 
     <!-- 查询用户是否已拥有ETH -->
-   <!-- <select id="findUserWalletCount" resultType="java.lang.Integer">
+    <!-- <select id="findUserWalletCount" resultType="java.lang.Integer">
 
-        SELECT COUNT(*) FROM duck_wallet
+         SELECT COUNT(*) FROM duck_wallet
 
-        <trim prefix="WHERE" prefixOverrides="AND | OR">
+         <trim prefix="WHERE" prefixOverrides="AND | OR">
 
-            <if test="userId != null and userId != 0">
-                AND userId = #{userId}
-            </if>
+             <if test="userId != null and userId != 0">
+                 AND userId = #{userId}
+             </if>
 
-            <if test="coinName != null and coinName.length() > 0">
-                AND coinName = #{coinName}
-            </if>
+             <if test="coinName != null and coinName.length() > 0">
+                 AND coinName = #{coinName}
+             </if>
 
-        </trim>
+         </trim>
 
 
-    </select>-->
+     </select>-->
 
 
 
@@ -546,6 +434,7 @@
     <!-- 查询参数 -->
     <sql id="Base_Column_List">
         id,
+        coinId,
         coinName,
         address,
         contractAddr,
@@ -555,6 +444,31 @@
         create_time,
         userId
     </sql>
+
+    <!-- 查询用户列表ETH信息 -->
+    <sql id="Base_Column_ETHWallet">
+        w.id,
+        w.coinId,
+        c.coinName,
+        c.coinImg,
+        w.address,
+        w.contractAddr,
+        userId
+    </sql>
+
+    <!-- 查询用户列表合约币信息 -->
+    <sql id="Base_Column_ContractWallet">
+        r.id,
+        r.coinId,
+        c.coinName,
+        c.coinImg,
+        r.address,
+        r.contractAddr,
+        userId
+    </sql>
+
+
+
 
     <!-- 查询ETH参数 -->
     <sql id="Base_Column_ListWallet">

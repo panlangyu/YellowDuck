@@ -15,46 +15,35 @@ import java.util.Map;
 @Repository
 public interface TranscationMapper {
 
-    public  List<TranscationVo> selectUserCoinTransactionList(@Param("currentPage") Integer currentPage,
-                                                              @Param("currentSize") Integer currentSize,
-                                                              @Param("userId") Integer userId,
-                                                              @Param("coinName") String coinName)throws Exception;
+    List<TranscationVo> selectUserCoinTransactionList(@Param("currentPage") Integer currentPage, @Param("currentSize") Integer currentSize,
+                                                      @Param("userId") Integer userId, @Param("coinName") String coinName);
 
 
-    public  Integer insertWalletTurnOut(Transcation transcation)throws Exception;
+    Integer insertWalletTurnOut(Transcation transcation);
+
+    Integer insertWalletToChangeInto(Transcation transcation);
+
+    Double selectUserCoinTurnToTotal(@Param("userId") Integer userId, @Param("startTime") String startTime,
+                                     @Param("endTime") String endTime);
 
 
-    public  Integer insertWalletToChangeInto(Transcation transcation)throws Exception;
+    Double selectUserCoinToChargeInfoTotal(@Param("userId") Integer userId, @Param("startTime") String startTime,
+                                           @Param("endTime") String endTime) ;
 
 
-    public  Double selectUserCoinTurnToTotal(@Param("userId") Integer userId,
-                                             @Param("startTime") String startTime,
-                                             @Param("endTime") String endTime)throws Exception;
+    Map<String, Object> selectUserCoinTrunToChargeTotal(@Param("userId") Integer userId, @Param("startTime") String startTime,
+                                                        @Param("endTime") String endTime);
 
 
-    public  Double selectUserCoinToChargeInfoTotal(@Param("userId") Integer userId,
-                                                   @Param("startTime") String startTime,
-                                                   @Param("endTime") String endTime) throws Exception;
+    Map<String, Object> selectUserWalletCoinStraightOrInterest(@Param("userId") Integer userId, @Param("coinName") String coinName);
 
 
-    public  Map<String, Object> selectUserCoinTrunToChargeTotal(@Param("userId") Integer userId,
-                                                                @Param("startTime") String startTime,
-                                                                @Param("endTime") String endTime)throws Exception;
+    List<TranscationVo> selectWalletUserCoinTransactionList(@Param("currentPage") Integer currentPage, @Param("currentSize") Integer currentSize,
+                                                            @Param("userId") Integer userId, @Param("coinName") String coinName,
+                                                            @Param("startTime") String startTime, @Param("endTime") String endTime);
 
 
-    public  Map<String, Object> selectUserWalletCoinStraightOrInterest(@Param("userId") Integer userId, @Param("coinName") String coinName)throws Exception;
-
-
-    public  List<TranscationVo> selectWalletUserCoinTransactionList(@Param("currentPage") Integer currentPage,
-                                                                    @Param("currentSize") Integer currentSize,
-                                                                    @Param("userId") Integer userId,
-                                                                    @Param("coinName") String coinName,
-                                                                    @Param("startTime") String startTime,
-                                                                    @Param("endTime") String endTime)throws Exception;
-
-
-    public  BigDecimal selectTranscationRechargeRecord(@Param("userId") Integer userId,
-                                                       @Param("coinId") Integer coinId)throws Exception;
+    BigDecimal selectTranscationRechargeRecord(@Param("userId") Integer userId, @Param("coinId") Integer coinId);
 
 
 }

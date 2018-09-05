@@ -3,6 +3,7 @@ package com.duck.yellowduck.controller;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 import com.duck.yellowduck.domain.model.vo.WalletVXUtilsVo;
 import com.duck.yellowduck.domain.service.TransferService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("transfer")
+@Api(value="聊天转账", tags={"用户聊天转账"})
 public class TransferController {
 
     @Autowired
@@ -25,23 +27,11 @@ public class TransferController {
     @RequestMapping(value={"/chatAndTransfer"}, method= RequestMethod.POST)
     public ApiResponseResult chatAndTransfer(@RequestBody WalletVXUtilsVo wallet) {
 
-        ApiResponseResult apiResponseResult = new ApiResponseResult();
-
-        try{
-
-            apiResponseResult = transferService.chatAndTransfer(wallet);
-
-        }catch (Exception e){
-            e.printStackTrace();
-
-            return ApiResponseResult.build(2016, "error", "出现异常", "");
-        }
-
-        return apiResponseResult;
+        return transferService.chatAndTransfer(wallet);
     }
 
 
-    @ApiOperation(value="用户聊天转账", notes="转账")
+    @ApiOperation(value="转账记录", notes="转账")
     @ApiImplicitParams({
             @ApiImplicitParam(name="currentPage", value="当前页码", dataType="Integer", paramType="query", required=true),
             @ApiImplicitParam(name="currentSize", value="页面容量", dataType="Integer", paramType="query", required=true),
@@ -54,19 +44,7 @@ public class TransferController {
                                                    @RequestParam("phone")String phone,
                                                    @RequestParam(value="startTime",required = false)String startTime){
 
-        ApiResponseResult apiResponseResult = new ApiResponseResult();
-
-        try{
-
-            apiResponseResult = transferService.findUserTransferInfo(currentPage,currentSize,phone,startTime);
-
-        }catch (Exception e){
-            e.printStackTrace();
-
-            return ApiResponseResult.build(2016, "error", "出现异常", "");
-        }
-
-        return apiResponseResult;
+        return transferService.findUserTransferInfo(currentPage,currentSize,phone,startTime);
     }
 
 
