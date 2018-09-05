@@ -20,8 +20,8 @@ public interface RedPacketRecordMapper {
      * @return
      * @throws Exception
      */
-    public List<RedPacketRecordVo> findUserRedPacketRecordInfo(@Param("userId")Integer userId,
-                                                               @Param("redEnvelopersId")Integer redEnvelopersId)throws Exception;
+    List<RedPacketRecordVo> findUserRedPacketRecordInfo(@Param("userId")Integer userId,
+                                                        @Param("redEnvelopersId")Integer redEnvelopersId);
 
 
     /**
@@ -30,7 +30,7 @@ public interface RedPacketRecordMapper {
      * @return
      * @throws Exception
      */
-    public Integer insertRedPacketRecordInfo(RedPacketRecord redPacketRecord)throws Exception;
+    Integer insertRedPacketRecordInfo(RedPacketRecord redPacketRecord);
 
 
 }

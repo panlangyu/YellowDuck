@@ -7,13 +7,12 @@ public enum WalletEnum {
 
     WALLET_NOT_NULL_ERROR(1001, "钱包地址不能为空"),
     WALLET_NOT_EXISTENT_ERROR(1002, "币种不存在"),
-    WALLET_INSERT_FALL(1005, "开通钱包失败"),
     WALLET_EXISTENT_COINNAME(1006, "该币种已存在"),
     WALLET_NOT_BLOCK_INFO(1007,"未查询到阻塞数信息"),
     WALLET_NOT_ACCOUNT_INFO(1008,"未查询到账户数据"),
     WALLET_INSERT_COINNAME(1009, "添加失败"),
     WALLET_SYSTEM_ERR(1010,"系统异常"),
-    WALLET_OPEN_UP(1011,"开通钱包失败"),
+    WALLET_NOT_OPEN_UP(1011,"开通钱包失败"),
     WALLET_NOT_USER_INFO(1012,"用户不存在"),
     WALLET_REPEAT_INFO(1015,"已添加过该币种"),
     WALLET_NOT_LIST_INFO(1016,"未查询到用户钱包信息"),
@@ -24,7 +23,7 @@ public enum WalletEnum {
     WALLET_ABSENTEEISM_REPEAT(1021,"旷工费不足"),
     WALLET_NOT_BEI_USER_INFO(1022,"被转账用户不存在"),
     WALLET_NOT_BER_USER_REPEAT(1025,"被转账用户没有钱包信息"),
-    WALLET_NOT_INSERT_ETH_INFO(1026,"用户未拥有ETH钱包");
+    WALLET_NOT_ETH_INFO(1026,"用户未拥有ETH钱包");
 
 
 

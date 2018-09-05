@@ -17,7 +17,7 @@ public interface ContractRelationMapper {
      * @return
      * @throws Exception
      */
-    public Integer insertContractRelationInfo(ContractRelation paramContractRelation) throws Exception;
+    Integer insertContractRelationInfo(ContractRelation paramContractRelation);
 
 
     /**
@@ -27,8 +27,8 @@ public interface ContractRelationMapper {
      * @return
      * @throws Exception
      */
-    public ContractRelation findWalletByUserIdAndAddress(@Param("userId") Integer paramInteger,
-                                                         @Param("contractAddr") String paramString) throws Exception;
+    ContractRelation findWalletByUserIdAndAddress(@Param("userId") Integer paramInteger,
+                                                  @Param("contractAddr") String paramString) ;
 
 
 

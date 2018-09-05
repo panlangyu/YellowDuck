@@ -7,13 +7,13 @@ import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public  interface DictionaryMapper
-{
-    public  List<Dictionary> selectDictionaryList(@Param("type") String type)
-            throws Exception;
+public interface DictionaryMapper {
 
-    public  List<DictionaryVo> selectDictionaryListById(@Param("id") Integer id, @Param("type") String type)
-            throws Exception;
+    List<Dictionary> selectDictionaryList(@Param("type") String type);
 
-    public  int updateDictionaryValueById(@Param("id") int id, @Param("value") String value);
+
+    List<DictionaryVo> selectDictionaryListById(@Param("id") Integer id, @Param("type") String type);
+
+
+    int updateDictionaryValueById(@Param("id") int id, @Param("value") String value);
 }

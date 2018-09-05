@@ -62,8 +62,8 @@ public class TranscationServiceImpl implements TranscationService {
                                                                Integer userId, String startTime) throws Exception {
         String endTime = "";
 
-        if ((startTime != null) && (!startTime.equals("")))
-        {
+        if (startTime != null && !startTime.equals("")) {
+
             String[] str = CalendarUtil.assemblyDate(startTime);
             startTime = str[0];
             endTime = str[1];
@@ -91,8 +91,8 @@ public class TranscationServiceImpl implements TranscationService {
         Map<String, Object> map = new HashMap();
 
         String endTime = "";
-        if ((startTime != null) && (!startTime.equals("")))
-        {
+        if (startTime != null && !startTime.equals("")) {
+
             String[] str = CalendarUtil.assemblyDate(startTime);
             startTime = str[0];
             endTime = str[1];
@@ -122,7 +122,7 @@ public class TranscationServiceImpl implements TranscationService {
         Map<String, Object> map = new HashMap();
 
         String endTime = "";
-        if ((startTime != null) && (!startTime.equals("")))
+        if (startTime != null && !startTime.equals(""))
         {
             String[] str = CalendarUtil.assemblyDate(startTime);
             startTime = str[0];
@@ -161,10 +161,12 @@ public class TranscationServiceImpl implements TranscationService {
                                                      String phone, String coinName) throws Exception {
         UserVo userInfo = this.userMapper.findUserExist(phone);
         if (null == userInfo) {
+            
             return ApiResponseResult.build(2010, "error", "该用户不存在", "");
         }
-        Wallet wallet = this.walletMapper.selectUserWalletETHAddress(userInfo.getId(),0);
+        Wallet wallet = walletMapper.selectUserWalletETHAddress(userInfo.getId(),0);
         if (null == wallet) {
+            
             return ApiResponseResult.build(2010, "error", "该用户下没有该币种", "");
         }
         PageHelper.startPage(currentPage, currentSize);

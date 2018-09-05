@@ -1,74 +1,36 @@
 package com.duck.yellowduck.domain.service;
 
 import com.duck.yellowduck.domain.model.model.User;
-import com.duck.yellowduck.domain.model.model.Wallet;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 import com.duck.yellowduck.domain.model.vo.WalletUtilsVo;
-import com.duck.yellowduck.domain.model.vo.WalletVXUtilsVo;
 
 /**
  * 钱包Service
  */
 public interface WalletService {
 
+    /** 创建ETH钱包 **/
+    ApiResponseResult createWalletInfo(User user) ;
 
-    public ApiResponseResult selectUserWalletTotal(Integer userId)throws Exception;
+    /** 查询用户钱包信息 **/
+    ApiResponseResult findUserWalletList(Integer currentPage,Integer currentSize,String phone,Integer id, String coinName) ;
 
+    /** 用户提币 **/
+    ApiResponseResult modifyWithdrawMoney(WalletUtilsVo walletUtilsVo) ;
 
-    public ApiResponseResult selectUserWalletCoinList(Integer currentPage, Integer currentSize, Integer userId, String coinName)
-            throws Exception;
+    /** 添加合约币信息 **/
+    ApiResponseResult queryContractAddr(String phone, String contractAddr);
 
-    public ApiResponseResult modifyWalletTurnOut(Wallet paramWallet)
-            throws Exception;
+    /** 查询所有账户 **/
+    ApiResponseResult queryAccountList();
 
-    public ApiResponseResult selectUserWalletCoinStraightOrInterest(Integer paramInteger1, Integer paramInteger2, Integer paramInteger3)
-            throws Exception;
+    /** 查询阻塞数 **/
+    ApiResponseResult blockNumber();
 
-    public ApiResponseResult selectYesterdayProfit(Integer paramInteger1, Integer paramInteger2)
-            throws Exception;
+    /** 查询用户下的币种信息,基本信息 **/
+    ApiResponseResult findWalletListInfo(String phone);
 
-    public ApiResponseResult modifyWalletDepositToChangeInto(Wallet wallet)
-            throws Exception;
-
-    public ApiResponseResult modifyWalletDepositTurnOut(Wallet wallet)
-            throws Exception;
-
-    public ApiResponseResult modifyChargeMoneyInfo(Wallet wallet)
-            throws Exception;
-
-    public ApiResponseResult createWalletInfo(User user)
-            throws Exception;
-
-    public ApiResponseResult findUserWalletList(Integer currentPage,Integer currentSize,String phone,Integer id, String coinName)
-            throws Exception;
-
-    public ApiResponseResult modifyWithdrawMoney(WalletUtilsVo walletUtilsVo)
-            throws Exception;
-
-    public ApiResponseResult queryContractAddr(String phone, String contractAddr)
-            throws Exception;
-
-    public ApiResponseResult queryAccountList();
-
-    public ApiResponseResult blockNumber();
-
-    public ApiResponseResult queryUserWalletInfo(String paramString1, String paramString2)
-            throws Exception;
-
-    /**
-     * 查询用户下的币种,只读取币种名称
-     * @param phone
-     * @return
-     * @throws Exception
-     */
-    public ApiResponseResult findWalletListInfo(String phone)throws Exception;
-
-    /**
-     * 查询用户ETH地址
-     * @param phone
-     * @return
-     * @throws Exception
-     */
-    public ApiResponseResult findWalletAddressByUserId(String phone)throws Exception;
+    /** 查询用户ETH地址 **/
+    ApiResponseResult findWalletAddressByUserId(String phone);
 
 }

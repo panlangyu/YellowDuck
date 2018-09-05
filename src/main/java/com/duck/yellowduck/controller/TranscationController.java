@@ -32,13 +32,13 @@ public class TranscationController
                                                           @RequestParam("currentSize") Integer currentSize,
                                                           @RequestParam("userId") Integer userId,
                                                           @RequestParam("coinType") String coinType) {
+
         ApiResponseResult apiResponse = new ApiResponseResult();
-        try
-        {
+        try {
+
             apiResponse = transcationService.selectUserCoinTransactionList(currentPage, currentSize, userId, coinType);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             e.printStackTrace();
 
             return ApiResponseResult.build(2004, "error", "出现异常", "");
@@ -60,12 +60,11 @@ public class TranscationController
                                                               @RequestParam(value="startTime", required=false) String startTime) {
 
         ApiResponseResult apiResponse = new ApiResponseResult();
-        try
-        {
+        try {
+
             apiResponse = transcationService.selectUserCoinTransactionListInfo(currentPage, currentSize, userId, startTime);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             e.printStackTrace();
 
             return ApiResponseResult.build(2004, "error", "出现异常", "");
@@ -82,12 +81,11 @@ public class TranscationController
                                                            @RequestParam(value="startTime", required=false) String startTime)
     {
         ApiResponseResult apiResponse = new ApiResponseResult();
-        try
-        {
+        try {
+
             apiResponse = transcationService.selectUserCoinTrunToChargeTotal(userId, startTime);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             e.printStackTrace();
 
             return ApiResponseResult.build(2004, "error", "出现异常", "");
@@ -106,15 +104,13 @@ public class TranscationController
     public ApiResponseResult queryWalletUserCoinTransactionList(@RequestParam("currentPage") Integer currentPage,
                                                                 @RequestParam("currentSize") Integer currentSize,
                                                                 @RequestParam("userId") Integer userId,
-                                                                @RequestParam("coinType") String coinType)
-    {
+                                                                @RequestParam("coinType") String coinType) {
         ApiResponseResult apiResponse = new ApiResponseResult();
-        try
-        {
+        try {
+
             apiResponse = transcationService.selectWalletUserCoinTransactionList(currentPage, currentSize, userId, coinType, null);
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             e.printStackTrace();
 
             return ApiResponseResult.build(2004, "error", "出现异常", "");

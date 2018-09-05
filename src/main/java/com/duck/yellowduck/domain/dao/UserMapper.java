@@ -11,17 +11,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserMapper {
 
+    /** 按手机号查询用户是否存在 **/
+    UserVo findUserExist(@Param("phone") String phone);
 
-    public  UserVo findUserExist(@Param("phone") String phone)throws Exception;
+    /** 添加用户信息 **/
+    Integer insertUserInfo(User user);
 
+    /** 修改用户信息 **/
+    Integer modifyUserInfo(User user);
 
-    public  Integer insertUserInfo(User user)throws Exception;
-
-
-    public  Integer modifyUserInfo(User user)throws Exception;
-
-
-    public  UserVo findUserById(@Param("id") Integer id)throws Exception;
-
+    /** 按编号查询用户信息 **/
+    UserVo findUserById(@Param("id") Integer id);
 
 }

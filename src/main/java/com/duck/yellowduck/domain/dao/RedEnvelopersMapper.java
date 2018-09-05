@@ -18,8 +18,8 @@ public interface RedEnvelopersMapper {
      * @return
      * @throws Exception
      */
-    public RedEnvelopersVo findUserRedEnvelopersInfo(@Param("id")Integer id,
-                                                     @Param("userId")Integer userId)throws Exception;
+    RedEnvelopersVo findUserRedEnvelopersInfo(@Param("id")Integer id,
+                                                     @Param("userId")Integer userId);
 
 
     /**
@@ -28,7 +28,7 @@ public interface RedEnvelopersMapper {
      * @return
      * @throws Exception
      */
-    public Integer insertRedEnvelopersInfo(RedEnvelopers redEnvelopers)throws Exception;
+    Integer insertRedEnvelopersInfo(RedEnvelopers redEnvelopers);
 
 
 }

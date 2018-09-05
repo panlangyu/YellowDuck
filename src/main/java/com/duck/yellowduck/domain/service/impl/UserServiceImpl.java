@@ -1,6 +1,8 @@
 package com.duck.yellowduck.domain.service.impl;
 
 import com.duck.yellowduck.domain.dao.UserMapper;
+import com.duck.yellowduck.domain.enums.UserEnum;
+import com.duck.yellowduck.domain.exception.UserException;
 import com.duck.yellowduck.domain.model.model.User;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 import com.duck.yellowduck.domain.model.vo.UserVo;
@@ -20,17 +22,18 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ApiResponseResult synchronousUserInfo(User user) throws Exception {
+    public ApiResponseResult synchronousUserInfo(User user) {
 
         Integer result = null;
 
         UserVo userInfo = userMapper.findUserExist(user.getPhone());
-        if (null == userInfo)
-        {
+        if (null == userInfo) {
+
             result = userMapper.insertUserInfo(user);
 
             if (result == 0) {
-                return ApiResponseResult.build(2011, "error", "新增失败", result);
+
+                throw new UserException(UserEnum.USER_INSERT_FAIL);
             }
 
             return ApiResponseResult.build(200, "success", "同步数据成功", result);
@@ -38,19 +41,21 @@ public class UserServiceImpl implements UserService {
 
         result = userMapper.modifyUserInfo(user);
         if (result == 0) {
-            return ApiResponseResult.build(2011, "error", "修改失败", result);
+
+            throw new UserException(UserEnum.USER_MODIFY_FAIL);
         }
+
         return ApiResponseResult.build(200, "success", "同步数据成功", result);
     }
 
     @Override
-    public ApiResponseResult queryUserByPhone(String phone) throws Exception {
+    public ApiResponseResult queryUserByPhone(String phone) {
 
         UserVo user = userMapper.findUserExist(phone);
 
         if (null == user) {
 
-            return ApiResponseResult.build(2011, "error", "该用户不存在", "");
+            throw new UserException(UserEnum.USER_NOT_INFO);
         }
 
         return ApiResponseResult.build(200, "success", "当前用户信息", user);

@@ -19,13 +19,13 @@ public interface CoinMapper {
      * @return
      * @throws Exception
      */
-    public Coin selectCoinByAddress(@Param("address")String address)throws Exception;
+    Coin selectCoinByAddress(@Param("address")String address);
 
     /**
      * 查询所有币种信息
      * @return
      * @throws Exception
      */
-    public List<CoinVo> selectCoinList() throws Exception;
+    List<CoinVo> selectCoinList();
 
 }
