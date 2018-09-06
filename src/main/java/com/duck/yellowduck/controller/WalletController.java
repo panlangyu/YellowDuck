@@ -40,17 +40,17 @@ public class WalletController {
             @ApiImplicitParam(name="currentPage", value="当前页码", dataType="Integer", paramType="query", required=true),
             @ApiImplicitParam(name="currentSize", value="页面容量", dataType="Integer", paramType="query", required=true),
             @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true),
-            @ApiImplicitParam(name="coinId", value="币种编号", dataType="Integer", paramType="query", required=false),
+            @ApiImplicitParam(name="id", value="币种编号", dataType="Integer", paramType="query", required=false),
             @ApiImplicitParam(name="coinName", value="币种名称", dataType="String", paramType="query", required=false)
     })
     @RequestMapping(value="/queryUserWalletList", method=RequestMethod.GET)
     public ApiResponseResult queryUserWalletList(@RequestParam("currentPage") Integer currentPage,
                                                  @RequestParam("currentSize") Integer currentSize,
                                                  @RequestParam("phone") String phone,
-                                                 @RequestParam(value="coinId",required = false) Integer coinId,
+                                                 @RequestParam(value="id",required = false) Integer id,
                                                  @RequestParam(value="coinName", required=false) String coinName) {
 
-        return walletService.findUserWalletList(currentPage,currentSize,phone,coinId,coinName);
+        return walletService.findUserWalletList(currentPage,currentSize,phone,id,coinName);
     }
 
     @ApiOperation(value="用户提币", notes="调用第三方转账")

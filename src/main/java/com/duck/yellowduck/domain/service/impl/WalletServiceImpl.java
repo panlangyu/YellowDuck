@@ -120,7 +120,7 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public ApiResponseResult findUserWalletList(Integer currentPage,Integer currentSize,String phone,Integer coinId,String coinName) {
+    public ApiResponseResult findUserWalletList(Integer currentPage,Integer currentSize,String phone,Integer id,String coinName) {
 
         UserVo userInfo = userMapper.findUserExist(phone);
         if (null == userInfo) {
@@ -130,30 +130,34 @@ public class WalletServiceImpl implements WalletService {
 
         PageHelper.startPage(currentPage, currentSize);
 
-        List<WalletListInfo> walletVoList = new ArrayList();
+        List<CoinListInfo> walletVoList = new ArrayList();
 
         List<WalletVo> voList = null;                       //用户币种列表,单条信息
 
+        List<CoinVoInfo> coinVoInfoList = null;
+
+        List<CoinListInfo> coinList = new ArrayList<>();
+
         // 查询用户列表数据
-        if(coinName != null && !coinName.equals("") && coinId != null && coinId > 0 && coinName.equals("ETH")){
+        if(coinName != null && !coinName.equals("") && id != null && id > 0 && coinName.equals("ETH")){
 
-            voList = walletMapper.selectETHCoinInfoById(currentPage,currentSize,userInfo.getId(), coinName,coinId);
-        }else if(coinName != null && !coinName.equals("") && coinId != null && coinId > 0){
+            coinVoInfoList = walletMapper.selectETHCoinInfoById(currentPage,currentSize,userInfo.getId(), coinName,id);
+        }else if(coinName != null && !coinName.equals("") && id != null && id > 0){
 
-            voList = walletMapper.selectContractCoinInfoById(currentPage,currentSize,userInfo.getId(),coinName, coinId);
+            coinVoInfoList = walletMapper.selectContractCoinInfoById(currentPage,currentSize,userInfo.getId(),coinName, id);
         }else{
 
-            voList = walletMapper.selectUserWalletInfo(currentPage,currentSize,userInfo.getId(), coinName);
+            coinVoInfoList = walletMapper.selectUserWalletInfo(currentPage,currentSize,userInfo.getId(), coinName);
         }
 
-        if (null == voList) {
+        if (null == coinVoInfoList) {
 
             throw new WalletException(WalletEnum.WALLET_NOT_LIST_INFO);
         }
 
         Map<String, String> map = new HashMap();
 
-        WalletListInfo walletVo = null;
+        CoinListInfo coinListInfo = new CoinListInfo();
 
         String uri = "";                //第三方API接口路径
 
@@ -163,193 +167,106 @@ public class WalletServiceImpl implements WalletService {
 
         Coin coin = new Coin();         //币种对象
 
-        List<Coin> coinList = new ArrayList<>();        //币种列表true,所有用户都可见
+        //List<Coin> coinList = new ArrayList<>();        //币种列表true,所有用户都可见
 
-        for (WalletVo vo : voList) {
+        //for (WalletVo vo : voList) {
 
-            map = new HashMap();
+        BigDecimal price = new BigDecimal("0");
 
-            walletVo = new WalletListInfo();
-            if (!vo.getCoinName().equals("ETH")) {
+        List<CoinVoInfo> listCoin = coinMapper.selectCoinList();
 
-                uri = url + "/token/balance";
-
-                address = walletMapper.findWalletAddressByUserId(vo.getUserId(), "ETH");
-                map.put("contractAddr", vo.getContractAddr());
-                map.put("from", address);
-
-                coin = coinMapper.selectCoinByAddress(vo.getContractAddr());
-                if(null == coin){
-
-                    walletVo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
-                }else{
-
-                    walletVo.setWalletTotal(coin.getMarketPrice());            //市场价格
-                }
-
-            }else {
-
-                uri = url + "/address";
-
-                map.put("address", vo.getAddress());
-                address = vo.getAddress();
-
-                coin = coinMapper.selectCoinByAddress("☺");                   //特殊符号查询ETH
-                if(null == coin){
-
-                    walletVo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
-                }else{
-
-                    walletVo.setWalletTotal(coin.getMarketPrice());            //市场价格
-                }
-
-            }
-
-            BigDecimal price = new BigDecimal("0");
-
-            str = HttpUtils.sendGet(uri, map, 2);
-            if (str == null || str.equals("") || str.equals("null")) {
-
-                throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
-            }
-
-            price = ObjectUtils.getPrice(str);
-
-            //是否能拿到币种金额
-            Integer compareZero = price.compareTo(BigDecimal.ZERO);
-            if(compareZero == -1){
-
-                throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
-            }
-
-            walletVo.setId(vo.getId());
-            walletVo.setAddress(address);
-            walletVo.setCoinName(vo.getCoinName());
-            walletVo.setCoinId(vo.getCoinId());
-            walletVo.setAmount(price);
-            walletVo.setCoinImg(vo.getCoinImg());
-            walletVo.setContractAddr(vo.getContractAddr());
-
-            walletVoList.add(walletVo);
-
-
-            /*Map<String, String> mapTwo = new HashMap();
-
-            coinList = coinMapper.selectCoinList();                            //用户共有的合约币信息
-
-            if(coinList != null && coinList.size() > 0){
-
-                for(Coin coinInfo : coinList){
-
-                    if(!coinInfo.getAddress().equals(vo.getContractAddr())){
+        for (CoinVoInfo vo : coinVoInfoList) {
+            //map = new HashMap();
 
 
 
-                        uri = url + "/token/balance";
+               /* coinListInfo = new CoinListInfo();
+                if (!vo.getCoinName().equals("ETH")) {
 
-                        address = walletMapper.findWalletAddressByUserId(vo.getUserId(), "ETH");
-                        mapTwo.put("contractAddr", coinInfo.getAddress());
-                        mapTwo.put("from", address);
+                    uri = url + "/token/balance";
 
+                    address = walletMapper.findWalletAddressByUserId(vo.getUserId(), "ETH");
+                    map.put("contractAddr", vo.getAddress());
+                    map.put("from", address);
 
-                        str = HttpUtils.sendGet(uri, mapTwo, (2));
-                        if (str == null || str.equals("") || str.equals("null")) {
+                    coin = coinMapper.selectCoinByAddress(vo.getAddress());
+                    if(null == coin){
 
-                            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
-                        }
+                        coinListInfo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
+                    }else{
 
-                        price = ObjectUtils.getPrice(str);
-
-                        //是否能拿到币种金额
-                        compareZero = price.compareTo(BigDecimal.ZERO);
-                        if(compareZero == -1){
-
-                            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
-                        }
-
-                        walletVo.setId(vo.getId());
-                        walletVo.setCoinId(vo.getCoinId());
-                        walletVo.setAddress(address);
-                        walletVo.setCoinName(coinInfo.getCoinName());
-                        walletVo.setAmount(price);
-                        walletVo.setCoinImg(coinInfo.getCoinImg());
-                        walletVo.setWalletTotal(coinInfo.getMarketPrice());
-                        walletVo.setContractAddr(coinInfo.getAddress());
-
-                        walletVoList.add(walletVo);
-
+                        coinListInfo.setWalletTotal(coin.getMarketPrice());            //市场价格
                     }
-                }
-            }*/
 
-        }
+                    coinListInfo.setContractAddr(vo.getAddress());
 
-        Map<String, String> mapTwo = new HashMap();
+                }else {
 
-        Set<WalletVo> set = new HashSet<WalletVo>();
+                    uri = url + "/address";
 
+                    map.put("address", vo.getAddress());
+                    address = vo.getAddress();
 
-        coinList = coinMapper.selectCoinList();                            //用户共有的合约币信息
+                    coin = coinMapper.selectCoinByAddress("☺");                   //特殊符号查询ETH
+                    if(null == coin){
 
-        if(coinList != null && coinList.size() > 0){
+                        coinListInfo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
+                    }else{
 
-            for(Coin coinInfo : coinList){
-
-                for(WalletVo vo : voList){
-
-                    if(!coinInfo.getAddress().equals(vo.getContractAddr())){
-
-
-                        //uri = url + "/token/balance";
-
-                        //address = walletMapper.findWalletAddressByUserId(vo.getUserId(), "ETH");
-                        //mapTwo.put("contractAddr", coinInfo.getAddress());
-                       // mapTwo.put("from", address);
-
-
-                        //str = HttpUtils.sendGet(uri, mapTwo, 2);
-                       // if (str == null || str.equals("") || str.equals("null")) {
-
-                       //    throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
-                       // }
-
-                        //price = ObjectUtils.getPrice(str);
-
-                        //是否能拿到币种金额
-                        //compareZero = price.compareTo(BigDecimal.ZERO);
-                       // if(compareZero == -1){
-
-                       //     throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
-                      //  }
-
-                        walletVo.setId(vo.getId());
-                        walletVo.setCoinId(vo.getCoinId());
-                        walletVo.setAddress(address);
-                        walletVo.setCoinName(coinInfo.getCoinName());
-                        //walletVo.setAmount(price);
-                        walletVo.setCoinImg(coinInfo.getCoinImg());
-                        walletVo.setWalletTotal(coinInfo.getMarketPrice());
-                        walletVo.setContractAddr(coinInfo.getAddress());
-
-                        walletVoList.add(walletVo);
-
+                        coinListInfo.setWalletTotal(coin.getMarketPrice());            //市场价格
                     }
 
                 }
 
+                str = HttpUtils.sendGet(uri, map, 2);
+                if (str == null || str.equals("") || str.equals("null")) {
 
-            }
+                    throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+                }
+
+                price = ObjectUtils.getPrice(str);
+
+                //是否能拿到币种金额
+                Integer compareZero = price.compareTo(BigDecimal.ZERO);
+                if(compareZero == -1){
+
+                    throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+                }
+
+
+
+            coinListInfo.setId(vo.getId());
+            coinListInfo.setAddress(address);
+            coinListInfo.setCoinName(vo.getCoinName());
+            //coinListInfo.setCoinId(vo.getCoinId());
+            coinListInfo.setAmount(price);
+            coinListInfo.setCoinImg(vo.getCoinImg());*/
+
+            coinListInfo = getCoinVoInfo(vo,userInfo);
+
+            coinList.add(coinListInfo);
+
+        }
+
+        // 循环币种为true的给所有用户
+        for(CoinVoInfo coinVoInfo : listCoin){
+
+
+            coinListInfo = getCoinVoInfo(coinVoInfo,userInfo);
+
+            coinList.add(coinListInfo);
         }
 
 
+        Set<CoinListInfo> set = new HashSet<>();
+        set.addAll(coinList);                                       //去重
 
-
-        PageInfo<WalletListInfo> pageInfo = new PageInfo(walletVoList);
-        PageBean<WalletListInfo> pageBean = new PageBean();
+        PageInfo<CoinListInfo> pageInfo = new PageInfo(coinList);
+        PageBean<CoinListInfo> pageBean = new PageBean();
         pageBean.setCurrentPage(currentPage);
         pageBean.setCurrentSize(currentSize);
         pageBean.setTotalNum(pageInfo.getTotal());
-        pageBean.setItems(walletVoList);
+        pageBean.setItems(coinList);
 
         return ApiResponseResult.build(200, "success", "查询用户钱包币种列表数据", pageBean);
     }
@@ -714,6 +631,88 @@ public class WalletServiceImpl implements WalletService {
         Integer num = transcationMapper.insertWalletTurnOut(transcation);
 
         return num;
+    }
+
+
+    public CoinListInfo getCoinVoInfo(CoinVoInfo vo,UserVo userInfo){
+
+        String uri = "";
+
+        String str = "";
+
+        Coin coin = new Coin();
+
+        Map<String,String> map = new HashMap<>();
+
+        String address ="";
+
+        BigDecimal price = new BigDecimal("0");
+
+        CoinListInfo coinListInfo = new CoinListInfo();
+        if (!vo.getCoinName().equals("ETH")) {
+
+            uri = url + "/token/balance";
+
+            address = walletMapper.findWalletAddressByUserId(userInfo.getId(), "ETH");
+            map.put("contractAddr", vo.getAddress());
+            map.put("from", address);
+
+            coin = coinMapper.selectCoinByAddress(vo.getAddress());
+            if(null == coin){
+
+                coinListInfo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
+            }else{
+
+                coinListInfo.setWalletTotal(coin.getMarketPrice());            //市场价格
+            }
+
+            coinListInfo.setContractAddr(vo.getAddress());
+
+        }else {
+
+            uri = url + "/address";
+
+            map.put("address", vo.getAddress());
+            address = vo.getAddress();
+
+            coin = coinMapper.selectCoinByAddress("☺");                   //特殊符号查询ETH
+            if(null == coin){
+
+                coinListInfo.setWalletTotal(new BigDecimal("0"));         //如果没有币种价格信息,就默认为0
+            }else{
+
+                coinListInfo.setWalletTotal(coin.getMarketPrice());            //市场价格
+            }
+
+        }
+
+        str = HttpUtils.sendGet(uri, map, 2);
+        if (str == null || str.equals("") || str.equals("null")) {
+
+            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+        }
+
+        price = ObjectUtils.getPrice(str);
+
+        //是否能拿到币种金额
+        Integer compareZero = price.compareTo(BigDecimal.ZERO);
+        if(compareZero == -1){
+
+            throw new WalletException(WalletEnum.WALLET_SYSTEM_ERR);
+        }
+
+
+
+        coinListInfo.setId(vo.getId());
+        coinListInfo.setAddress(address);
+        coinListInfo.setCoinName(vo.getCoinName());
+        //coinListInfo.setCoinId(vo.getCoinId());
+        coinListInfo.setAmount(price);
+        coinListInfo.setCoinImg(vo.getCoinImg());
+
+
+        return coinListInfo;
+
     }
 
 

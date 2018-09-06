@@ -1,7 +1,7 @@
 package com.duck.yellowduck.domain.dao;
 
 import com.duck.yellowduck.domain.model.model.Coin;
-import com.duck.yellowduck.domain.model.vo.CoinVo;
+import com.duck.yellowduck.domain.model.vo.CoinVoInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -26,6 +26,6 @@ public interface CoinMapper {
      * @return
      * @throws Exception
      */
-    List<Coin> selectCoinList();
+    List<CoinVoInfo> selectCoinList();
 
 }

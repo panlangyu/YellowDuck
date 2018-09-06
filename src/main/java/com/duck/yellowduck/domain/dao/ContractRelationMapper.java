@@ -18,7 +18,7 @@ public interface ContractRelationMapper {
      * @return
      * @throws Exception
      */
-    public Integer insertContractRelationInfo(ContractRelation contractRelation)throws Exception;
+    public Integer insertContractRelationInfo(ContractRelation contractRelation);
 
     /**
      * 查询合约币是否存在
@@ -28,7 +28,7 @@ public interface ContractRelationMapper {
      * @throws Exception
      */
     public ContractRelation findWalletByUserIdAndAddress(@Param("userId")Integer userId,
-                                                         @Param("contractAddr")String contractAddr)throws Exception;
+                                                         @Param("contractAddr")String contractAddr);
 
 
 

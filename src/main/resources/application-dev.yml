@@ -64,7 +64,7 @@ logging:
 server:
   context-path: /yellowduck
   port: 8082
-  address: 192.168.10.118
+  #address: 192.168.10.118
   tomcat:
     uri-encoding: UTF-8
 

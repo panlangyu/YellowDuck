@@ -2,11 +2,15 @@ package com.duck.yellowduck.domain.model.vo;
 
 import java.math.BigDecimal;
 
-public class WalletListInfo {
+
+/**
+ * 装配币种列表信息
+ */
+public class CoinListInfo {
 
     private Integer id;
 
-    private Integer coinId;
+    //private Integer coinId;
 
     private String address;
 
@@ -30,13 +34,13 @@ public class WalletListInfo {
         this.id = id;
     }
 
-    public Integer getCoinId() {
+    /*public Integer getCoinId() {
         return coinId;
     }
 
     public void setCoinId(Integer coinId) {
         this.coinId = coinId;
-    }
+    }*/
 
     public String getAddress()
     {

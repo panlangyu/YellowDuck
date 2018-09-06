@@ -3,13 +3,13 @@
 <mapper namespace="com.duck.yellowduck.domain.dao.WalletMapper">
 
     <!-- 封装给客户端的Vo数据 -->
-    <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.WalletVo">
+    <resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.CoinVoInfo">
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="coinId" jdbcType="INTEGER" property="coinId"/>
+        <!--<result column="coinId" jdbcType="INTEGER" property="coinId"/>-->
         <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
         <result column="coinImg" jdbcType="VARCHAR" property="coinImg"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
-        <result column="contractAddr" jdbcType="VARCHAR" property="contractAddr"/>
+        <!--<result column="contractAddr" jdbcType="VARCHAR" property="contractAddr"/>-->
         <result column="userId" jdbcType="INTEGER" property="userId"/>
     </resultMap>
 
@@ -39,20 +39,42 @@
     <!-- 查询用户钱包下的币种信息 -->
     <select id="selectUserWalletInfo" resultMap="BaseResultMap">
 
-        <!--SELECT id,coinName,coinImg,address,contractAddr,userId FROM duck_wallet
+
+        SELECT
+
+        <include refid="Base_Column_ETHInfo"/>
+
+        FROM duck_wallet
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
 
             <if test="userId != null and userId != 0">
                 AND userid = #{userId}
             </if>
-            <if test="coinName != null and coinName.length() > 0">
-                AND coinName = #{coinName}
-            </if>
 
-        </trim>-->
+        </trim>
+
+        UNION ALL
 
         SELECT
+
+        <include refid="Base_Column_HeYueInfo"/>
+
+        FROM duck_coin AS c
+        LEFT JOIN duck_contract_relation AS r  ON c.id = r.coinId
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userid = #{userId}
+            </if>
+
+        </trim>
+
+       /* WHERE userId = 9
+        AND c.id = 2*/
+
+
+        <!--SELECT
 
         <include refid="Base_Column_ETHWallet"/>
 
@@ -64,9 +86,9 @@
             <if test="userId != null and userId != 0">
                 AND userid = #{userId}
             </if>
-          <!--  <if test="coinName != null and coinName.length() > 0">
+          &lt;!&ndash;  <if test="coinName != null and coinName.length() > 0">
                 AND c.coinName = #{coinName}
-            </if>-->
+            </if>&ndash;&gt;
 
         </trim>
 
@@ -84,34 +106,38 @@
             <if test="userId != null and userId != 0">
                 AND userid = #{userId}
             </if>
-           <!-- <if test="coinName != null and coinName.length() > 0">
+           &lt;!&ndash; <if test="coinName != null and coinName.length() > 0">
                 AND c.coinName = #{coinName}
-            </if>-->
+            </if>&ndash;&gt;
 
-        </trim>
+        </trim>-->
 
     </select>
 
     <!-- 查询币种详情单条ETH信息 -->
     <select id="selectETHCoinInfoById" resultMap="BaseResultMap">
 
+
+
+        <!--<include refid="Base_Column_ETHWallet"/>-->
+
         SELECT
 
-        <include refid="Base_Column_ETHWallet"/>
+        <include refid="Base_Column_ETHInfo"/>
 
-        FROM duck_wallet AS w
-        INNER JOIN duck_coin AS c ON w.coinId = c.id
+        FROM duck_wallet
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
 
             <if test="userId != null and userId != 0">
-                AND userId = #{userId}
+                AND userid = #{userId}
             </if>
-            <if test="coinName != null and coinName.length() > 0">
+
+            <!--<if test="coinName != null and coinName.length() > 0">
                 AND c.coinName = #{coinName}
-            </if>
-            <if test="coinId != null and coinId != 0">
-                AND w.coidId = #{coinId}
+            </if>-->
+            <if test="id != null and id != 0">
+                AND id = #{id}
             </if>
 
         </trim>
@@ -123,6 +149,23 @@
 
         SELECT
 
+        <include refid="Base_Column_HeYueInfo"/>
+
+        FROM duck_coin AS c
+        LEFT JOIN duck_contract_relation AS r  ON c.id = r.coinId
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userid = #{userId}
+            </if>
+            <if test="id != null and id != 0">
+                AND c.id = #{id}
+            </if>
+
+        </trim>
+
+        <!--SELECT
+
         <include refid="Base_Column_ContractWallet"/>
 
         FROM duck_contract_relation AS r
@@ -133,14 +176,14 @@
             <if test="userId != null and userId != 0">
                 AND userId = #{userId}
             </if>
-            <if test="coinName != null and coinName.length() > 0">
+           &lt;!&ndash; <if test="coinName != null and coinName.length() > 0">
                 AND c.coinName = #{coinName}
-            </if>
+            </if>&ndash;&gt;
             <if test="coinId != null and coinId != 0">
                 AND w.coidId = #{coinId}
             </if>
 
-        </trim>
+        </trim>-->
 
     </select>
 
@@ -499,6 +542,29 @@
         create_time,
         userId
     </sql>
+
+    <!-- 查询用户ETH封装参数 -->
+    <sql id="Base_Column_ETHInfo">
+
+        id,
+        coinName,
+        coinImg,
+        address,
+        userId
+
+    </sql>
+
+    <!-- 查询用户合约币信息封装参数 -->
+    <sql id="Base_Column_HeYueInfo">
+
+        c.id,
+        c.coinName,
+        c.coinImg,
+        c.address,
+        userId
+
+    </sql>
+
 
 
 </mapper>

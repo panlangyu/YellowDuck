@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.duck.yellowduck.domain.dao.TransferMapper;
 import com.duck.yellowduck.domain.dao.UserMapper;
 import com.duck.yellowduck.domain.dao.WalletMapper;
+import com.duck.yellowduck.domain.enums.TransferEnum;
+import com.duck.yellowduck.domain.exception.TransferException;
 import com.duck.yellowduck.domain.model.model.Transcation;
 import com.duck.yellowduck.domain.model.model.Transfer;
 import com.duck.yellowduck.domain.model.model.Wallet;

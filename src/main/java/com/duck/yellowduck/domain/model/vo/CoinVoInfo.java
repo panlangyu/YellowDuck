@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 /**
  * 封装少量参数
  */
-public class WalletVo {
+public class CoinVoInfo {
 
     private Integer id;
 

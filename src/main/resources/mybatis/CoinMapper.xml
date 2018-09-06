@@ -27,6 +27,14 @@
         <result column="status" jdbcType="INTEGER" property="status"/>
     </resultMap>
 
+    <resultMap id="BaseResultCoin" type="com.duck.yellowduck.domain.model.vo.CoinVoInfo">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
+        <result column="coinImg" jdbcType="VARCHAR" property="coinImg"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+    </resultMap>
+
+
 
     <!-- 公用参数 -->
     <sql id="Base_Column_List">
@@ -67,20 +75,27 @@
 
 
     <!-- 查询为true的币种信息,所有用户可见 -->
-    <select id="selectCoinList" resultMap="BaseResultMapCoin">
+    <select id="selectCoinList" resultMap="BaseResultCoin">
 
           /*SELECT id,`name`,coinName,coinImg,address,marketPrice,`status` FROM duck_coin*/
 
         SELECT
 
-         <include refid="Base_Column_List"/>
+         <include refid="Base_Column_CoinList"/>
 
         FROM duck_coin
 
         WHERE `status` = 0
     </select>
 
+    <sql id="Base_Column_CoinList">
 
+         id,
+         coinName,
+         coinImg,
+         address
+
+    </sql>
 
 
 </mapper>

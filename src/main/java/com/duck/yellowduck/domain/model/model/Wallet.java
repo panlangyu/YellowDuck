@@ -49,6 +49,14 @@ public class Wallet {
         this.id = id;
     }
 
+    public Integer getCoinId() {
+        return coinId;
+    }
+
+    public void setCoinId(Integer coinId) {
+        this.coinId = coinId;
+    }
+
     public String getCoinName() {
         return coinName;
     }
