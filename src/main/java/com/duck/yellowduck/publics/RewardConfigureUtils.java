@@ -29,6 +29,11 @@ public class RewardConfigureUtils
     private BigDecimal outMultiple;
     private Integer factorialNumber;
 
+    private String publicKey;       //公链
+
+    private String privateKey;      //私链
+
+
     public static RewardConfigureUtils getInstance()
     {
         if (configureUtils == null) {
@@ -226,5 +231,21 @@ public class RewardConfigureUtils
     public void setOutMultiple(BigDecimal outMultiple)
     {
         this.outMultiple = outMultiple;
+    }
+
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
+
+    public String getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
     }
 }

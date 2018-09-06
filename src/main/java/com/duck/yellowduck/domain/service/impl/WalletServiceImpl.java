@@ -8,10 +8,7 @@ import com.duck.yellowduck.domain.model.model.*;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 import com.duck.yellowduck.domain.model.vo.*;
 import com.duck.yellowduck.domain.service.WalletService;
-import com.duck.yellowduck.publics.HttpUtils;
-import com.duck.yellowduck.publics.ObjectUtils;
-import com.duck.yellowduck.publics.PageBean;
-import com.duck.yellowduck.publics.RewardConfigureUtils;
+import com.duck.yellowduck.publics.*;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.*;
 
 /**
@@ -45,6 +44,14 @@ public class WalletServiceImpl implements WalletService {
     @Value("${yellowduck.url}")
     private String url ;                                       //第三方服务器端口
 
+    private static String pubkey;                              //RSA加密公链
+
+    private static String prikey;                              //RSA加密私链
+
+    static{
+         pubkey = RewardConfigureUtils.getInstance().getPublicKey();          //获取公链
+         prikey = RewardConfigureUtils.getInstance().getPrivateKey();         //获取私有链
+    }
 
 
     @Override
@@ -532,6 +539,38 @@ public class WalletServiceImpl implements WalletService {
 
         return ApiResponseResult.build(200,"success","用户ETH钱包地址",address);
     }
+
+    @Override
+    public ApiResponseResult rsaShow(String passwd) {
+
+        passwd = ObjectUtils.rsaDecrypt(passwd);           //解密密码
+
+        if(passwd == null || passwd.equals("")){
+
+            throw new WalletException(WalletEnum.WALLET_PASSWD_DAMAGE);
+        }
+
+        //String pubkey = RewardConfigureUtils.getInstance().getPublicKey();          //获取公链
+        //String prikey = RewardConfigureUtils.getInstance().getPrivateKey();         //获取私有链
+        /*String s = "";          //加密后的密码
+        try {
+            System.out.println("公链："+pubkey);
+            System.out.println("私链："+prikey);
+            RSAPublicKey publicKey = RSAEncrypt.loadPublicKey(pubkey);
+            RSAPrivateKey privateKey = RSAEncrypt.loadPrivateKey(prikey);
+            String str = passwd;
+            s = RSAEncrypt.encrypt(publicKey, str.getBytes());
+            System.out.println("加密后：" + s);
+            String s1 = RSAEncrypt.decrypt(privateKey, RSAEncrypt.strToBase64(s));
+            System.out.println(s1);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }*/
+
+        return ApiResponseResult.build(200,"success","资金密码加密",passwd);
+    }
+
 
 
     public Integer insertWalletTurnTo(WalletUtilsVo wallet, Wallet userWalletCoin) {

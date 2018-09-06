@@ -23,7 +23,8 @@ public enum WalletEnum {
     WALLET_ABSENTEEISM_REPEAT(1021,"旷工费不足"),
     WALLET_NOT_BEI_USER_INFO(1022,"被转账用户不存在"),
     WALLET_NOT_BER_USER_REPEAT(1025,"被转账用户没有钱包信息"),
-    WALLET_NOT_ETH_INFO(1026,"用户未拥有ETH钱包");
+    WALLET_NOT_ETH_INFO(1026,"用户未拥有ETH钱包"),
+    WALLET_PASSWD_DAMAGE(1027,"密码数据已损坏");
 
 
 

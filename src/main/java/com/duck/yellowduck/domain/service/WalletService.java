@@ -33,4 +33,8 @@ public interface WalletService {
     /** 查询用户ETH地址 **/
     ApiResponseResult findWalletAddressByUserId(String phone);
 
+    /** 加密钱包密码 **/
+    ApiResponseResult rsaShow(String passwd);
+
+
 }

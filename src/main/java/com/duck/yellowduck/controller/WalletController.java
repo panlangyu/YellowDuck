@@ -103,6 +103,13 @@ public class WalletController {
          return walletService.findWalletAddressByUserId(phone);
     }
 
+    @ApiOperation(value="查询用户ETH钱包地址", notes="ETH钱包地址")
+    @ApiImplicitParam(name="passwd", value="资金密码", dataType="String", paramType="query", required=true)
+    @RequestMapping(value="/rsaShow", method=RequestMethod.GET)
+    public ApiResponseResult rsaShow(@RequestParam("passwd")String passwd){
+
+        return walletService.rsaShow(passwd);
+    }
 
 
 }
