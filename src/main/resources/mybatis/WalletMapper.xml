@@ -64,9 +64,9 @@
             <if test="userId != null and userId != 0">
                 AND userid = #{userId}
             </if>
-            <if test="coinName != null and coinName.length() > 0">
+          <!--  <if test="coinName != null and coinName.length() > 0">
                 AND c.coinName = #{coinName}
-            </if>
+            </if>-->
 
         </trim>
 
@@ -84,9 +84,9 @@
             <if test="userId != null and userId != 0">
                 AND userid = #{userId}
             </if>
-            <if test="coinName != null and coinName.length() > 0">
+           <!-- <if test="coinName != null and coinName.length() > 0">
                 AND c.coinName = #{coinName}
-            </if>
+            </if>-->
 
         </trim>
 
@@ -107,9 +107,11 @@
             <if test="userId != null and userId != 0">
                 AND userId = #{userId}
             </if>
-
-            <if test="id != null and id != 0">
-                AND w.id = #{id}
+            <if test="coinName != null and coinName.length() > 0">
+                AND c.coinName = #{coinName}
+            </if>
+            <if test="coinId != null and coinId != 0">
+                AND w.coidId = #{coinId}
             </if>
 
         </trim>
@@ -131,9 +133,11 @@
             <if test="userId != null and userId != 0">
                 AND userId = #{userId}
             </if>
-
-            <if test="id != null and id != 0">
-                AND r.id = #{id}
+            <if test="coinName != null and coinName.length() > 0">
+                AND c.coinName = #{coinName}
+            </if>
+            <if test="coinId != null and coinId != 0">
+                AND w.coidId = #{coinId}
             </if>
 
         </trim>

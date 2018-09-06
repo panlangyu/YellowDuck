@@ -14,7 +14,8 @@ public enum TransferEnum {
     TRANSFER_ABSENTEEISM_REPEAT(1008,"旷工费不足"),
     TRANSFER_NOT_BEI_TRANSFER_INFO(1009,"被转账用户不存在"),
     TRANSFER_NOT_INFO(1010,"用户未拥有ETH钱包"),
-    TRANSFER_PASSWD_FAIL(1011,"密码输入不正确");
+    TRANSFER_PASSWD_FAIL(1011,"密码输入不正确"),
+    TRANSFER_PASSWD_DAMAGE(1012,"密码数据已损坏");
 
 
     private Integer code;               //状态码

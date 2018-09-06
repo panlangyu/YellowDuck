@@ -2,20 +2,15 @@ package com.duck.yellowduck.domain.model.vo;
 
 import java.math.BigDecimal;
 
-public class WalletListInfo {
-
+public class WalletListInfo
+{
     private Integer id;
-
+    private Integer coinId;
     private String address;
-
     private String contractAddr;
-
     private BigDecimal amount;
-
     private String coinName;
-
     private String coinImg;
-
     private BigDecimal walletTotal;
 
     public Integer getId()

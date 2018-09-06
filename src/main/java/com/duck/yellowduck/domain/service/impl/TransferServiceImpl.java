@@ -83,6 +83,13 @@ public class TransferServiceImpl implements TransferService {
             throw new TransferException(TransferEnum.TRANSFER_NOT_TRANSFER_REPEAT);
         }
 
+        wallet.setPasswd(ObjectUtils.rsaDecrypt(wallet.getPasswd()));               //RSA解密密码
+        if(wallet.getPasswd() == null || wallet.getPasswd().equals("")){
+
+            throw new TransferException(TransferEnum.TRANSFER_PASSWD_DAMAGE);
+        }
+
+
         //验证密码输入是否正确
         if(userWallet.getPasswd() != null && !userWallet.getPasswd().equals("")){
 

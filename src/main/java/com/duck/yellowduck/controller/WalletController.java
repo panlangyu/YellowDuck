@@ -1,5 +1,7 @@
 package com.duck.yellowduck.controller;
 
+import com.duck.yellowduck.domain.enums.WalletEnum;
+import com.duck.yellowduck.domain.exception.WalletException;
 import com.duck.yellowduck.domain.model.model.User;
 import com.duck.yellowduck.domain.model.model.Wallet;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
@@ -38,17 +40,17 @@ public class WalletController {
             @ApiImplicitParam(name="currentPage", value="当前页码", dataType="Integer", paramType="query", required=true),
             @ApiImplicitParam(name="currentSize", value="页面容量", dataType="Integer", paramType="query", required=true),
             @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true),
-            @ApiImplicitParam(name="id", value="钱包编号", dataType="Integer", paramType="query", required=false),
+            @ApiImplicitParam(name="coinId", value="币种编号", dataType="Integer", paramType="query", required=false),
             @ApiImplicitParam(name="coinName", value="币种名称", dataType="String", paramType="query", required=false)
     })
     @RequestMapping(value="/queryUserWalletList", method=RequestMethod.GET)
     public ApiResponseResult queryUserWalletList(@RequestParam("currentPage") Integer currentPage,
                                                  @RequestParam("currentSize") Integer currentSize,
                                                  @RequestParam("phone") String phone,
-                                                 @RequestParam(value="id",required = false) Integer id,
+                                                 @RequestParam(value="coinId",required = false) Integer coinId,
                                                  @RequestParam(value="coinName", required=false) String coinName) {
 
-        return walletService.findUserWalletList(currentPage,currentSize,phone,id,coinName);
+        return walletService.findUserWalletList(currentPage,currentSize,phone,coinId,coinName);
     }
 
     @ApiOperation(value="用户提币", notes="调用第三方转账")
@@ -56,6 +58,27 @@ public class WalletController {
     @RequestMapping(value="/modifyWithdrawMoney", method=RequestMethod.POST)
     public ApiResponseResult modifyWithdrawMoney(@RequestBody WalletUtilsVo wallet,
                                                  HttpServletRequest request){
+
+        //验证手机号是否输入
+        if(wallet.getPhone() == null || wallet.getPhone().equals("") || wallet.getPhone().equals("\"\"") || wallet.getPhone().equals("''")){
+
+            throw new WalletException(WalletEnum.WALLET_PHONE_NULL);
+        }
+        //验证钱包编号是否输入
+        if(wallet.getId() == null || wallet.getId() <= 0 ){
+
+            throw new WalletException(WalletEnum.WALLET_ID_NULL);
+        }
+        //验证转入地址是否输入
+        if(wallet.getAddress() == null || wallet.getAddress().equals("") || wallet.getAddress().equals("\"\"") || wallet.getAddress().equals("''")){
+
+            throw new WalletException(WalletEnum.WALLET_ADDRESS_NULL);
+        }
+        //验证数量是否输入
+        if(wallet.getValue() == null || wallet.getValue().equals("") || wallet.getValue().equals("\"\"") || wallet.getValue().equals("''")){
+
+            throw new WalletException(WalletEnum.WALLET_VALUE_NULL);
+        }
 
         return walletService.modifyWithdrawMoney(wallet);
     }
@@ -68,6 +91,17 @@ public class WalletController {
     @RequestMapping(value="/queryContractAddr", method=RequestMethod.GET)
     public ApiResponseResult queryContractAddr(@RequestParam("phone") String phone,
                                                @RequestParam("contractAddr") String contractAddr) {
+
+        //验证手机号是否输入
+        if(phone == null || phone.equals("") || phone.equals("\"\"") || phone.equals("''")){
+
+            throw new WalletException(WalletEnum.WALLET_PHONE_NULL);
+        }
+        //验证合约币地址是否输入
+        if(contractAddr == null || contractAddr.equals("") || contractAddr.equals("\"\"") || contractAddr.equals("''")){
+
+            throw new WalletException(WalletEnum.WALLET_CONTRACTADDR_NULL);
+        }
 
          return walletService.queryContractAddr(phone, contractAddr);
     }
@@ -91,6 +125,12 @@ public class WalletController {
     @RequestMapping(value="/queryWalletListInfo", method=RequestMethod.GET)
     public ApiResponseResult queryWalletListInfo(@RequestParam("phone")String phone){
 
+        //验证手机号是否输入
+        if(phone == null || phone.equals("") || phone.equals("\"\"") || phone.equals("''")){
+
+            throw new WalletException(WalletEnum.WALLET_PHONE_NULL);
+        }
+
         return walletService.findWalletListInfo(phone);
     }
 
@@ -100,9 +140,22 @@ public class WalletController {
     @RequestMapping(value="/queryWalletAddressByUserId", method=RequestMethod.GET)
     public ApiResponseResult queryWalletAddressByUserId(@RequestParam("phone")String phone){
 
-         return walletService.findWalletAddressByUserId(phone);
+        //验证手机号是否输入
+        if(phone == null || phone.equals("") || phone.equals("\"\"") || phone.equals("''")){
+
+            throw new WalletException(WalletEnum.WALLET_PHONE_NULL);
+        }
+
+        return walletService.findWalletAddressByUserId(phone);
     }
 
+    @ApiOperation(value="查询用户ETH钱包地址", notes="ETH钱包地址")
+    @ApiImplicitParam(name="passwd", value="资金密码", dataType="String", paramType="query", required=true)
+    @RequestMapping(value="/rsaShow", method=RequestMethod.GET)
+    public ApiResponseResult rsaShow(@RequestParam("passwd")String passwd){
+
+        return walletService.rsaShow(passwd);
+    }
 
 
 }

@@ -9,7 +9,10 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -17,10 +20,40 @@ import java.sql.SQLException;
 /**
  * 系统异常的统一处理
  */
+@RestController
+@ControllerAdvice
 public class RestExceptionHandler {
 
 
     private final static Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
+
+
+    //运行参数数值转换
+    @ExceptionHandler(value=NumberFormatException.class)
+    public ApiResponseResult numberFormatException(NumberFormatException ex){
+
+        this.logger.error("【服务器运行数值转换异常】 {} : "+ ex.getMessage());
+        ex.printStackTrace();
+        return ApiResponseResult.build(500,"error","[服务器运行数值转换异常]："+ex.getMessage(),"");
+    }
+
+    //参数数值转换
+    @ExceptionHandler(value=MethodArgumentTypeMismatchException.class)
+    public ApiResponseResult methodArgumentTypeMismatchException(MethodArgumentTypeMismatchException ex){
+
+        this.logger.error("【服务器参数数值转换异常】 {} : "+ ex.getMessage());
+        ex.printStackTrace();
+        return ApiResponseResult.build(500,"error","[服务器参数数值转换异常]：Failed to convert value of type 'java.lang.String' to required type 'java.lang.Integer'","");
+    }
+
+    //RSA加密异常
+    @ExceptionHandler(value=ArrayIndexOutOfBoundsException.class)
+    public ApiResponseResult arrayIndexOutOfBoundsException(ArrayIndexOutOfBoundsException ex) {
+
+        this.logger.error("【服务器加密算法异常】 {} : "+ ex.getMessage());
+        ex.printStackTrace();
+        return ApiResponseResult.build(1012,"error","[服务器加密算法异常]：too much data for RSA block","");
+    }
 
     //空值异常
     @ExceptionHandler(value = NullPointerException.class)
@@ -122,7 +155,7 @@ public class RestExceptionHandler {
 
         this.logger.error("[服务器错误] : " + ex.getMessage());
         ex.printStackTrace();
-        return ApiResponseResult.build(1002,"error","[服务器错误,请联系管理员]","");
+        return ApiResponseResult.build(1002,"error","[服务器错误,请联系管理员]"+ex.getMessage(),"");
     }
 
     //所有异常
@@ -131,7 +164,7 @@ public class RestExceptionHandler {
 
         this.logger.error("[服务器错误] : "+ ex.getMessage());
         ex.printStackTrace();
-        return ApiResponseResult.build(1001,"error","[服务器错误,请联系管理员]","");
+        return ApiResponseResult.build(1001,"error","[服务器错误,请联系管理员]"+ex.getMessage(),"");
     }
 
 

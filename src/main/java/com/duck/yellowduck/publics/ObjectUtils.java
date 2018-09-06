@@ -2,6 +2,8 @@ package com.duck.yellowduck.publics;
 
 import com.alibaba.fastjson.JSONObject;
 import java.math.BigDecimal;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
 /**
@@ -161,6 +163,32 @@ public class ObjectUtils {
 
         return coinName;
     }
+
+    /** rsa解密密码 **/
+    public static String rsaDecrypt(String passwd){
+
+        //String pubkey = RewardConfigureUtils.getInstance().getPublicKey();          //获取公链
+        String prikey = RewardConfigureUtils.getInstance().getPrivateKey();         //获取私有链
+
+        //System.out.println("pubkey:" + pubkey);
+        System.out.println("prikey:" + prikey);
+        String decryptPasswd ="";          //解密后的密码
+        try {
+
+            //RSAPublicKey publicKey = RSAEncrypt.loadPublicKey(pubkey);
+            RSAPrivateKey privateKey = RSAEncrypt.loadPrivateKey(prikey);
+            //String str = passwd;
+            //s = RSAEncrypt.encrypt(publicKey, str.getBytes());
+            System.out.println("加密后：" + passwd);
+            decryptPasswd = RSAEncrypt.decrypt(privateKey, RSAEncrypt.strToBase64(passwd));
+            System.out.println(decryptPasswd);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return decryptPasswd;
+    }
+
 
 
 

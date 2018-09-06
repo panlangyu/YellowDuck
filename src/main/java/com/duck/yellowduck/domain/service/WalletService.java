@@ -13,7 +13,7 @@ public interface WalletService {
     ApiResponseResult createWalletInfo(User user) ;
 
     /** 查询用户钱包信息 **/
-    ApiResponseResult findUserWalletList(Integer currentPage,Integer currentSize,String phone,Integer id, String coinName) ;
+    ApiResponseResult findUserWalletList(Integer currentPage,Integer currentSize,String phone,Integer coinId, String coinName) ;
 
     /** 用户提币 **/
     ApiResponseResult modifyWithdrawMoney(WalletUtilsVo walletUtilsVo) ;
@@ -32,5 +32,9 @@ public interface WalletService {
 
     /** 查询用户ETH地址 **/
     ApiResponseResult findWalletAddressByUserId(String phone);
+
+    /** 加密钱包密码 **/
+    ApiResponseResult rsaShow(String passwd);
+
 
 }

@@ -26,6 +26,6 @@ public interface CoinMapper {
      * @return
      * @throws Exception
      */
-    List<CoinVo> selectCoinList();
+    List<Coin> selectCoinList();
 
 }
