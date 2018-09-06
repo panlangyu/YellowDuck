@@ -24,7 +24,15 @@ public enum WalletEnum {
     WALLET_NOT_BEI_USER_INFO(1022,"被转账用户不存在"),
     WALLET_NOT_BER_USER_REPEAT(1025,"被转账用户没有钱包信息"),
     WALLET_NOT_ETH_INFO(1026,"用户未拥有ETH钱包"),
-    WALLET_PASSWD_DAMAGE(1027,"密码数据已损坏");
+    WALLET_PASSWD_DAMAGE(1027,"密码数据已损坏"),
+
+    //非空验证
+    WALLET_PASSWD_NULL(2001,"请输入资金密码"),
+    WALLET_PHONE_NULL(2002,"请输入手机号码"),
+    WALLET_CONTRACTADDR_NULL(2005,"请输入合约币地址"),
+    WALLET_ID_NULL(2006,"请输入正确的编号"),
+    WALLET_ADDRESS_NULL(2007,"请输入转入地址"),
+    WALLET_VALUE_NULL(2008,"请输入转账数量");
 
 
 

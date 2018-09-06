@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 public class WalletListInfo
 {
     private Integer id;
+    private Integer coinId;
     private String address;
     private String contractAddr;
     private BigDecimal amount;
@@ -20,6 +21,14 @@ public class WalletListInfo
     public void setId(Integer id)
     {
         this.id = id;
+    }
+
+    public Integer getCoinId() {
+        return coinId;
+    }
+
+    public void setCoinId(Integer coinId) {
+        this.coinId = coinId;
     }
 
     public String getAddress()

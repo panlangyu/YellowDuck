@@ -7,7 +7,6 @@ import com.duck.yellowduck.domain.dao.UserMapper;
 import com.duck.yellowduck.domain.dao.WalletMapper;
 import com.duck.yellowduck.domain.enums.TransferEnum;
 import com.duck.yellowduck.domain.exception.TransferException;
-import com.duck.yellowduck.domain.exception.WalletException;
 import com.duck.yellowduck.domain.model.model.Transfer;
 import com.duck.yellowduck.domain.model.model.Wallet;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
@@ -85,11 +84,11 @@ public class TransferServiceImpl implements TransferService {
             throw new TransferException(TransferEnum.TRANSFER_NOT_TRANSFER_REPEAT);
         }
 
-        /*wallet.setPasswd(ObjectUtils.rsaDecrypt(wallet.getPasswd()));               //RSA解密密码
+        wallet.setPasswd(ObjectUtils.rsaDecrypt(wallet.getPasswd()));               //RSA解密密码
         if(wallet.getPasswd() == null || wallet.getPasswd().equals("")){
 
             throw new TransferException(TransferEnum.TRANSFER_PASSWD_DAMAGE);
-        }*/
+        }
 
 
         //验证密码输入是否正确

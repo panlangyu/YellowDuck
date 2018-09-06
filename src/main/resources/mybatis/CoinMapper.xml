@@ -66,11 +66,18 @@
     </select>
 
 
-    <!-- 查询币种信息 -->
-    <select id="selectCoinList" resultMap="BaseResultMap">
+    <!-- 查询为true的币种信息,所有用户可见 -->
+    <select id="selectCoinList" resultMap="BaseResultMapCoin">
 
-          SELECT id,`name`,coinName,coinImg,address,marketPrice,`status` FROM duck_coin
+          /*SELECT id,`name`,coinName,coinImg,address,marketPrice,`status` FROM duck_coin*/
 
+        SELECT
+
+         <include refid="Base_Column_List"/>
+
+        FROM duck_coin
+
+        WHERE `status` = 0
     </select>
 
 
