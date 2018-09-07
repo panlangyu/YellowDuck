@@ -17,6 +17,17 @@ public class WalletStatusVo {
     //private Boolean status;             //状态
 
 
+    @Override
+    public boolean equals(Object obj) {
+        WalletStatusVo p = (WalletStatusVo) obj;
+        return p.id == this.id;
+    }
+    //重写hashcode()方法:
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
     public Integer getId() {
         return id;
     }

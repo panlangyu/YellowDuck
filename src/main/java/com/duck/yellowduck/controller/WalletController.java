@@ -50,6 +50,14 @@ public class WalletController {
                                                  @RequestParam(value="id",required = false) Integer id,
                                                  @RequestParam(value="coinName", required=false) String coinName) {
 
+        if((id == null || id <= 0) && (coinName!=null && !coinName.equals(""))){
+
+            throw new WalletException(WalletEnum.WALLET_IDANDNAME_NULL);
+        }
+        if((id != null && id > 0) && (coinName == null || coinName.equals(""))){
+
+            throw new WalletException(WalletEnum.WALLET_IDANDNAME_NULL);
+        }
         return walletService.findUserWalletList(currentPage,currentSize,phone,id,coinName);
     }
 
@@ -103,7 +111,7 @@ public class WalletController {
             throw new WalletException(WalletEnum.WALLET_CONTRACTADDR_NULL);
         }
 
-         return walletService.queryContractAddr(phone, contractAddr);
+        return walletService.queryContractAddr(phone, contractAddr);
     }
 
     @ApiOperation(value="查询所有账户", notes="所有账户")

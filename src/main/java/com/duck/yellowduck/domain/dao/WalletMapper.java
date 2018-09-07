@@ -21,11 +21,11 @@ public interface WalletMapper {
 
     /** 查询币种详情ETH币种信息 **/
     List<CoinVoInfo> selectETHCoinInfoById(@Param("currentPage") Integer currentPage, @Param("currentSize") Integer currentSize,
-                                         @Param("userId") Integer userId,@Param("coinName") String coinName, @Param("id") Integer id);
+                                           @Param("userId") Integer userId,@Param("coinName") String coinName, @Param("id") Integer id);
 
     /** 查询币种详情合约币信息 **/
     List<CoinVoInfo> selectContractCoinInfoById(@Param("currentPage") Integer currentPage, @Param("currentSize") Integer currentSize,
-                                              @Param("userId") Integer userId,@Param("coinName") String coinName, @Param("id") Integer id);
+                                                @Param("userId") Integer userId,@Param("coinName") String coinName, @Param("id") Integer id);
 
     /** 给当前操作的行加锁(共享锁) **/
     List<Wallet> lockWalletTable(@Param("id")Integer id) ;
@@ -51,6 +51,9 @@ public interface WalletMapper {
 
     /** 用户钱包信息 **/
     List<Wallet> findUserWalletInfo(@Param("userId") Integer userId);
+
+    /** ETH信息 **/
+    WalletStatusVo findWalletETHListInfo(@Param("userId") Integer userId);
 
     /** 查询用户下的币种信息,基本信息 **/
     List<WalletStatusVo> findWalletListInfo(@Param("userId") Integer userId);

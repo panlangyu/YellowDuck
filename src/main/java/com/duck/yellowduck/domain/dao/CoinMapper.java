@@ -13,19 +13,13 @@ import java.util.List;
 public interface CoinMapper {
 
 
-    /**
-     * 查询单条币种信息
-     * @param address
-     * @return
-     * @throws Exception
-     */
+    /** 查询单条币种信息 **/
     Coin selectCoinByAddress(@Param("address")String address);
 
-    /**
-     * 查询所有币种信息
-     * @return
-     * @throws Exception
-     */
+    /** 查询所有币种信息 **/
     List<CoinVoInfo> selectCoinList();
+
+    /** 按编号查询币种单条信息 **/
+    CoinVoInfo selectCoinById(@Param("id")Integer id,@Param("coinName")String coinName);
 
 }

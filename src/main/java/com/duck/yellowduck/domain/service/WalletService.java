@@ -1,8 +1,10 @@
 package com.duck.yellowduck.domain.service;
 
 import com.duck.yellowduck.domain.model.model.User;
+import com.duck.yellowduck.domain.model.model.Wallet;
 import com.duck.yellowduck.domain.model.response.ApiResponseResult;
 import com.duck.yellowduck.domain.model.vo.WalletUtilsVo;
+import com.duck.yellowduck.domain.model.vo.WalletVXUtilsVo;
 
 /**
  * 钱包Service

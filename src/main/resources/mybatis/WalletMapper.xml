@@ -16,7 +16,7 @@
     <!-- 封装条件 -->
     <resultMap id="BaseResultMapWallet" type="com.duck.yellowduck.domain.model.model.Wallet">
         <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="coinId" jdbcType="INTEGER" property="coinId"/>
+        <!--<result column="coinId" jdbcType="INTEGER" property="coinId"/>-->
         <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="contractAddr" jdbcType="VARCHAR" property="contractAddr"/>
@@ -132,10 +132,9 @@
             <if test="userId != null and userId != 0">
                 AND userid = #{userId}
             </if>
-
-            <!--<if test="coinName != null and coinName.length() > 0">
-                AND c.coinName = #{coinName}
-            </if>-->
+            <if test="coinName != null and coinName.length() > 0">
+                AND coinName = #{coinName}
+            </if>
             <if test="id != null and id != 0">
                 AND id = #{id}
             </if>
@@ -157,6 +156,9 @@
 
             <if test="userId != null and userId != 0">
                 AND userid = #{userId}
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+                AND c.coinName = #{coinName}
             </if>
             <if test="id != null and id != 0">
                 AND c.id = #{id}
@@ -285,7 +287,6 @@
     <insert id="insertWalletInfo" parameterType="com.duck.yellowduck.domain.model.model.Wallet">
 
         INSERT INTO duck_wallet(
-                coinId,
                 coinName,
                 coinImg,
                 address,
@@ -298,7 +299,6 @@
                 userId
                 )
         VALUES(
-            #{coinId},
             #{coinName},
             #{coinImg},
             #{address},
@@ -411,24 +411,15 @@
 
     </select>
 
-    <!-- 查询用户下的币种信息,名称 -->
-    <select id="findWalletListInfo" parameterType="java.lang.Integer" resultMap="BaseResultWallet">
 
-        SELECT w.id,c.coinName,w.address,w.contractAddr FROM duck_wallet w
-        INNER JOIN duck_coin c ON w.coinId = c.id
+    <!---->
+    <select id="findWalletETHListInfo" parameterType="java.lang.Integer" resultMap="BaseResultWallet">
 
-        <trim prefix="WHERE" prefixOverrides="AND | OR">
+         SELECT
 
-            <if test="userId != null and userId != 0">
-                AND userId = #{userId}
-            </if>
+       id,coinName,address
 
-        </trim>
-
-        UNION ALL
-
-        SELECT r.id,c.coinName,r.address,r.contractAddr FROM duck_contract_relation r
-        INNER JOIN duck_coin c ON r.coinId = c.id
+        FROM duck_wallet
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
 
@@ -437,23 +428,32 @@
             </if>
 
         </trim>
-
-
-        <!--SELECT coinName FROM duck_wallet
-
-        <trim prefix="WHERE" prefixOverrides="AND | OR">
-
-            <if test="userId != null and userId != 0">
-                AND userId = #{userId}
-            </if>
-
-        </trim>-->
-
-
-
-
 
     </select>
+
+    <!---->
+    <select id="findWalletListInfo" parameterType="java.lang.Integer" resultMap="BaseResultWallet">
+
+
+        SELECT
+
+        c.id,c.coinName,c.address
+
+        FROM duck_coin AS c
+        LEFT JOIN duck_contract_relation AS r  ON c.id = r.coinId
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="userId != null and userId != 0">
+                AND userId = #{userId}
+            </if>
+
+        </trim>
+
+    </select>
+
+
+
 
     <!-- 查询用户是否已拥有ETH -->
     <!-- <select id="findUserWalletCount" resultType="java.lang.Integer">

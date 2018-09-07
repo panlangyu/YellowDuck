@@ -10,7 +10,7 @@ public class Wallet {
 
     private Integer id;                     //编号
 
-    private Integer coinId;                 //币种编号
+    //private Integer coinId;                 //币种编号
 
     private String coinName;                //币种名称
 
@@ -49,13 +49,13 @@ public class Wallet {
         this.id = id;
     }
 
-    public Integer getCoinId() {
+   /* public Integer getCoinId() {
         return coinId;
     }
 
     public void setCoinId(Integer coinId) {
         this.coinId = coinId;
-    }
+    }*/
 
     public String getCoinName() {
         return coinName;

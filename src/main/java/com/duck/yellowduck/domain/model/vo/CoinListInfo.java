@@ -42,6 +42,19 @@ public class CoinListInfo {
         this.coinId = coinId;
     }*/
 
+    //重写equals()方法:判断唯一编号是否相等;
+    @Override
+    public boolean equals(Object obj) {
+        CoinListInfo p = (CoinListInfo) obj;
+        return p.id == this.id;
+    }
+    //重写hashcode()方法:
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
+
     public String getAddress()
     {
         return this.address;

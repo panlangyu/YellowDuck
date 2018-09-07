@@ -56,7 +56,7 @@
 
         SELECT
 
-         <include refid="Base_Column_List"/>
+        <include refid="Base_Column_List"/>
 
         FROM duck_coin
 
@@ -77,15 +77,40 @@
     <!-- 查询为true的币种信息,所有用户可见 -->
     <select id="selectCoinList" resultMap="BaseResultCoin">
 
-          /*SELECT id,`name`,coinName,coinImg,address,marketPrice,`status` FROM duck_coin*/
+        /*SELECT id,`name`,coinName,coinImg,address,marketPrice,`status` FROM duck_coin*/
 
         SELECT
 
-         <include refid="Base_Column_CoinList"/>
+        <include refid="Base_Column_CoinList"/>
 
         FROM duck_coin
 
         WHERE `status` = 0
+    </select>
+
+
+    <!-- 查询单条币种信息 -->
+    <select id="selectCoinById" resultMap="BaseResultCoin">
+
+        SELECT
+
+        <include refid="Base_Column_CoinList"/>
+
+        FROM duck_coin
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="id != null and id != 0">
+
+                AND  id = #{id}
+            </if>
+            <if test="coinName != null and coinName.length() > 0">
+
+                AND  coinName = #{coinName}
+            </if>
+
+        </trim>
+
     </select>
 
     <sql id="Base_Column_CoinList">

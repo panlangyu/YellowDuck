@@ -2,32 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.duck.yellowduck.domain.dao.ContractRelationMapper">
 
-    <!-- 封装给客户端的Vo数据 -->
-    <!--<resultMap id="BaseResultMap" type="com.duck.yellowduck.domain.model.vo.WalletVo">
-        <id column="id" jdbcType="INTEGER" property="id"/>
-        <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
-        <result column="coinImg" jdbcType="VARCHAR" property="coinImg"/>
-        <result column="address" jdbcType="VARCHAR" property="address"/>
-        <result column="contractAddr" jdbcType="VARCHAR" property="contractAddr"/>
-        <result column="userId" jdbcType="INTEGER" property="userId"/>
-    </resultMap>-->
-
     <!-- 封装条件 -->
     <resultMap id="BaseResultMapWallet" type="com.duck.yellowduck.domain.model.model.ContractRelation">
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="coinId" jdbcType="INTEGER" property="coinId"/>
-        <result column="coinName" jdbcType="VARCHAR" property="coinName"/>
-        <result column="address" jdbcType="VARCHAR" property="address"/>
-        <result column="contractAddr" jdbcType="VARCHAR" property="contractAddr"/>
-        <result column="privateKey" jdbcType="VARCHAR" property="privateKey"/>
         <result column="passwd" jdbcType="VARCHAR" property="passwd"/>
-        <result column="keystore" jdbcType="VARCHAR" property="keystore"/>
         <result column="createTime" jdbcType="TIMESTAMP" property="createTime"/>
         <result column="userId" jdbcType="INTEGER" property="userId"/>
     </resultMap>
-
-
-
 
 
     <!-- 新增合约币信息 -->
@@ -117,16 +99,9 @@
                 AND userId = #{userId}
             </if>
 
-            <if test="contractAddr != null and contractAddr.length() > 0">
-                AND contractAddr = #{contractAddr}
-            </if>
-
         </trim>
 
     </select>
-
-
-
 
 
 
@@ -136,12 +111,7 @@
     <sql id="Base_Column_List">
         id,
         coinId,
-        coinName,
-        address,
-        contractAddr,
-        privateKey,
         passwd,
-        keystore,
         createTime,
         userId
     </sql>
