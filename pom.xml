@@ -78,7 +78,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <!-- 打成war包时把注释打开,剔除tomcat -->
-           <!-- <exclusions>
+            <!--<exclusions>
                  <exclusion>
                      <groupId>org.springframework.boot</groupId>
                      <artifactId>spring-boot-starter-tomcat</artifactId>
@@ -451,10 +451,10 @@
                 </configuration>
             </plugin>
 
-            <plugin>
+           <!-- <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+            </plugin>-->
 
         </plugins>
     </build>
