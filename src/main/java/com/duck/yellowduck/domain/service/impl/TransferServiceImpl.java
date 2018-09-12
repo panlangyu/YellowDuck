@@ -150,7 +150,7 @@ public class TransferServiceImpl implements TransferService {
         Map<String, String> amountMap = new HashMap();
         Map<String, String> txMap = new HashMap();
 
-        if (userWallet.getContractAddr() != null && (!userWallet.getContractAddr().equals(""))) {
+        if (userWallet.getContractAddr() != null && !userWallet.getContractAddr().equals("")) {
 
             uri = url + "/token/balance";
 
@@ -263,7 +263,7 @@ public class TransferServiceImpl implements TransferService {
 
         List<TransferVo> voList = transferMapper.findUserTransferInfo(currentPage,currentSize,user.getId(),startTime,endTime);
 
-        if (null == voList) {
+        if (voList.isEmpty()) {
 
             throw new TransferException(TransferEnum.TRANSFER_NOT_INFO);
         }

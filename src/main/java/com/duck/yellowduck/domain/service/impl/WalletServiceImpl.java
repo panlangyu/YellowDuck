@@ -130,10 +130,6 @@ public class WalletServiceImpl implements WalletService {
 
         PageHelper.startPage(currentPage, currentSize);
 
-        List<CoinVoInfo> walletVoList = new ArrayList();
-
-        List<WalletVo> voList = null;                       //用户币种列表,单条信息
-
         List<CoinVoInfo> coinVoInfoList = null;
 
         List<CoinListInfo> coinList = new ArrayList<>();
@@ -149,7 +145,7 @@ public class WalletServiceImpl implements WalletService {
 
             coinVoInfoList = walletMapper.selectContractCoinInfoById(currentPage,currentSize,userInfo.getId(),coinName, id);
 
-            if(null == coinVoInfoList || coinVoInfoList.size() == 0 ){
+            if(coinVoInfoList.isEmpty()){
 
                 voInfo = coinMapper.selectCoinById(id,coinName);
 
@@ -163,20 +159,14 @@ public class WalletServiceImpl implements WalletService {
             coinVoInfoList = walletMapper.selectUserWalletInfo(currentPage,currentSize,userInfo.getId(), coinName);
         }
 
-        if (null == coinVoInfoList) {
+        if (coinVoInfoList.isEmpty()) {
 
             throw new WalletException(WalletEnum.WALLET_NOT_LIST_INFO);
         }
 
         CoinListInfo coinListInfo = new CoinListInfo();
 
-        //ETH
-        /*for(CoinVoInfo vo : walletVoList){
-            coinListInfo = getCoinVoInfo(vo,userInfo);
 
-            coinList.add(coinListInfo);
-        }
-*/
         for (CoinVoInfo vo : coinVoInfoList) {
 
             coinListInfo = getCoinVoInfo(vo,userInfo);
@@ -189,7 +179,7 @@ public class WalletServiceImpl implements WalletService {
 
             List<CoinVoInfo> listCoin = coinMapper.selectCoinList();
 
-            if(listCoin != null && listCoin.size() > 0){
+            if(!listCoin.isEmpty()){
 
                 // 循环币种为true的给所有用户
                 for(CoinVoInfo coinVoInfo : listCoin){
@@ -379,7 +369,7 @@ public class WalletServiceImpl implements WalletService {
         }
 
         List<Wallet> walletList = walletMapper.findUserWalletInfo(userInfo.getId());
-        if (null == walletList && walletList.size() == 0) {
+        if (walletList.isEmpty()) {
 
             throw new WalletException(WalletEnum.WALLET_NOT_LIST_INFO);
         }
@@ -465,7 +455,7 @@ public class WalletServiceImpl implements WalletService {
 
         Map<String, String> map = new HashMap();
         String str = HttpUtils.sendGet(uri, map, 2);
-        if ((str == null) || (str.equals(""))) {
+        if (str == null || str.equals("") || str.equals("null")) {
 
             throw new WalletException(WalletEnum.WALLET_NOT_ACCOUNT_INFO);
         }
@@ -510,7 +500,7 @@ public class WalletServiceImpl implements WalletService {
 
         if(null == ethInfo){
 
-            if (null == voList || voList.size() == 0) {
+            if (voList.isEmpty()) {
 
                 throw new WalletException(WalletEnum.WALLET_NOT_USER_REPEAT);
             }
@@ -565,10 +555,10 @@ public class WalletServiceImpl implements WalletService {
         for(WalletStatusVo statusVo : statusVoList){
 
             if(!statusVos.contains(statusVo)){
+
                 statusVos.add(statusVo);
             }
         }
-
 
         return ApiResponseResult.build(200, "success", "用户币种列表", statusVos);
     }

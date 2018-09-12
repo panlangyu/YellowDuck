@@ -31,7 +31,7 @@ public class ReceiveRecordServiceImpl implements ReceiveRecordService {
         PageHelper.startPage(currentPage,currentSize);
 
         List<ReceiveRecord> voList = receiveRecordMapper.selectReceiveRecordListInfo(currentPage,currentSize,address);
-        if(null == voList || voList.size() == 0 ){
+        if(voList.isEmpty()){
 
             throw new ReceiveRecordException(ReceiveRecordEnum.RECEIVE_NOT_INFO);
         }
