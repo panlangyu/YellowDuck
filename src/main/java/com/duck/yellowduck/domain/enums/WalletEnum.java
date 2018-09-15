@@ -33,7 +33,7 @@ public enum WalletEnum {
     WALLET_ID_NULL(2006,"请输入正确的编号"),
     WALLET_ADDRESS_NULL(2007,"请输入转入地址"),
     WALLET_VALUE_NULL(2008,"请输入转账数量"),
-    WALLET_IDANDNAME_NULL(2009,"编号和币种名称都不能为空");
+    WALLET_IDANDNAME_NULL(2009,"编号和币种名称不能为空");
 
 
 

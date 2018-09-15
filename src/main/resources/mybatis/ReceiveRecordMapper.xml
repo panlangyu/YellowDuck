@@ -8,19 +8,30 @@
         <id column="id" jdbcType="INTEGER" property="id"/>
         <result column="address" jdbcType="VARCHAR" property="address"/>
         <result column="amount" jdbcType="DECIMAL" property="amount"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="synchronization_create_time" jdbcType="TIMESTAMP" property="createTime"/>
     </resultMap>
 
 
     <!-- 公用参数 -->
-    <sql id="Base_Column_List">
+    <!--<sql id="Base_Column_List">
 
         id,
         address,
         amount,
         create_time
 
+    </sql>-->
+
+    <sql id="Base_Column_List">
+
+         r.id,
+         r.address,
+         r.amount,
+         u.synchronization_create_time
+
     </sql>
+
+
 
     <!-- 查询用户领取记录信息,可按地址查询单条 -->
     <select id="selectReceiveRecordListInfo" resultMap="BaseResultMap" parameterType="java.lang.String">
@@ -29,13 +40,15 @@
 
         <include refid="Base_Column_List"/>
 
-        FROM duck_receive_record
+        FROM duck_receive_record AS r
+        INNER JOIN duck_wallet AS w ON r.address = w.address
+        INNER JOIN duck_user AS u ON w.userId = u.id
 
         <trim prefix="WHERE" prefixOverrides="AND | OR">
 
             <if test="address != null and address.length() > 0">
 
-                AND  address = #{address}
+                AND  r.address = #{address}
 
             </if>
 
