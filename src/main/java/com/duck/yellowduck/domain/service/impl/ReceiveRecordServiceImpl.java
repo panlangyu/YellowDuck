@@ -46,7 +46,20 @@ public class ReceiveRecordServiceImpl implements ReceiveRecordService {
         return ApiResponseResult.build(200,"success","查询用户领取记录",pageBean);
     }
 
+    @Override
+    public ApiResponseResult findReceiveIsTrue(String phone) {
 
+        Boolean flag = true;
+
+        Integer result = receiveRecordMapper.selectReceiveIsTrue(phone);
+
+        if(result == 0){
+
+            flag = false;
+        }
+
+        return ApiResponseResult.build(200,"success","查询用户是否领取福利",flag);
+    }
 
 
 }

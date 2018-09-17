@@ -16,4 +16,8 @@ public interface ReceiveRecordMapper {
                                                     @Param("currentSize")Integer currentSize,
                                                     @Param("address")String address);
 
+
+    /** 查询用户是否领取过记录 **/
+    Integer selectReceiveIsTrue(@Param("phone")String phone);
+
 }

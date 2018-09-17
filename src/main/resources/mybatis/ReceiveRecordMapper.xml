@@ -57,6 +57,30 @@
     </select>
 
 
+    <!-- 查询用户是否领取过 -->
+    <select id="selectReceiveIsTrue"  resultType="java.lang.Integer"  parameterType="java.lang.String">
+
+        SELECT
+
+          COUNT(*)
+
+        FROM duck_receive_record AS r
+        INNER JOIN duck_wallet AS w ON r.address = w.address
+        INNER JOIN duck_user AS u ON w.userId = u.id
+
+        <trim prefix="WHERE" prefixOverrides="AND | OR">
+
+            <if test="phone != null and phone.length() > 0">
+
+                AND  phone = #{phone}
+
+            </if>
+
+        </trim>
+
+    </select>
+
+
 
 
 </mapper>

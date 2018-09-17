@@ -31,6 +31,14 @@ public class ReceiveRecordController {
         return receiveRecordService.findReceiveRecordListInfo(currentPage,currentSize,address);
     }
 
+    @ApiOperation(value="查询用户是否领取过", notes="按手机号去查询")
+    @ApiImplicitParam(name="phone", value="手机号", dataType="String", paramType="query", required=true)
+    @RequestMapping(value={"/queryUserReceiveIsTrue"}, method=RequestMethod.GET)
+    public ApiResponseResult queryUserReceiveIsTrue(@RequestParam("phone") String phone){
+
+        return receiveRecordService.findReceiveIsTrue(phone);
+    }
+
 
 
 }
