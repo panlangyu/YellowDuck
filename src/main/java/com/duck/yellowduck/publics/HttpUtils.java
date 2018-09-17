@@ -63,26 +63,29 @@ public class HttpUtils
         return result;
     }
 
-    public static String sendGet(String url, Map<String, String> params, Integer type)
-    {
+    public static String sendGet(String url, Map<String, String> params, Integer type) {
+
         BufferedReader reader = null;
         StringBuffer sb = new StringBuffer();
-        try
-        {
+        try {
+
             String content = "";
-            if (type.intValue() == 1)
-            {
+            if (type.intValue() == 1) {
                 content = mpPost(params);
                 content = content.substring(1, content.length());
                 url = url + "?" + content;
-            }
-            else if (type.intValue() == 2)
-            {
+            } else if (type.intValue() == 2) {
                 content = mpGet(params);
 
                 url = url + content;
             }
             URL realUrl = new URL(url);
+
+            //Https加密
+            if("https".equalsIgnoreCase(realUrl.getProtocol())){
+
+                SslUtils.ignoreSsl();
+            }
 
             URLConnection connection = realUrl.openConnection();
 
@@ -99,22 +102,15 @@ public class HttpUtils
                 sb.append(line);
             }
             return sb.toString();
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("发送 GET 请求出现异常" + e);
             e.printStackTrace();
-        }
-        finally
-        {
-            try
-            {
+        } finally {
+            try {
                 if (reader != null) {
                     reader.close();
                 }
-            }
-            catch (Exception e2)
-            {
+            } catch (Exception e2) {
                 e2.printStackTrace();
             }
         }
@@ -174,14 +170,20 @@ public class HttpUtils
         return sb.toString();
     }
 
-    public static String sendPost(String url, String params)
-    {
+    public static String sendPost(String url, String params) {
+
         OutputStreamWriter out = null;
         BufferedReader in = null;
         String result = "";
-        try
-        {
+        try {
             URL realUrl = new URL(url);
+
+            //https加密
+            if("https".equalsIgnoreCase(realUrl.getProtocol())) {
+
+                SslUtils.ignoreSsl();
+            }
+
             HttpURLConnection conn = null;
             conn = (HttpURLConnection)realUrl.openConnection();
             conn.setDoOutput(true);
